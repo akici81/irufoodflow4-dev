@@ -181,7 +181,7 @@ export default function UrunHavuzuPage() {
             value={aramaMetni}
             onChange={(e) => setAramaMetni(e.target.value)}
             placeholder="Ürün adı, marka veya kod ara..."
-            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm flex-1 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-black p-2 flex-1 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <select
             value={secilenKategori}
