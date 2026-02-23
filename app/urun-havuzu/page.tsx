@@ -44,7 +44,7 @@ export default function UrunHavuzuPage() {
   const [duzenleId, setDuzenleId] = useState<string | null>(null);
   const [panelAcik, setPanelAcik] = useState(false);
   const [bildirim, setBildirim] = useState<{ tip: "basari" | "hata"; metin: string } | null>(null);
-  const [yukleniyor, setYukleniyor] = useState(true);
+  const [veriYukleniyor, setVeriYukleniyor] = useState(true);
   const [aktifRol, setAktifRol] = useState("");
   const dosyaRef = useRef<HTMLInputElement>(null);
 
@@ -54,7 +54,7 @@ export default function UrunHavuzuPage() {
   }, []);
 
   const fetchUrunler = async () => {
-    setYukleniyor(true);
+    setVeriYukleniyor(true);
     const { data } = await supabase.from("urunler").select("*").order("urun_adi");
     setUrunler((data || []).map((u: any) => ({
       id: u.id,
@@ -68,7 +68,7 @@ export default function UrunHavuzuPage() {
       kod: u.kod,
       notlar: u.notlar,
     })));
-    setYukleniyor(false);
+    setVeriYukleniyor(false);
   };
 
   const bildirimGoster = (tip: "basari" | "hata", metin: string) => {
