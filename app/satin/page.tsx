@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 
 import { supabase } from "@/lib/supabase";
 
@@ -15,6 +16,10 @@ type OzetSatir = {
 };
 
 export default function SatinAlmaPage() {
+  const { yetkili, yukleniyor } = useAuth("/satin");
+  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+  if (!yetkili) return null;
+
  const [siparisler, setSiparisler] = useState<Siparis[]>([]);
  const [stokMap, setStokMap] = useState<Record<string, { id: string; stok: number; kategori: string }>>({});
  const [satirlar, setSatirlar] = useState<OzetSatir[]>([]);

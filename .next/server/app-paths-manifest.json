@@ -1,0 +1,18 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/dersler/page": "app/dersler/page.js",
+  "/bolum-baskani/page": "app/bolum-baskani/page.js",
+  "/alisveris-listelerim/page": "app/alisveris-listelerim/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/kullanicilar/page": "app/kullanicilar/page.js",
+  "/ogretmen/page": "app/ogretmen/page.js",
+  "/page": "app/page.js",
+  "/siparis-yonetimi/page": "app/siparis-yonetimi/page.js",
+  "/satin/page": "app/satin/page.js",
+  "/siparislerim/page": "app/siparislerim/page.js",
+  "/stok/page": "app/stok/page.js",
+  "/siparisler/page": "app/siparisler/page.js",
+  "/talep/page": "app/talep/page.js",
+  "/urun-havuzu/page": "app/urun-havuzu/page.js"
+}

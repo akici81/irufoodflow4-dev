@@ -4,8 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import DashboardLayout from "../components/DashboardLayout";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "../hooks/useAuth";
 
 export default function AdminAnaSayfa() {
+  const { yetkili, yukleniyor } = useAuth("/admin");
+  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+  if (!yetkili) return null;
  const [istatistik, setIstatistik] = useState({
  kullaniciSayisi: 0,
  urunSayisi: 0,

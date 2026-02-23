@@ -2,23 +2,28 @@
 
 import { useEffect, useState, useCallback } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 type UrunStok = { id: string; urunAdi: string; marka: string; olcu: string; stok: number };
 
 export default function StokPage() {
+  const { yetkili, yukleniyor } = useAuth("/stok");
+  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+  if (!yetkili) return null;
+
     const [urunler, setUrunler] = useState<UrunStok[]>([]);
     const [stokMap, setStokMap] = useState<Record<string, number>>({});
     const [kgInputler, setKgInputler] = useState<Record<string, string>>({});
     const [aramaMetni, setAramaMetni] = useState("");
     const [kaydediliyor, setKaydediliyor] = useState<Record<string, boolean>>({});
     const [bildirim, setBildirim] = useState<{ tip: "basari" | "hata"; metin: string } | null>(null);
-    const [yukleniyor, setYukleniyor] = useState(true);
+    const [veriYukleniyor, setVeriYukleniyor] = useState(true);
 
     useEffect(() => { fetchUrunler(); }, []);
 
     const fetchUrunler = async () => {
-        setYukleniyor(true);
+        setVeriYukleniyor(true);
         const { data } = await supabase.from("urunler").select("id, urun_adi, marka, olcu, stok").order("urun_adi");
         const liste = (data || []).map((u: any) => ({
             id: u.id, urunAdi: u.urun_adi, marka: u.marka, olcu: u.olcu, stok: u.stok ?? 0,
@@ -27,7 +32,7 @@ export default function StokPage() {
         const map: Record<string, number> = {};
         liste.forEach((u) => { map[u.id] = u.stok; });
         setStokMap(map);
-        setYukleniyor(false);
+        setVeriYukleniyor(false);
     };
 
     const bildir = (tip: "basari" | "hata", metin: string) => {

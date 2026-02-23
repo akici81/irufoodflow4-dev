@@ -16,6 +16,7 @@ const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
  admin: [
  { name: " Ana Sayfa", path: "/admin" },
  { name: " Ürün Havuzu", path: "/urun-havuzu" },
+ { name: " Reçete Havuzu", path: "/receteler" },
  { name: " Kullanıcılar", path: "/kullanicilar" },
  { name: " Dersler", path: "/dersler" },
  { name: " Alışveriş Listeleri", path: "/siparisler" },
@@ -24,6 +25,7 @@ const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
  ogretmen: [
  { name: " Ana Sayfa", path: "/ogretmen" },
  { name: " Ürün Havuzu", path: "/urun-havuzu" },
+ { name: " Reçete Havuzu", path: "/receteler" },
  { name: " Alışveriş Listelerim", path: "/alisveris-listelerim" },
  { name: " Siparişlerim", path: "/siparislerim" },
  { name: " Talep Oluştur", path: "/talep" },

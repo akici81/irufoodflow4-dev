@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 
 import { supabase } from "@/lib/supabase";
 
@@ -9,10 +10,16 @@ type Urun = { id: string; urunAdi: string; marka: string; fiyat: number; olcu: s
 type Ders = { id: string; kod: string; ad: string };
 type HaftaUrun = { urunId: string; urunAdi: string; marka: string; miktar: number; olcu: string; birimFiyat: number; toplam: number };
 type DersListesi = { dersId: string; dersAdi: string; dersKodu: string; ogretmenAdi: string; olusturmaTarihi: string; haftalar: Record<string, HaftaUrun[]> };
+type Recete = { id: string; ad: string; kategori: string; porsiyon: number };
+type ReceteMalzeme = { urun_adi: string; marka: string; birim: string; miktar_kisi: number };
 
 const HAFTALAR = Array.from({ length: 10 }, (_, i) => `${i + 1}. Hafta`);
 
 export default function AlisverisListeleriPage() {
+  const { yetkili, yukleniyor } = useAuth("/alisveris-listelerim");
+  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+  if (!yetkili) return null;
+
   const [kullaniciId, setKullaniciId] = useState<number | null>(null);
   const [kullaniciAdi, setKullaniciAdi] = useState("");
   const [atananDersler, setAtananDersler] = useState<Ders[]>([]);
@@ -29,6 +36,13 @@ export default function AlisverisListeleriPage() {
   const [dersSablonDosyasi, setDersSablonDosyasi] = useState<Record<string, File>>({});
   const [sablonYukleniyor, setSablonYukleniyor] = useState<Record<string, boolean>>({});
   const sablonInputRef = useRef<Record<string, HTMLInputElement | null>>({});
+
+  // Reçete modalı
+  const [receteModalAcik, setReceteModalAcik] = useState(false);
+  const [receteler, setReceteler] = useState<Recete[]>([]);
+  const [secilenReceteId, setSecilenReceteId] = useState("");
+  const [ogrenciSayisi, setOgrenciSayisi] = useState(1);
+  const [receteYukleniyor, setReceteYukleniyor] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -155,6 +169,57 @@ export default function AlisverisListeleriPage() {
     .filter(Boolean) as HaftaUrun[];
 
   const haftaToplam = secilenUrunListesi.reduce((acc, u) => acc + u.toplam, 0);
+
+  // ── Reçeteden Ekle ────────────────────────────────────────────────────────
+  const handleReceteModalAc = async () => {
+    if (!secilenDers) { bildirimGoster("hata", "Önce ders seçin."); return; }
+    if (receteler.length === 0) {
+      const { data } = await supabase.from("receteler").select("id, ad, kategori, porsiyon").eq("aktif", true).order("ad");
+      setReceteler(data || []);
+    }
+    setSecilenReceteId("");
+    setOgrenciSayisi(1);
+    setReceteModalAcik(true);
+  };
+
+  const handleReceteUygula = async () => {
+    if (!secilenReceteId) { bildirimGoster("hata", "Reçete seçin."); return; }
+    if (ogrenciSayisi < 1) { bildirimGoster("hata", "Öğrenci sayısı en az 1 olmalı."); return; }
+    setReceteYukleniyor(true);
+
+    const { data: malzemeler } = await supabase
+      .from("recete_malzemeleri")
+      .select("*")
+      .eq("recete_id", secilenReceteId);
+
+    if (!malzemeler || malzemeler.length === 0) {
+      bildirimGoster("hata", "Bu reçetede malzeme tanımlanmamış.");
+      setReceteYukleniyor(false);
+      return;
+    }
+
+    // Her malzeme için ürün havuzunda eşleştir
+    const yeniListe = { ...liste };
+    let eslesilenSayisi = 0;
+
+    for (const malzeme of malzemeler as ReceteMalzeme[]) {
+      const toplam = Math.round(malzeme.miktar_kisi * ogrenciSayisi * 1000) / 1000;
+      // Ürün havuzunda isim veya marka ile eşleştir
+      const eslesenUrun = urunler.find(u =>
+        u.urunAdi.toLowerCase().includes(malzeme.urun_adi.toLowerCase()) ||
+        malzeme.urun_adi.toLowerCase().includes(u.urunAdi.toLowerCase())
+      );
+      if (eslesenUrun) {
+        yeniListe[eslesenUrun.id] = (yeniListe[eslesenUrun.id] || 0) + toplam;
+        eslesilenSayisi++;
+      }
+    }
+
+    setListe(yeniListe);
+    setReceteModalAcik(false);
+    setReceteYukleniyor(false);
+    bildirimGoster("basari", `${eslesilenSayisi}/${malzemeler.length} malzeme listeye eklendi. Eşleşmeyenler manuel eklenebilir.`);
+  };
 
   const handleHaftaKaydet = async () => {
     if (!secilenDers) { bildirimGoster("hata", "Lutfen ders secin."); return; }
@@ -521,9 +586,14 @@ export default function AlisverisListeleriPage() {
               <div className="flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                   <h2 className="font-semibold text-gray-800 text-sm">Urun Havuzu — {secilenHafta}</h2>
-                  <input value={aramaMetni} onChange={(e) => setAramaMetni(e.target.value)} placeholder="Urun ara..."
-                    className="border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 w-48" />
-                </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={handleReceteModalAc}
+                      className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-2 rounded-xl transition whitespace-nowrap">
+                      🍽 Reçeteden Ekle
+                    </button>
+                    <input value={aramaMetni} onChange={(e) => setAramaMetni(e.target.value)} placeholder="Urun ara..."
+                      className="border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 w-48" />
+                  </div>
 
                 <div className="mx-4 mt-4 mb-1 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
                   <p className="text-xs font-semibold text-blue-700 mb-2">Miktar Giris Rehberi</p>
@@ -794,6 +864,51 @@ export default function AlisverisListeleriPage() {
           </div>
         )}
       </div>
+
+      {/* Reçeteden Ekle Modal */}
+      {receteModalAcik && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-800">🍽 Reçeteden Ekle</h2>
+              <button onClick={() => setReceteModalAcik(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="text-xs font-medium text-gray-700 block mb-1">Reçete Seçin</label>
+                <select value={secilenReceteId} onChange={e => setSecilenReceteId(e.target.value)}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                  <option value="">-- Reçete seçin --</option>
+                  {receteler.map(r => (
+                    <option key={r.id} value={r.id}>{r.ad} ({r.kategori})</option>
+                  ))}
+                </select>
+                {receteler.length === 0 && (
+                  <p className="text-xs text-gray-400 mt-1">Henüz reçete eklenmemiş. Reçete Havuzu'ndan ekleyebilirsiniz.</p>
+                )}
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-700 block mb-1">Öğrenci Sayısı</label>
+                <input type="number" min={1} value={ogrenciSayisi} onChange={e => setOgrenciSayisi(Number(e.target.value))}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700">
+                Reçetedeki malzemeler, öğrenci sayısıyla çarpılarak mevcut listeye <strong>eklenir</strong>. Ürün havuzunda eşleşen ürünler otomatik işaretlenir.
+              </div>
+              <div className="flex gap-3 pt-1">
+                <button onClick={() => setReceteModalAcik(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">
+                  İptal
+                </button>
+                <button onClick={handleReceteUygula} disabled={receteYukleniyor || !secilenReceteId}
+                  className="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold py-2.5 rounded-xl transition disabled:opacity-50">
+                  {receteYukleniyor ? "Ekleniyor..." : "Listeye Ekle"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

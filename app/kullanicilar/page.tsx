@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 type Kullanici = {
@@ -34,6 +35,10 @@ const ROL_RENK: Record<string, string> = {
 const BOSH_FORM = { username: "", ad_soyad: "", password_hash: "", role: "ogretmen", dersler: [] as string[] };
 
 export default function KullanicilarPage() {
+  const { yetkili, yukleniyor } = useAuth("/kullanicilar");
+  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+  if (!yetkili) return null;
+
  const [sekme, setSekme] = useState<"liste" | "ekle" | "guncelle">("liste");
  const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);
  const [dersler, setDersler] = useState<Ders[]>([]);
@@ -41,21 +46,21 @@ export default function KullanicilarPage() {
  const [duzenleId, setDuzenleId] = useState<number | null>(null);
  const [hata, setHata] = useState("");
  const [basari, setBasari] = useState("");
- const [yukleniyor, setYukleniyor] = useState(true);
+ const [veriYukleniyor, setVeriYukleniyor] = useState(true);
 
  useEffect(() => {
  fetchData();
  }, []);
 
  const fetchData = async () => {
- setYukleniyor(true);
+ setVeriYukleniyor(true);
  const [{ data: k }, { data: d }] = await Promise.all([
  supabase.from("kullanicilar").select("*").order("id"),
  supabase.from("dersler").select("*").order("kod"),
  ]);
  setKullanicilar(k || []);
  setDersler(d || []);
- setYukleniyor(false);
+ setVeriYukleniyor(false);
  };
 
  const mesaj = (tip: "basari" | "hata", metin: string) => {
