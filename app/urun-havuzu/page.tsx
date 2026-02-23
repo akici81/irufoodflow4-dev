@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 export type Urun = {
@@ -31,6 +32,10 @@ const BOSH_FORM: Omit<Urun, "id"> = {
 };
 
 export default function UrunHavuzuPage() {
+  const { yetkili, yukleniyor } = useAuth("/urun-havuzu");
+  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+  if (!yetkili) return null;
+
   const [urunler, setUrunler] = useState<Urun[]>([]);
   const [aramaMetni, setAramaMetni] = useState("");
   const [secilenKategori, setSecilenKategori] = useState("Tümü");
