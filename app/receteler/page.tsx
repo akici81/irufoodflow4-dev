@@ -31,15 +31,12 @@ const BIRIMLER = ["gr", "kg", "ml", "lt", "adet", "çay k.", "yemek k.", "su b."
 
 export default function RecetelerPage() {
   const { yetkili, yukleniyor } = useAuth("/receteler");
-  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
-  if (!yetkili) return null;
-
   const [kullaniciId, setKullaniciId] = useState<number | null>(null);
   const [kullaniciRole, setKullaniciRole] = useState<string>("");
   const [receteler, setReceteler] = useState<Recete[]>([]);
   const [filtreKat, setFiltreKat] = useState("Tümü");
   const [aramaMetni, setAramaMetni] = useState("");
-  const [yukleniyor, setYukleniyor] = useState(true);
+  const [veriYukleniyor, setVeriYukleniyor] = useState(true);
   const [bildirim, setBildirim] = useState<{ tip: "basari" | "hata"; metin: string } | null>(null);
   const [aktifSekme, setAktifSekme] = useState<"benim" | "ortak">("benim");
   const [ortakReceteler, setOrtakReceteler] = useState<Recete[]>([]);
@@ -62,17 +59,17 @@ export default function RecetelerPage() {
       setKullaniciRole(role);
       fetchReceteler(Number(id), role);
     } else {
-      setYukleniyor(false);
+      setVeriYukleniyor(false);
     }
   }, []);
 
   const fetchReceteler = async (kid: number, role: string) => {
-    setYukleniyor(true);
+    setVeriYukleniyor(true);
     const { data } = role === "admin"
       ? await supabase.from("receteler").select("*").eq("aktif", true).order("ad")
       : await supabase.from("receteler").select("*").eq("aktif", true).eq("olusturan_id", kid).order("ad");
     setReceteler(data || []);
-    setYukleniyor(false);
+    setVeriYukleniyor(false);
   };
 
   const fetchMalzemeler = async (receteId: string): Promise<Malzeme[]> => {
@@ -182,6 +179,9 @@ export default function RecetelerPage() {
     (filtreKat === "Tümü" || r.kategori === filtreKat) &&
     (aramaMetni === "" || r.ad.toLowerCase().includes(aramaMetni.toLowerCase()))
   );
+
+  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yukleniyor...</div>;
+  if (!yetkili) return null;
 
   return (
     <DashboardLayout title="Tarif Defterim" subtitle="Kişisel reçete havuzunuz — ilerleyen dönemler için saklayın">
