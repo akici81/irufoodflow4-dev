@@ -32,9 +32,8 @@ const BOSH_FORM: Omit<Urun, "id"> = {
 };
 
 export default function UrunHavuzuPage() {
-  const { yetkili, yukleniyor } = useAuth("/urun-havuzu");
-  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
-  if (!yetkili) return null;
+  // authYukleniyor olarak yeniden adlandırıldı (Naming Collision engellendi)
+  const { yetkili, yukleniyor: authYukleniyor } = useAuth("/urun-havuzu");
 
   const [urunler, setUrunler] = useState<Urun[]>([]);
   const [aramaMetni, setAramaMetni] = useState("");
@@ -70,6 +69,10 @@ export default function UrunHavuzuPage() {
     })));
     setVeriYukleniyor(false);
   };
+
+  // Yetki ve yüklenme kontrolleri
+  if (authYukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+  if (!yetkili) return null;
 
   const bildirimGoster = (tip: "basari" | "hata", metin: string) => {
     setBildirim({ tip, metin });
@@ -228,8 +231,8 @@ export default function UrunHavuzuPage() {
           </div>
         </div>
 
-        {yukleniyor ? (
-          <div className="text-center py-16 text-gray-400 text-sm">Yükleniyor...</div>
+        {veriYukleniyor ? (
+          <div className="text-center py-16 text-gray-400 text-sm">Veriler yükleniyor...</div>
         ) : filtrelenmis.length === 0 ? (
           <div className="text-center py-16 text-gray-400 text-sm">
             {urunler.length === 0 ? "Henüz ürün yok." : "Bu filtreye uygun ürün bulunamadı."}
