@@ -23,8 +23,8 @@ const OLCU_SECENEKLERI = ["Kg", "L", "Paket", "Adet", "G", "Ml", "Kutu"];
 const BOSH_FORM: Omit<Urun, "id">= { urunAdi: "", marka: "", fiyat: 0, olcu: "Kg", kategori: "", market: "", stok: 0, kod: "", notlar: "" };
 
 export default function UrunHavuzuPage() {
-  const { yetkili, yukleniyor } = useAuth("/urun-havuzu");
-  if (yukleniyor || !yetkili) return null;
+  const { yetkili, yukleniyor: authYukleniyor } = useAuth("/urun-havuzu");
+  if (authYukleniyor || !yetkili) return null;
 
  const [urunler, setUrunler] = useState<Urun[]>([]);
  const [aramaMetni, setAramaMetni] = useState("");

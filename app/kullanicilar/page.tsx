@@ -35,8 +35,8 @@ const ROL_RENK: Record<string, string> = {
 const BOSH_FORM = { username: "", ad_soyad: "", password_hash: "", role: "ogretmen", dersler: [] as string[] };
 
 export default function KullanicilarPage() {
-  const { yetkili, yukleniyor } = useAuth("/kullanicilar");
-  if (yukleniyor || !yetkili) return null;
+  const { yetkili, yukleniyor: authYukleniyor } = useAuth("/kullanicilar");
+  if (authYukleniyor || !yetkili) return null;
 
  const [sekme, setSekme] = useState<"liste" | "ekle" | "guncelle">("liste");
  const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);

@@ -8,8 +8,8 @@ import { supabase } from "@/lib/supabase";
 type UrunStok = { id: string; urunAdi: string; marka: string; olcu: string; stok: number };
 
 export default function StokPage() {
-  const { yetkili, yukleniyor } = useAuth("/stok");
-  if (yukleniyor || !yetkili) return null;
+  const { yetkili, yukleniyor: authYukleniyor } = useAuth("/stok");
+  if (authYukleniyor || !yetkili) return null;
 
     const [urunler, setUrunler] = useState<UrunStok[]>([]);
     const [stokMap, setStokMap] = useState<Record<string, number>>({});
