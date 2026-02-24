@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
 
@@ -31,6 +32,9 @@ const BOSH_URUN: Omit<Urun, "id">= { urunAdi: "", marka: "", fiyat: 0, olcu: "Kg
 type Sekme = "panel" | "kullanici" | "listeler" | "siparisler" | "urunler";
 
 export default function BolumBaskaniPage() {
+  const { yetkili, yukleniyor } = useAuth("/bolum-baskani");
+  if (yukleniyor || !yetkili) return null;
+
  const [adSoyad, setAdSoyad] = useState("");
  const [dersler, setDersler] = useState<Ders[]>([]);
  const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);

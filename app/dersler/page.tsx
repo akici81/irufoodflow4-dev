@@ -2,12 +2,16 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 type Ders = { id: string; kod: string; ad: string; donem: string; aktif: boolean };
 type Kullanici = { id: number; username: string; ad_soyad: string; role: string; dersler: string[] };
 
 export default function DerslerPage() {
+  const { yetkili, yukleniyor } = useAuth("/dersler");
+  if (yukleniyor || !yetkili) return null;
+
   const [dersler, setDersler] = useState<Ders[]>([]);
   const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);
   const [yeniKod, setYeniKod] = useState("");

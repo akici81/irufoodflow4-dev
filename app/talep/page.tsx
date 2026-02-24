@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 type Urun = { id: string; urunAdi: string; marka: string; fiyat: number; olcu: string; kategori: string };
@@ -20,6 +21,9 @@ const olcuBilgisi = (olcu: string) => {
 };
 
 export default function TalepPage() {
+  const { yetkili, yukleniyor } = useAuth("/talep");
+  if (yukleniyor || !yetkili) return null;
+
   const [kullaniciId, setKullaniciId] = useState<number | null>(null);
   const [kullaniciAdi, setKullaniciAdi] = useState("");
   const [dersler, setDersler] = useState<Ders[]>([]);

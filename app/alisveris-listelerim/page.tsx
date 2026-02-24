@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import * as XLSX from "xlsx";
 import { supabase } from "@/lib/supabase";
 
@@ -13,6 +14,9 @@ type DersListesi = { dersId: string; dersAdi: string; dersKodu: string; ogretmen
 const HAFTALAR = Array.from({ length: 10 }, (_, i) => `${i + 1}. Hafta`);
 
 export default function AlisverisListeleriPage() {
+  const { yetkili, yukleniyor } = useAuth("/alisveris-listelerim");
+  if (yukleniyor || !yetkili) return null;
+
   const [kullaniciId, setKullaniciId] = useState<number | null>(null);
   const [kullaniciAdi, setKullaniciAdi] = useState("");
   const [atananDersler, setAtananDersler] = useState<Ders[]>([]);

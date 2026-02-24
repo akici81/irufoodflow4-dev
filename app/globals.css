@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --red: #B71C1C;
-  --red-dark: #7F1212;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -14,7 +9,6 @@
 body {
   background: #F5F5F5;
   color: #18181B;
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

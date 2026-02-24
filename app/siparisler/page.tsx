@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import * as XLSX from "xlsx";
 import { supabase } from "@/lib/supabase";
 
@@ -18,6 +19,9 @@ const DURUM_LABEL: Record<string, string> = {
 };
 
 export default function SiparislerPage() {
+  const { yetkili, yukleniyor } = useAuth("/siparisler");
+  if (yukleniyor || !yetkili) return null;
+
  const [siparisler, setSiparisler] = useState<Siparis[]>([]);
  const [detay, setDetay] = useState<Siparis | null>(null);
  const [filtreHafta, setFiltreHafta] = useState("tumu");

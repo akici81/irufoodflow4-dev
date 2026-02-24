@@ -3,9 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 export default function AdminAnaSayfa() {
+  const { yetkili, yukleniyor } = useAuth("/admin");
+  if (yukleniyor || !yetkili) return null;
+
   const [istatistik, setIstatistik] = useState({
     kullaniciSayisi: 0,
     urunSayisi: 0,

@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 type Ders = { id: string; kod: string; ad: string };
 
 export default function OgretmenAnaSayfa() {
+  const { yetkili, yukleniyor } = useAuth("/ogretmen");
+  if (yukleniyor || !yetkili) return null;
+
   const [adSoyad, setAdSoyad] = useState("");
   const [atananDersler, setAtananDersler] = useState<Ders[]>([]);
 

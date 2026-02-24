@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 type SiparisUrun = { urunAdi: string; marka: string; miktar: number; olcu: string; birimFiyat: number; toplam: number };
@@ -17,6 +18,9 @@ const DURUM_LABEL: Record<string, string> = {
 };
 
 export default function SiparislerimPage() {
+  const { yetkili, yukleniyor } = useAuth("/siparislerim");
+  if (yukleniyor || !yetkili) return null;
+
  const [siparisler, setSiparisler] = useState<Siparis[]>([]);
  const [detay, setDetay] = useState<Siparis | null>(null);
  const [filtreDers, setFiltreDers] = useState("tumu");

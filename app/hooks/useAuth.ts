@@ -3,25 +3,51 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-// Her sayfanın hangi rollere açık olduğu
-const SAYFA_ROLLERI: Record<string, string[]> = {
-  "/admin":              ["admin"],
-  "/kullanicilar":       ["admin"],
-  "/dersler":            ["admin", "bolum_baskani"],
-  "/siparisler":         ["admin"],
-  "/siparis-yonetimi":   ["admin"],
-  "/urun-havuzu":        ["admin", "ogretmen"],
-  "/receteler":          ["admin", "ogretmen"],
-  "/bolum-baskani":      ["admin", "bolum_baskani"],
-  "/ogretmen":           ["admin", "ogretmen"],
-  "/alisveris-listelerim": ["admin", "ogretmen"],
-  "/siparislerim":       ["admin", "ogretmen"],
-  "/talep":              ["admin", "ogretmen"],
-  "/satin":              ["admin", "satin_alma"],
-  "/stok":               ["admin", "stok"],
+const ROL_IZINLERI: Record<string, string[]> = {
+  admin: [
+    "/admin",
+    "/urun-havuzu",
+    "/kullanicilar",
+    "/dersler",
+    "/siparisler",
+    "/siparis-yonetimi",
+    "/receteler",
+  ],
+  ogretmen: [
+    "/ogretmen",
+    "/alisveris-listelerim",
+    "/siparislerim",
+    "/talep",
+    "/receteler",
+  ],
+  satin_alma: [
+    "/satin",
+    "/urun-havuzu",
+  ],
+  stok: [
+    "/stok",
+    "/urun-havuzu",
+  ],
+  bolum_baskani: [
+    "/bolum-baskani",
+    "/dersler",
+  ],
+  "bolum-baskani": [
+    "/bolum-baskani",
+    "/dersler",
+  ],
 };
 
-export function useAuth(sayfaYolu: string) {
+const ROL_ANA_SAYFA: Record<string, string> = {
+  admin: "/admin",
+  ogretmen: "/ogretmen",
+  satin_alma: "/satin",
+  stok: "/stok",
+  bolum_baskani: "/bolum-baskani",
+  "bolum-baskani": "/bolum-baskani",
+};
+
+export function useAuth(gerekenSayfa: string) {
   const router = useRouter();
   const [yetkili, setYetkili] = useState(false);
   const [yukleniyor, setYukleniyor] = useState(true);
@@ -36,30 +62,19 @@ export function useAuth(sayfaYolu: string) {
       return;
     }
 
-    const izinliRoller = SAYFA_ROLLERI[sayfaYolu];
-    
-    // Tanımsız sayfa — erişime izin ver
-    if (!izinliRoller) {
-      setYetkili(true);
-      setYukleniyor(false);
+    const izinliSayfalar = ROL_IZINLERI[role] ?? [];
+    const erisimVar = izinliSayfalar.includes(gerekenSayfa);
+
+    if (!erisimVar) {
+      // Yetkisi yoksa kendi ana sayfasına at
+      const anaSayfa = ROL_ANA_SAYFA[role] ?? "/";
+      router.replace(anaSayfa);
       return;
     }
 
-    if (izinliRoller.includes(role)) {
-      setYetkili(true);
-      setYukleniyor(false);
-    } else {
-      // Yetkisiz — rolüne göre ana sayfasına yönlendir
-      const anaSayfa: Record<string, string> = {
-        admin: "/admin",
-        ogretmen: "/ogretmen",
-        satin_alma: "/satin",
-        stok: "/stok",
-        bolum_baskani: "/bolum-baskani",
-      };
-      router.replace(anaSayfa[role] || "/");
-    }
-  }, [sayfaYolu, router]);
+    setYetkili(true);
+    setYukleniyor(false);
+  }, [gerekenSayfa, router]);
 
   return { yetkili, yukleniyor };
 }

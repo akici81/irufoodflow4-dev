@@ -2,12 +2,16 @@
 
 import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 type SiparisUrun = { urunId: string; urunAdi: string; marka: string; miktar: number; olcu: string; birimFiyat: number; toplam: number };
 type Siparis = { id: string; ogretmenId: number; ogretmenAdi: string; dersId: string; dersAdi: string; hafta: string; urunler: SiparisUrun[]; genelToplam: number; tarih: string; durum: string };
 
 export default function SiparisYonetimiPage() {
+  const { yetkili, yukleniyor } = useAuth("/siparis-yonetimi");
+  if (yukleniyor || !yetkili) return null;
+
  const [siparisler, setSiparisler] = useState<Siparis[]>([]);
  const [sekme, setSekme] = useState<"hepsi" | "filtre">("hepsi");
  const [filtreOgretmen, setFiltreOgretmen] = useState("tumu");
