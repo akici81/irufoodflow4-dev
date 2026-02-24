@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
@@ -50,6 +51,7 @@ const ZORLUKLAR = ["Kolay", "Orta", "Zor"];
 export default function RecetelerPage() {
   const { yetkili, yukleniyor: authYukleniyor } = useAuth("/receteler");
 
+  const router = useRouter();
   const [kullaniciId, setKullaniciId] = useState<number | null>(null);
   const [kullaniciRole, setKullaniciRole] = useState<string>("");
   const [kullaniciAdi, setKullaniciAdi] = useState<string>("");
@@ -197,6 +199,7 @@ export default function RecetelerPage() {
       }).eq("id", mevcutSiparis.id);
 
       bildir("basari", `"${listeRecete.ad}" ${listeForm.hafta} listesine eklendi!`);
+      setTimeout(() => router.push("/alisveris-listelerim"), 1000);
     } else {
       // Yeni sipariş oluştur
       const genelToplam = yeniUrunler.reduce((s, u) => s + u.toplam, 0);
@@ -212,6 +215,7 @@ export default function RecetelerPage() {
         durum: "bekliyor",
       });
       bildir("basari", `"${listeRecete.ad}" için ${listeForm.hafta} listesi oluşturuldu!`);
+      setTimeout(() => router.push("/alisveris-listelerim"), 1000);
     }
 
     setListeModalAcik(false);
