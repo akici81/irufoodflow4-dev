@@ -277,7 +277,7 @@ export default function RecetelerPage() {
     const filtre = val.trim().length === 0
       ? urunHavuzu.slice(0, 8)
       : urunHavuzu.filter(u =>
-          u.urun_adi.toLowerCase().includes(val.toLowerCase()) ||
+          (u.urun_adi || "").toLowerCase().includes(val.toLowerCase()) ||
           (u.marka || "").toLowerCase().includes(val.toLowerCase())
         ).slice(0, 8);
     setUrunOneri(filtre);
@@ -286,7 +286,7 @@ export default function RecetelerPage() {
 
   const handleUrunOdak = () => {
     const filtre = yeniMalzeme.urun_adi.trim().length === 0 ? urunHavuzu.slice(0, 8)
-      : urunHavuzu.filter(u => u.urun_adi.toLowerCase().includes(yeniMalzeme.urun_adi.toLowerCase())).slice(0, 8);
+      : urunHavuzu.filter(u => (u.urun_adi || "").toLowerCase().includes((yeniMalzeme.urun_adi || "").toLowerCase())).slice(0, 8);
     setUrunOneri(filtre);
     setOneriAcik(filtre.length > 0);
   };
@@ -347,7 +347,7 @@ export default function RecetelerPage() {
 
   const gosterilecek = (aktifSekme === "benim" ? receteler : ortakReceteler).filter(r =>
     (filtreKat === "Tümü" || r.kategori === filtreKat) &&
-    (aramaMetni === "" || r.ad.toLowerCase().includes(aramaMetni.toLowerCase()))
+    (aramaMetni === "" || (r.ad || "").toLowerCase().includes(aramaMetni.toLowerCase()))
   );
 
   const zorlukRenk: Record<string, string> = { Kolay: "text-emerald-600 bg-emerald-50", Orta: "text-amber-600 bg-amber-50", Zor: "text-red-600 bg-red-50" };

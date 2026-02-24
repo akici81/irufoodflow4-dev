@@ -128,7 +128,7 @@ export default function UrunHavuzuPage() {
  const markalar = ["Tümü", ...Array.from(new Set(urunler.map((u) => u.marka).filter(Boolean))).sort()];
 
  const filtrelenmis = urunler.filter((u) => {
- const aramaUygun = !aramaMetni || u.urunAdi.toLowerCase().includes(aramaMetni.toLowerCase()) || u.marka.toLowerCase().includes(aramaMetni.toLowerCase()) || u.kod.toLowerCase().includes(aramaMetni.toLowerCase());
+ const aramaUygun = !aramaMetni || (u.urunAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (u.marka || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (u.kod || "").toLowerCase().includes(aramaMetni.toLowerCase());
  const kategoriUygun = secilenKategori === "Tümü" || u.kategori === secilenKategori;
  const markaUygun = secilenMarka === "Tümü" || u.marka === secilenMarka;
  return aramaUygun && kategoriUygun && markaUygun;

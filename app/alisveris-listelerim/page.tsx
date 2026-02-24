@@ -80,7 +80,7 @@ export default function AlisverisListeleriPage() {
   const secilenDersObj = atananDersler.find((d) => d.id === secilenDers);
 
   const filtreliUrunler = urunler.filter((u) =>
-    !aramaMetni || u.urunAdi.toLowerCase().includes(aramaMetni.toLowerCase()) || u.marka.toLowerCase().includes(aramaMetni.toLowerCase())
+    !aramaMetni || (u.urunAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (u.marka || "").toLowerCase().includes(aramaMetni.toLowerCase())
   );
 
   const olcuBilgisi = (olcu: string) => {
