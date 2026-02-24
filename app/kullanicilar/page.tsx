@@ -36,7 +36,6 @@ const BOSH_FORM = { username: "", ad_soyad: "", password_hash: "", role: "ogretm
 
 export default function KullanicilarPage() {
   const { yetkili, yukleniyor: authYukleniyor } = useAuth("/kullanicilar");
-  if (authYukleniyor || !yetkili) return null;
 
  const [sekme, setSekme] = useState<"liste" | "ekle" | "guncelle">("liste");
  const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);
@@ -126,6 +125,7 @@ export default function KullanicilarPage() {
 
  const inputClass = "mt-1 w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500";
 
+ if (authYukleniyor || !yetkili) return null;
  return (
  <DashboardLayout title="Kullanıcı & Erişim Yönetimi" subtitle="Sistemdeki personel ve kullanıcı bilgilerini yönetin">
  <div className="max-w-5xl space-y-5">

@@ -190,6 +190,7 @@ export default function BolumBaskaniPage() {
  { key: "urunler", label: "Ürün Havuzu" },
  ];
 
+ if (yukleniyor || !yetkili) return null;
  return (
  <DashboardLayout title="Bölüm Başkanı Paneli" subtitle="Tüm yönetim araçları">
  <div className="max-w-6xl space-y-5">

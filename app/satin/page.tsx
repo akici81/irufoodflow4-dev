@@ -163,6 +163,7 @@ export default function SatinAlmaPage() {
  XLSX.writeFile(wb, `${ad}.xlsx`);
  };
 
+ if (yukleniyor || !yetkili) return null;
  return (
  <DashboardLayout title="Satın Alma Paneli" subtitle="Haftalık ürün özetleri ve stok karşılaştırması">
  <div className="max-w-6xl space-y-5">

@@ -88,6 +88,7 @@ export default function SiparislerPage() {
  XLSX.writeFile(wb, `Alisveris_Listeleri_${new Date().toLocaleDateString("tr-TR").replace(/\./g, "-")}.xlsx`);
  };
 
+ if (yukleniyor || !yetkili) return null;
  return (
  <DashboardLayout title="Alışveriş Listeleri" subtitle="Tüm öğretmen taleplerini görüntüleyin ve yönetin">
  <div className="max-w-7xl space-y-5">

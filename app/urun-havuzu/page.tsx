@@ -24,7 +24,6 @@ const BOSH_FORM: Omit<Urun, "id">= { urunAdi: "", marka: "", fiyat: 0, olcu: "Kg
 
 export default function UrunHavuzuPage() {
   const { yetkili, yukleniyor: authYukleniyor } = useAuth("/urun-havuzu");
-  if (authYukleniyor || !yetkili) return null;
 
  const [urunler, setUrunler] = useState<Urun[]>([]);
  const [aramaMetni, setAramaMetni] = useState("");
@@ -135,6 +134,7 @@ export default function UrunHavuzuPage() {
  return aramaUygun && kategoriUygun && markaUygun;
  });
 
+ if (authYukleniyor || !yetkili) return null;
  return (
  <DashboardLayout title="Ürün Havuzu">
  <div className="space-y-5 max-w-7xl">

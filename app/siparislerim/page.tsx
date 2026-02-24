@@ -46,6 +46,7 @@ export default function SiparislerimPage() {
  (filtreHafta === "tumu" || s.hafta === filtreHafta)
  );
 
+ if (yukleniyor || !yetkili) return null;
  return (
  <DashboardLayout title="Siparişlerim" subtitle="Gönderdiğiniz alışveriş listelerini takip edin">
  <div className="max-w-6xl space-y-5">

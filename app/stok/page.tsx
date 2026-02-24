@@ -9,7 +9,6 @@ type UrunStok = { id: string; urunAdi: string; marka: string; olcu: string; stok
 
 export default function StokPage() {
   const { yetkili, yukleniyor: authYukleniyor } = useAuth("/stok");
-  if (authYukleniyor || !yetkili) return null;
 
     const [urunler, setUrunler] = useState<UrunStok[]>([]);
     const [stokMap, setStokMap] = useState<Record<string, number>>({});
@@ -91,6 +90,7 @@ export default function StokPage() {
 
     const stokluUrun = urunler.filter((u) => u.stok > 0).length;
 
+    if (authYukleniyor || !yetkili) return null;
     return (
         <DashboardLayout title="Stok Paneli" subtitle="Depodaki mevcut ürün miktarlarını girin">
             <div className="max-w-5xl space-y-5">

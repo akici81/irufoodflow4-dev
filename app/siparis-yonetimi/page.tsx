@@ -52,6 +52,7 @@ export default function SiparisYonetimiPage() {
 
  const gosterilen = sekme === "hepsi" ? siparisler : filtrelenmis;
 
+ if (yukleniyor || !yetkili) return null;
  return (
  <DashboardLayout title="Sipariş Yönetimi" subtitle="Tüm siparişleri görüntüleyin ve yönetin">
  <div className="max-w-6xl space-y-5">
