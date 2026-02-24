@@ -23,22 +23,23 @@ const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
   ],
   ogretmen: [
     { name: "Ana Sayfa", path: "/ogretmen" },
-    { name: "Ürün Havuzu", path: "/urun-havuzu" },
     { name: "Alışveriş Listelerim", path: "/alisveris-listelerim" },
     { name: "Siparişlerim", path: "/siparislerim" },
     { name: "Talep Oluştur", path: "/talep" },
   ],
   satin_alma: [
-    { name: "Satın Alma Paneli", path: "/satin" },
-    { name: "Aktif Siparişler", path: "/siparisler" },
+    { name: "Ana Sayfa", path: "/satin" },
   ],
-  "bolum-baskani": [
-    { name: "Bölüm Yönetimi", path: "/bolum-baskani" },
-    { name: "Ders Atamaları", path: "/dersler" },
+  stok: [
+    { name: "Ana Sayfa", path: "/stok" },
   ],
   bolum_baskani: [
-    { name: "Bölüm Yönetimi", path: "/bolum-baskani" },
-    { name: "Ders Atamaları", path: "/dersler" },
+    { name: "Ana Sayfa", path: "/bolum-baskani" },
+    { name: "Ders Yönetimi", path: "/dersler" },
+  ],
+  "bolum-baskani": [
+    { name: "Ana Sayfa", path: "/bolum-baskani" },
+    { name: "Ders Yönetimi", path: "/dersler" },
   ],
 };
 
@@ -50,8 +51,6 @@ const ROL_LABEL: Record<string, string> = {
   "bolum-baskani": "Bölüm Başkanı",
   bolum_baskani: "Bölüm Başkanı",
 };
-
-const RED = "#B71C1C";
 
 export default function DashboardLayout({
   children,
@@ -81,6 +80,13 @@ export default function DashboardLayout({
     fetchKullanici();
   }, [router]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("aktifKullaniciId");
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    router.push("/");
+  };
+
   if (!kullanici) return null;
 
   const menu = ROLE_MENUS[kullanici.role] ?? [];
@@ -92,128 +98,87 @@ export default function DashboardLayout({
     .toUpperCase();
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#F4F4F5", fontFamily: "'Cargan', serif" }}>
+    <div className="min-h-screen flex bg-zinc-100">
 
-      {/* SIDEBAR */}
-      <aside style={{
-        width: 248,
-        minWidth: 248,
-        background: RED,
-        display: "flex",
-        flexDirection: "column",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "100vh",
-        zIndex: 50,
-      }}>
+      {/* ─── SIDEBAR ─────────────────────────────── */}
+      <aside className="w-60 flex-shrink-0 flex flex-col fixed h-screen z-40"
+        style={{ background: "#B71C1C" }}>
 
         {/* Logo */}
-        <div style={{ padding: "28px 24px 24px", borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{
-              width: 36, height: 36,
-              background: "white",
-              borderRadius: 8,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-            }}>
-              <span style={{ color: RED, fontWeight: 900, fontSize: 11, letterSpacing: 0.5 }}>İRÜ</span>
+        <div className="px-5 py-6 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-black" style={{ color: "#B71C1C" }}>İRÜ</span>
             </div>
             <div>
-              <div style={{ color: "white", fontWeight: 700, fontSize: 15, lineHeight: "1.2" }}>FoodFlow</div>
-              <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 10, letterSpacing: 0.5 }}>Yönetim Sistemi</div>
+              <p className="text-white font-bold text-sm leading-tight">FoodFlow</p>
+              <p className="text-white/50 text-xs">Yönetim Sistemi</p>
             </div>
           </div>
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: "16px 12px", overflowY: "auto" }}>
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {menu.map((item) => {
             const aktif = pathname === item.path;
             return (
-              <Link key={item.path} href={item.path} style={{
-                display: "block",
-                padding: "10px 14px",
-                borderRadius: 8,
-                marginBottom: 2,
-                fontSize: 13.5,
-                fontWeight: aktif ? 700 : 500,
-                color: aktif ? RED : "rgba(255,255,255,0.8)",
-                background: aktif ? "white" : "transparent",
-                textDecoration: "none",
-                letterSpacing: 0.2,
-                transition: "all 0.15s",
-              }}>
+              <Link
+                key={item.path}
+                href={item.path}
+                className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  aktif
+                    ? "bg-white text-red-800 font-semibold shadow-sm"
+                    : "text-white/75 hover:bg-white/10 hover:text-white"
+                }`}
+              >
                 {item.name}
               </Link>
             );
           })}
         </nav>
 
-        {/* Kullanici */}
-        <div style={{ padding: "16px 16px 20px", borderTop: "1px solid rgba(255,255,255,0.12)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-            <div style={{
-              width: 38, height: 38,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.15)",
-              border: "2px solid rgba(255,255,255,0.25)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: "white", fontWeight: 700, fontSize: 13, flexShrink: 0,
-            }}>
-              {initials}
+        {/* Kullanıcı */}
+        <div className="px-4 py-4 border-t border-white/10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-full bg-white/15 border-2 border-white/25 flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-xs font-bold">{initials}</span>
             </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ color: "white", fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {kullanici.ad_soyad}
-              </div>
-              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>
-                {ROL_LABEL[kullanici.role]}
-              </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-white text-sm font-semibold truncate leading-tight">
+                {kullanici.ad_soyad || kullanici.username}
+              </p>
+              <p className="text-white/50 text-xs truncate">
+                {ROL_LABEL[kullanici.role] ?? kullanici.role}
+              </p>
             </div>
           </div>
           <button
-            onClick={() => { localStorage.clear(); router.push("/"); }}
-            style={{
-              width: "100%", padding: "9px",
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.2)",
-              borderRadius: 8,
-              color: "rgba(255,255,255,0.8)",
-              fontSize: 12, fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "'Cargan', serif",
-              letterSpacing: 0.3,
-            }}
+            onClick={handleLogout}
+            className="w-full text-sm font-medium py-2 rounded-lg border border-white/20 text-white/75 hover:bg-white/10 hover:text-white transition-all"
           >
             Çıkış Yap
           </button>
         </div>
       </aside>
 
-      {/* MAIN */}
-      <main style={{ marginLeft: 248, flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      {/* ─── ANA İÇERİK ─────────────────────────── */}
+      <main className="flex-1 flex flex-col min-h-screen" style={{ marginLeft: 240 }}>
 
         {/* Header */}
         {title && (
-          <header style={{
-            background: "white",
-            borderBottom: "1px solid #E4E4E7",
-            padding: "20px 36px",
-          }}>
+          <div className="bg-white border-b border-zinc-200 px-8 py-5 flex-shrink-0">
             {subtitle && (
-              <div style={{ fontSize: 11, fontWeight: 600, color: RED, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 4 }}>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-1"
+                style={{ color: "#B71C1C" }}>
                 {subtitle}
-              </div>
+              </p>
             )}
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#18181B", margin: 0, letterSpacing: 0.2 }}>
-              {title}
-            </h1>
-          </header>
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{title}</h1>
+          </div>
         )}
 
-        <div style={{ flex: 1, overflow: "auto", padding: "32px 36px", background: "#F4F4F5" }}>
+        {/* İçerik */}
+        <div className="flex-1 p-8 bg-zinc-50">
           {children}
         </div>
       </main>

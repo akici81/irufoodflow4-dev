@@ -3,36 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #1f2937;
-  --primary: #a01f1f;
-  --primary-light: #d94f6b;
-  --accent: #f59e0b;
+  --red: #B71C1C;
+  --red-dark: #7F1212;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #111827;
-    --foreground: #f9fafb;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Cargan', serif;
+  background: #F5F5F5;
+  color: #18181B;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Cargan', serif;
-  font-weight: 700;
-}
-
-button, input, select, textarea, label, a, p, span, td, th, li {
-  font-family: 'Cargan', serif;
-}
-
-/* Form input text rengi her zaman siyah */
+/* Form elemanlarında metin rengi her zaman siyah */
 input[type="text"],
 input[type="password"],
 input[type="email"],
@@ -41,68 +27,25 @@ input[type="week"],
 textarea,
 select {
   color: #000000 !important;
-  background-color: #ffffff !important;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #9ca3af !important;
+  color: #9CA3AF !important;
 }
 
-/* Smooth transitions */
-button,
-a,
-input,
-select,
-textarea {
-  transition: all 0.2s ease-in-out;
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
-
-@layer components {
-  /* Primary button style */
-  .btn-primary {
-    @apply text-white font-semibold py-2 px-4 rounded-lg transition-colors;
-    background-color: var(--primary);
-  }
-
-  .btn-primary:hover {
-    background-color: #8B1F2A;
-  }
-
-  /* Secondary button style */
-  .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold py-2 px-4 rounded-lg transition-colors;
-  }
-
-  /* Card style */
-  .card {
-    @apply bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-6;
-  }
-
-  /* Badge style */
-  .badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
-  }
-
-  .badge-primary {
-    @apply bg-pink-100 text-pink-900;
-  }
-
-  .badge-accent {
-    @apply bg-amber-100;
-    color: #b45309;
-  }
-
-  .badge-success {
-    @apply bg-green-100 text-green-900;
-  }
-
-  .badge-warning {
-    @apply bg-yellow-100 text-yellow-900;
-  }
-
-  .badge-error {
-    @apply bg-red-100 text-red-900;
-  }
+::-webkit-scrollbar-track {
+  background: transparent;
 }
-
+::-webkit-scrollbar-thumb {
+  background: #D4D4D8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A1A1AA;
+}
