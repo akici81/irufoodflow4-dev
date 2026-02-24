@@ -79,9 +79,18 @@ export default function AlisverisListeleriPage() {
 
   const secilenDersObj = atananDersler.find((d) => d.id === secilenDers);
 
-  const filtreliUrunler = urunler.filter((u) =>
-    !aramaMetni || (u.urunAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (u.marka || "").toLowerCase().includes(aramaMetni.toLowerCase())
-  );
+  const filtreliUrunler = (() => {
+    if (!aramaMetni.trim()) return urunler;
+    const q = aramaMetni.toLowerCase();
+    const exact = urunler.filter(u => (u.urunAdi || "").toLowerCase() === q);
+    const starts = urunler.filter(u => (u.urunAdi || "").toLowerCase().startsWith(q) && (u.urunAdi || "").toLowerCase() !== q);
+    const contains = urunler.filter(u => {
+      const ad = (u.urunAdi || "").toLowerCase();
+      return ad.includes(q) && !ad.startsWith(q);
+    });
+    const marka = urunler.filter(u => (u.marka || "").toLowerCase().includes(q) && !(u.urunAdi || "").toLowerCase().includes(q));
+    return [...exact, ...starts, ...contains, ...marka];
+  })();
 
   const olcuBilgisi = (olcu: string) => {
     const tip = olcu.toLowerCase();

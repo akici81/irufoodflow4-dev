@@ -66,7 +66,7 @@ export default function SiparislerPage() {
  const hUygun = filtreHafta === "tumu" || s.hafta === filtreHafta;
  const oUygun = filtreOgretmen === "tumu" || s.ogretmenAdi === filtreOgretmen;
  const dUygun = filtreDurum === "tumu" || s.durum === filtreDurum;
- const aUygun = !aramaMetni || s.ogretmenAdi.toLowerCase().includes(aramaMetni.toLowerCase()) || s.dersAdi.toLowerCase().includes(aramaMetni.toLowerCase());
+ const aUygun = !aramaMetni || (s.ogretmenAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (s.dersAdi || "").toLowerCase().includes(aramaMetni.toLowerCase());
  return hUygun && oUygun && dUygun && aUygun;
  });
 

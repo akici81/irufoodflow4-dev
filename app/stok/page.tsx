@@ -84,7 +84,7 @@ export default function StokPage() {
 
     const filtrelenmis = urunler.filter((u) =>
         !aramaMetni ||
-        u.urunAdi.toLowerCase().includes(aramaMetni.toLowerCase()) ||
+        (u.urunAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) ||
         (u.marka || "").toLowerCase().includes(aramaMetni.toLowerCase())
     );
 

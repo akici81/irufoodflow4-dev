@@ -67,7 +67,7 @@ export default function TalepPage() {
   }, []);
 
   const filtreliUrunler = urunler.filter((u) =>
-    !aramaMetni || u.urunAdi.toLowerCase().includes(aramaMetni.toLowerCase()) || u.marka.toLowerCase().includes(aramaMetni.toLowerCase())
+    !aramaMetni || (u.urunAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (u.marka || "").toLowerCase().includes(aramaMetni.toLowerCase())
   );
 
   const handleCheckbox = (urun: Urun, isaretli: boolean) => {
