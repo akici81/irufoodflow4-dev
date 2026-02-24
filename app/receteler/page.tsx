@@ -148,10 +148,26 @@ export default function RecetelerPage() {
 
   const handleUrunAdiDegis = (val: string) => {
     setYeniMalzeme(p => ({ ...p, urun_adi: val }));
-    if (val.trim().length < 1) { setUrunOneri([]); setOneriAcik(false); return; }
-    const filtre = urunHavuzu.filter(u =>
-      u.urun_adi.toLowerCase().includes(val.toLowerCase())
-    ).slice(0, 8);
+    const aramaVal = val.trim();
+    const filtre = aramaVal.length === 0
+      ? urunHavuzu.slice(0, 10)
+      : urunHavuzu.filter(u =>
+          u.urun_adi.toLowerCase().includes(aramaVal.toLowerCase()) ||
+          (u.marka || "").toLowerCase().includes(aramaVal.toLowerCase())
+        ).slice(0, 10);
+    setUrunOneri(filtre);
+    setOneriAcik(filtre.length > 0);
+  };
+
+  const handleUrunAdiOdak = () => {
+    // Odaklanınca tüm ürünleri göster (ya da mevcut aramaya göre filtrele)
+    const aramaVal = yeniMalzeme.urun_adi.trim();
+    const filtre = aramaVal.length === 0
+      ? urunHavuzu.slice(0, 10)
+      : urunHavuzu.filter(u =>
+          u.urun_adi.toLowerCase().includes(aramaVal.toLowerCase()) ||
+          (u.marka || "").toLowerCase().includes(aramaVal.toLowerCase())
+        ).slice(0, 10);
     setUrunOneri(filtre);
     setOneriAcik(filtre.length > 0);
   };
@@ -443,22 +459,25 @@ export default function RecetelerPage() {
                     <div className="col-span-4 relative">
                       <input value={yeniMalzeme.urun_adi} onChange={e => handleUrunAdiDegis(e.target.value)}
                         onKeyDown={e => e.key === "Enter" && handleMalzemeEkle()}
-                        onBlur={() => setTimeout(() => setOneriAcik(false), 150)}
-                        onFocus={() => yeniMalzeme.urun_adi.length > 0 && urunOneri.length > 0 && setOneriAcik(true)}
-                        placeholder="Ürün adı *"
+                        onBlur={() => setTimeout(() => setOneriAcik(false), 200)}
+                        onFocus={handleUrunAdiOdak}
+                        placeholder="Ürün ara veya yaz..."
                         autoComplete="off"
                         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white" />
                       {oneriAcik && urunOneri.length > 0 && (
-                        <div className="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-xl shadow-lg w-64 max-h-48 overflow-y-auto">
+                        <div className="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-xl shadow-xl w-72 max-h-52 overflow-y-auto">
+                          <div className="px-3 py-1.5 border-b border-gray-100">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ürün Havuzu</span>
+                          </div>
                           {urunOneri.map((u, i) => (
                             <button
                               key={i}
                               type="button"
                               onMouseDown={() => handleUrunSec(u)}
-                              className="w-full text-left px-3 py-2 hover:bg-red-50 flex justify-between items-center gap-2 text-sm border-b border-gray-50 last:border-0"
+                              className="w-full text-left px-3 py-2.5 hover:bg-red-50 flex justify-between items-center gap-2 text-sm border-b border-gray-50 last:border-0 transition-colors"
                             >
-                              <span className="font-medium text-gray-800 truncate">{u.urun_adi}</span>
-                              <span className="text-xs text-gray-400 shrink-0">{u.marka || ""} {u.olcu}</span>
+                              <span className="font-semibold text-gray-800 truncate">{u.urun_adi}</span>
+                              <span className="text-xs text-gray-400 shrink-0 bg-gray-100 px-2 py-0.5 rounded-full">{u.marka ? u.marka + " · " : ""}{u.olcu}</span>
                             </button>
                           ))}
                         </div>
