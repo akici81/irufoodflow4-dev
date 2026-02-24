@@ -51,6 +51,11 @@ export default function RecetelerPage() {
   const [yeniMalzeme, setYeniMalzeme] = useState({ urun_adi: "", marka: "", birim: "gr", miktar_kisi: 0, notlar: "" });
   const [formYukleniyor, setFormYukleniyor] = useState(false);
 
+  // Ürün havuzu autocomplete
+  const [urunHavuzu, setUrunHavuzu] = useState<{ urun_adi: string; marka: string; olcu: string }[]>([]);
+  const [urunOneri, setUrunOneri] = useState<{ urun_adi: string; marka: string; olcu: string }[]>([]);
+  const [oneriAcik, setOneriAcik] = useState(false);
+
   useEffect(() => {
     const id = localStorage.getItem("aktifKullaniciId");
     const role = localStorage.getItem("role") || "";
@@ -61,6 +66,15 @@ export default function RecetelerPage() {
     } else {
       setVeriYukleniyor(false);
     }
+  }, []);
+
+  // Ürün havuzunu çek
+  useEffect(() => {
+    const fetchUrunHavuzu = async () => {
+      const { data } = await supabase.from("urunler").select("urun_adi, marka, olcu").order("urun_adi");
+      setUrunHavuzu(data || []);
+    };
+    fetchUrunHavuzu();
   }, []);
 
   const fetchReceteler = async (kid: number, role: string) => {
@@ -130,6 +144,25 @@ export default function RecetelerPage() {
     bildir("basari", `"${r.ad}" tarif defterinize kopyalandı!`);
     setAktifSekme("benim");
     fetchReceteler(kullaniciId, kullaniciRole);
+  };
+
+  const handleUrunAdiDegis = (val: string) => {
+    setYeniMalzeme(p => ({ ...p, urun_adi: val }));
+    if (val.trim().length < 1) { setUrunOneri([]); setOneriAcik(false); return; }
+    const filtre = urunHavuzu.filter(u =>
+      u.urun_adi.toLowerCase().includes(val.toLowerCase())
+    ).slice(0, 8);
+    setUrunOneri(filtre);
+    setOneriAcik(filtre.length > 0);
+  };
+
+  const handleUrunSec = (u: { urun_adi: string; marka: string; olcu: string }) => {
+    // olcu'yu birim listesine uygun hale getir
+    const birimMap: Record<string, string> = { Kg: "kg", G: "gr", L: "lt", Ml: "ml", Adet: "adet", Paket: "adet", Kutu: "adet" };
+    const birim = birimMap[u.olcu] || "gr";
+    setYeniMalzeme(p => ({ ...p, urun_adi: u.urun_adi, marka: u.marka || "", birim }));
+    setUrunOneri([]);
+    setOneriAcik(false);
   };
 
   const handleMalzemeEkle = () => {
@@ -407,11 +440,29 @@ export default function RecetelerPage() {
                 )}
                 <div className="bg-gray-50 rounded-xl p-3 space-y-2">
                   <div className="grid grid-cols-12 gap-2">
-                    <div className="col-span-4">
-                      <input value={yeniMalzeme.urun_adi} onChange={e => setYeniMalzeme(p => ({ ...p, urun_adi: e.target.value }))}
+                    <div className="col-span-4 relative">
+                      <input value={yeniMalzeme.urun_adi} onChange={e => handleUrunAdiDegis(e.target.value)}
                         onKeyDown={e => e.key === "Enter" && handleMalzemeEkle()}
+                        onBlur={() => setTimeout(() => setOneriAcik(false), 150)}
+                        onFocus={() => yeniMalzeme.urun_adi.length > 0 && urunOneri.length > 0 && setOneriAcik(true)}
                         placeholder="Ürün adı *"
+                        autoComplete="off"
                         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white" />
+                      {oneriAcik && urunOneri.length > 0 && (
+                        <div className="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-xl shadow-lg w-64 max-h-48 overflow-y-auto">
+                          {urunOneri.map((u, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onMouseDown={() => handleUrunSec(u)}
+                              className="w-full text-left px-3 py-2 hover:bg-red-50 flex justify-between items-center gap-2 text-sm border-b border-gray-50 last:border-0"
+                            >
+                              <span className="font-medium text-gray-800 truncate">{u.urun_adi}</span>
+                              <span className="text-xs text-gray-400 shrink-0">{u.marka || ""} {u.olcu}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <div className="col-span-3">
                       <input value={yeniMalzeme.marka} onChange={e => setYeniMalzeme(p => ({ ...p, marka: e.target.value }))}
