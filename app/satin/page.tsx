@@ -81,7 +81,7 @@ export default function SatinAlmaPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Satın Alma Paneli">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -186,7 +186,7 @@ export default function SatinAlmaPage() {
           </div>
           <div className="ml-auto flex items-end gap-3">
             <button type="button" onClick={handlePdf} disabled={satirlar.length === 0}
-              className="bg-primary-900 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition disabled:opacity-40 shadow-lg shadow-red-900/20">PDF</button>
+              className="bg-red-700 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition disabled:opacity-40 shadow-lg shadow-red-900/20">PDF</button>
             <button type="button" onClick={handleExcel} disabled={satirlar.length === 0}
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition disabled:opacity-40 shadow-sm">Excel</button>
           </div>

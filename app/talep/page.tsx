@@ -141,7 +141,7 @@ export default function TalepPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Malzeme Talebi">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -155,7 +155,7 @@ export default function TalepPage() {
           <div className="flex-1 min-w-[280px]">
             <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1 mb-2 block">Ders Seçimi</label>
             <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-primary-900/10 outline-none transition-all">
+              className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-red-700/10 outline-none transition-all">
               <option value="">Lütfen Ders Seçiniz...</option>
               {dersler.map((d) => <option key={d.id} value={d.id}>{d.kod} - {d.ad}</option>)}
             </select>
@@ -163,7 +163,7 @@ export default function TalepPage() {
           <div className="w-full md:w-64">
             <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1 mb-2 block">Uygulama Haftası</label>
             <select value={secilenHafta} onChange={(e) => setSecilenHafta(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-primary-900/10 outline-none">
+              className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-red-700/10 outline-none">
               {HAFTALAR.map((h) => <option key={h}>{h}</option>)}
             </select>
           </div>
@@ -183,7 +183,7 @@ export default function TalepPage() {
               <div className="flex flex-wrap gap-4 items-end">
                 <div className="flex-[2] min-w-[200px]">
                   <input value={manuelUrun} onChange={(e) => setManuelUrun(e.target.value)} placeholder="Ürün adını yazın..."
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm focus:ring-2 focus:ring-primary-900/10 outline-none transition-all" />
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm focus:ring-2 focus:ring-red-700/10 outline-none transition-all" />
                 </div>
                 <div className="flex-1 min-w-[100px]">
                   <input type="number" value={manuelMiktar} onChange={(e) => setManuelMiktar(e.target.value)} placeholder="Miktar"
@@ -244,14 +244,14 @@ export default function TalepPage() {
                                     <input type="text" inputMode="decimal" placeholder="0,00"
                                       value={kgInputler[u.id] !== undefined ? kgInputler[u.id] : (miktar > 0 ? String(miktar).replace(".", ",") : "")}
                                       onChange={(e) => handleKgInput(u.id, e.target.value)}
-                                      className="w-16 bg-transparent text-right text-xs font-black text-primary-900 outline-none" />
+                                      className="w-16 bg-transparent text-right text-xs font-black text-red-700 outline-none" />
                                     <span className="ml-2 text-[10px] font-black text-red-300 uppercase">{u.olcu}</span>
                                   </div>
                                 ) : (
                                   <div className="flex items-center gap-1 bg-white border border-red-100 rounded-xl p-1 shadow-sm">
                                     <button onClick={() => handleAzalt(u)} className="w-8 h-8 flex items-center justify-center hover:bg-red-50 text-red-800 rounded-lg font-black transition">-</button>
                                     <span className="w-12 text-center text-xs font-black text-gray-700">{miktar} <span className="text-[8px] block text-gray-300 leading-none tracking-tighter uppercase">{u.olcu}</span></span>
-                                    <button onClick={() => handleArttir(u)} className="w-8 h-8 flex items-center justify-center bg-red-50 hover:bg-primary-900 hover:text-white text-primary-900 rounded-lg font-black transition">+</button>
+                                    <button onClick={() => handleArttir(u)} className="w-8 h-8 flex items-center justify-center bg-red-50 hover:bg-red-700 hover:text-white text-red-700 rounded-lg font-black transition">+</button>
                                   </div>
                                 )}
                               </div>
@@ -273,7 +273,7 @@ export default function TalepPage() {
             <div className="bg-gray-900 rounded-2xl p-8 text-white shadow-2xl sticky top-8 border border-gray-800">
               <div className="flex items-center justify-between mb-8 border-b border-gray-800 pb-6">
                 <h3 className="font-black text-lg tracking-tight uppercase">Talep Özeti</h3>
-                <span className="bg-primary-900 text-[10px] px-2 py-1 rounded-md font-black">{Object.keys(seciliUrunler).length} Kalem</span>
+                <span className="bg-red-700 text-[10px] px-2 py-1 rounded-md font-black">{Object.keys(seciliUrunler).length} Kalem</span>
               </div>
 
               {Object.keys(seciliUrunler).length === 0 && !manuelUrun ? (
@@ -314,7 +314,7 @@ export default function TalepPage() {
               {basari && <p className="text-emerald-400 text-[10px] font-black uppercase mb-4 text-center">✅ Liste Gönderildi!</p>}
 
               <button onClick={handleGonder}
-                className="w-full bg-primary-900 hover:bg-red-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-red-900/40 uppercase text-xs tracking-[0.2em]">
+                className="w-full bg-red-700 hover:bg-red-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-red-900/40 uppercase text-xs tracking-[0.2em]">
                 Talebi Tamamla ve Gönder
               </button>
             </div>

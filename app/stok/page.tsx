@@ -84,7 +84,7 @@ export default function StokPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Stok Paneli">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -112,7 +112,7 @@ export default function StokPage() {
                     {[
                         { label: "Toplam Ürün", deger: urunler.length, renk: "text-gray-800" },
                         { label: "Stokta Var", deger: stokluUrun, renk: "text-emerald-600" },
-                        { label: "Stok Yok", deger: urunler.length - stokluUrun, renk: "text-primary-900" },
+                        { label: "Stok Yok", deger: urunler.length - stokluUrun, renk: "text-red-700" },
                     ].map((k) => (
                         <div key={k.label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{k.label}</p>
@@ -157,7 +157,7 @@ export default function StokPage() {
                     </div>
                     {veriYukleniyor ? (
                         <div className="py-20 text-center flex items-center justify-center gap-3 text-gray-400 text-sm">
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-900"></div>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-700"></div>
                             Yükleniyor...
                         </div>
                     ) : filtrelenmis.length === 0 ? (

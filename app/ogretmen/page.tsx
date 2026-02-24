@@ -41,20 +41,20 @@ export default function OgretmenAnaSayfa() {
   if (yukleniyor) return (
     <DashboardLayout title="Öğretim Görevlisi Paneli">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
 
   return (
     <DashboardLayout
-      title={`Hoş Geldiniz, ${adSoyad.split(' ')[0]}`}
-      subtitle="Öğretim Görevlisi Paneli"
+      title={`Merhaba, ${adSoyad}!`}
+      subtitle="Öğretmen Paneline Hoş Geldiniz."
     >
       <div className="max-w-6xl animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         {/* Karşılama Kartı */}
-        <div className="bg-gradient-to-r from-[primary-900] to-[#a32626] text-white rounded-2xl px-10 py-10 mb-10 shadow-xl shadow-red-900/10 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-red-700 to-[#a32626] text-white rounded-2xl px-10 py-10 mb-10 shadow-xl shadow-red-900/10 relative overflow-hidden">
           <div className="relative z-10">
             <h1 className="text-3xl font-black mb-2 tracking-tight">Merhaba, {adSoyad}! 👋</h1>
             <p className="text-red-100/80 text-sm font-medium max-w-md">
@@ -81,8 +81,8 @@ export default function OgretmenAnaSayfa() {
                   </p>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <div className="p-4 rounded-2xl bg-primary-900/5 border border-primary-900/10">
-                      <p className="text-primary-900 text-[11px] font-black uppercase tracking-widest mb-1 italic">İpucu 01</p>
+                    <div className="p-4 rounded-2xl bg-red-700/5 border border-red-700/10">
+                      <p className="text-red-700 text-[11px] font-black uppercase tracking-widest mb-1 italic">İpucu 01</p>
                       <p className="text-gray-700 text-xs">Ürünleri işaretleyip haftalık planlamanızı saniyeler içinde yapın.</p>
                     </div>
                     <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
@@ -91,7 +91,7 @@ export default function OgretmenAnaSayfa() {
                     </div>
                   </div>
 
-                  <Link href="/talep" className="inline-flex items-center justify-center bg-gray-900 hover:bg-primary-900 text-white text-sm font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-gray-200 hover:shadow-red-200 group">
+                  <Link href="/talep" className="inline-flex items-center justify-center bg-gray-900 hover:bg-red-700 text-white text-sm font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-gray-200 hover:shadow-red-200 group">
                     Hemen Malzeme Talebi Oluştur
                     <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                   </Link>
@@ -122,11 +122,11 @@ export default function OgretmenAnaSayfa() {
                   {atananDersler.map((d) => (
                     <div key={d.id} className="group p-4 rounded-2xl border border-gray-50 hover:border-red-100 hover:bg-red-50/30 transition-all duration-300 cursor-default">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-xs font-black text-primary-900 group-hover:scale-110 transition-transform shadow-sm">
+                        <div className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-xs font-black text-red-700 group-hover:scale-110 transition-transform shadow-sm">
                           {d.kod.slice(0, 3)}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-[11px] font-black text-primary-900 uppercase tracking-tighter mb-0.5">{d.kod}</p>
+                          <p className="text-[11px] font-black text-red-700 uppercase tracking-tighter mb-0.5">{d.kod}</p>
                           <p className="text-[13px] text-gray-700 font-bold truncate tracking-tight">{d.ad}</p>
                         </div>
                       </div>

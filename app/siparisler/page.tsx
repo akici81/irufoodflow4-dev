@@ -42,7 +42,7 @@ export default function SiparislerPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Alışveriş Listeleri">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -180,12 +180,12 @@ export default function SiparislerPage() {
  <tbody className="divide-y divide-gray-50">
  {filtrelenmis.map((s) => (
  <tr key={s.id} onClick={() => setDetay(detay?.id === s.id ? null : s)}
- className={`cursor-pointer transition-colors ${detay?.id === s.id ? "bg-primary-900/5" : "hover:bg-gray-50"}`}>
+ className={`cursor-pointer transition-colors ${detay?.id === s.id ? "bg-red-700/5" : "hover:bg-gray-50"}`}>
  <td className="px-5 py-4 font-bold text-gray-800">{s.ogretmenAdi}</td>
  <td className="px-5 py-4 text-gray-600 max-w-[200px] truncate">{s.dersAdi}</td>
  <td className="px-5 py-4 text-gray-500">{s.hafta}</td>
  <td className="px-5 py-4 text-gray-400 text-xs font-black">{s.urunler.length} ürün</td>
- <td className="px-5 py-4 font-black text-primary-900">
+ <td className="px-5 py-4 font-black text-red-700">
  {s.genelToplam > 0 ? `₺${s.genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}
  </td>
  <td className="px-5 py-4">
@@ -238,7 +238,7 @@ export default function SiparislerPage() {
  </div>
  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
  <span className="text-xs font-black text-gray-800 uppercase tracking-widest">Genel Toplam</span>
- <span className="text-base font-black text-primary-900">
+ <span className="text-base font-black text-red-700">
  {detay.genelToplam > 0 ? `₺${detay.genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}
  </span>
  </div>

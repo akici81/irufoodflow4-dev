@@ -255,7 +255,7 @@ export default function BolumBaskaniPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Bölüm Başkanı Paneli">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -279,7 +279,7 @@ export default function BolumBaskaniPage() {
           </div>
         )}
 
-        <div className="bg-gradient-to-r from-[primary-900] to-[#a32626] text-white rounded-2xl px-8 py-7">
+        <div className="bg-gradient-to-r from-red-700 to-[#a32626] text-white rounded-2xl px-8 py-7">
           <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 mb-1">Bölüm Başkanı Paneli</p>
           <h1 className="text-2xl font-black tracking-tight">Merhaba, {adSoyad}!</h1>
           <p className="text-red-200 text-sm font-medium mt-1">Hoş Geldiniz — tüm yönetim araçları burada.</p>
@@ -289,9 +289,9 @@ export default function BolumBaskaniPage() {
         <div className="flex gap-1 bg-gray-100/50 p-1 rounded-2xl border border-gray-200/60">
           {sekmeler.map((s) => (
             <button key={s.key} onClick={() => setAktifSekme(s.key)}
-              className={`flex-1 px-3 py-2.5 text-[11px] font-black rounded-xl transition flex items-center justify-center gap-2 uppercase tracking-tighter ${aktifSekme === s.key ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-400 hover:text-gray-600"}`}>
+              className={`flex-1 px-3 py-2.5 text-[11px] font-black rounded-xl transition flex items-center justify-center gap-2 uppercase tracking-tighter ${aktifSekme === s.key ? "bg-white text-red-700 shadow-sm italic" : "text-gray-400 hover:text-gray-600"}`}>
               {s.label}
-              {s.badge ? <span className="bg-primary-900 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">{s.badge}</span> : null}
+              {s.badge ? <span className="bg-red-700 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">{s.badge}</span> : null}
             </button>
           ))}
         </div>
@@ -301,7 +301,7 @@ export default function BolumBaskaniPage() {
           <div className="space-y-5">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "Toplam Ders", deger: dersler.length, emoji: "📚", renk: "text-primary-900" },
+                { label: "Toplam Ders", deger: dersler.length, emoji: "📚", renk: "text-red-700" },
                 { label: "Öğretmen Sayısı", deger: ogretmenler.length, emoji: "🧑‍🏫", renk: "text-blue-600" },
                 { label: "Atanmış Ders", deger: atanmisDersSayisi, emoji: "🔗", renk: "text-emerald-600" },
                 { label: "Bekleyen Sipariş", deger: bekleyenSayisi, emoji: "⏳", renk: "text-amber-600" },
@@ -317,9 +317,9 @@ export default function BolumBaskaniPage() {
             </div>
             <Link href="/dersler">
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary-900/10 rounded-2xl flex items-center justify-center flex-shrink-0"><span className="text-2xl">📖</span></div>
-                <div><h3 className="font-black text-primary-900 tracking-tight">Ders Yönetimi</h3><p className="text-gray-500 text-sm">Dersleri ekleyin, silin ve öğretmenlere atayın</p></div>
-                <span className="ml-auto text-sm font-black text-primary-900">Git →</span>
+                <div className="w-12 h-12 bg-red-700/10 rounded-2xl flex items-center justify-center flex-shrink-0"><span className="text-2xl">📖</span></div>
+                <div><h3 className="font-black text-red-700 tracking-tight">Ders Yönetimi</h3><p className="text-gray-500 text-sm">Dersleri ekleyin, silin ve öğretmenlere atayın</p></div>
+                <span className="ml-auto text-sm font-black text-red-700">Git →</span>
               </div>
             </Link>
           </div>
@@ -354,7 +354,7 @@ export default function BolumBaskaniPage() {
                   </select>
                 </div>
               </div>
-              <button onClick={handleKullaniciEkle} className="w-full bg-primary-900 hover:bg-red-800 text-white font-black py-4 rounded-2xl transition text-xs uppercase tracking-widest shadow-lg shadow-red-900/20">+ Kullanıcı Ekle</button>
+              <button onClick={handleKullaniciEkle} className="w-full bg-red-700 hover:bg-red-800 text-white font-black py-4 rounded-2xl transition text-xs uppercase tracking-widest shadow-lg shadow-red-900/20">+ Kullanıcı Ekle</button>
             </div>
 
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -474,7 +474,7 @@ export default function BolumBaskaniPage() {
           <div className="space-y-4">
             <div className="flex gap-3">
               <input value={urunArama} onChange={(e) => setUrunArama(e.target.value)} placeholder="Ürün ara..." className="flex-1 bg-white border border-gray-200 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20" />
-              <button onClick={() => setUrunPanel(true)} className="bg-primary-900 hover:bg-red-800 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-lg shadow-red-900/20">+ Ekle</button>
+              <button onClick={() => setUrunPanel(true)} className="bg-red-700 hover:bg-red-800 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-lg shadow-red-900/20">+ Ekle</button>
             </div>
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
               <table className="w-full text-sm">

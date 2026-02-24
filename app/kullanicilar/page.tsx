@@ -74,7 +74,7 @@ export default function KullanicilarPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Kullanıcı Yönetimi">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -145,7 +145,7 @@ export default function KullanicilarPage() {
   };
 
   // Fokus renklerini kırmızıdan (ring-red-500) daha yumuşak bordoya (ring-[primary-900]/20) çevirdim
-  const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-3 text-sm font-semibold text-gray-800 focus:ring-4 focus:ring-[primary-900]/10 focus:border-primary-900/30 transition-all outline-none placeholder:text-gray-300";
+  const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-3 text-sm font-semibold text-gray-800 focus:ring-4 focus:ring-[primary-900]/10 focus:border-red-700/30 transition-all outline-none placeholder:text-gray-300";
 
   return (
     <DashboardLayout title="Erişim Yönetimi" subtitle="Personel yetkilerini buradan yönetin">
@@ -168,7 +168,7 @@ export default function KullanicilarPage() {
             (s !== "guncelle" || duzenleId) && (
               <button key={s} onClick={() => setSekme(s)}
                 className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${
-                  sekme === s ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-400 hover:text-gray-600"
+                  sekme === s ? "bg-white text-red-700 shadow-sm italic" : "text-gray-400 hover:text-gray-600"
                 }`}>
                 {s === "liste" ? "Personel Listesi" : s === "ekle" ? "+ Yeni Kayıt" : "Düzenle"}
               </button>
@@ -244,9 +244,9 @@ export default function KullanicilarPage() {
                       {dersler.map((d) => (
                         <button key={d.id} type="button" onClick={() => toggleDers(d.id)}
                           className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
-                            form.dersler.includes(d.id) ? "bg-white border-primary-900 ring-2 ring-[primary-900]/5 shadow-sm" : "bg-white/50 border-transparent opacity-60"
+                            form.dersler.includes(d.id) ? "bg-white border-red-700 ring-2 ring-[primary-900]/5 shadow-sm" : "bg-white/50 border-transparent opacity-60"
                           }`}>
-                          <div className={`w-4 h-4 rounded border flex items-center justify-center ${form.dersler.includes(d.id) ? "bg-primary-900 border-primary-900" : "border-gray-300"}`}>
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center ${form.dersler.includes(d.id) ? "bg-red-700 border-red-700" : "border-gray-300"}`}>
                             {form.dersler.includes(d.id) && <span className="text-white text-[10px]">✓</span>}
                           </div>
                           <span className="text-xs font-bold text-gray-700">{d.kod} - {d.ad}</span>
@@ -259,7 +259,7 @@ export default function KullanicilarPage() {
 
               <div className="flex gap-3 mt-10">
                 <button onClick={sekme === "ekle" ? handleEkle : handleGuncelle}
-                  className="bg-primary-900 hover:bg-red-800 text-white font-black py-3.5 px-10 rounded-2xl transition-all shadow-lg shadow-red-900/10 uppercase text-[11px] tracking-widest">
+                  className="bg-red-700 hover:bg-red-800 text-white font-black py-3.5 px-10 rounded-2xl transition-all shadow-lg shadow-red-900/10 uppercase text-[11px] tracking-widest">
                   {sekme === "ekle" ? "Kaydı Oluştur" : "Değişiklikleri Kaydet"}
                 </button>
                 {sekme === "guncelle" && (

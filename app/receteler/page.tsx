@@ -232,7 +232,7 @@ export default function RecetelerPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Tarif Defterim">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -251,11 +251,11 @@ export default function RecetelerPage() {
         {/* Sekmeler */}
         <div className="flex bg-gray-100/50 p-1 rounded-2xl w-fit border border-gray-200/60">
           <button onClick={() => setAktifSekme("benim")}
-            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "benim" ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-700 hover:text-gray-900"}`}>
+            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "benim" ? "bg-white text-red-700 shadow-sm italic" : "text-gray-700 hover:text-gray-900"}`}>
             📒 Tarif Defterim ({receteler.length})
           </button>
           <button onClick={handleOrtakSekme}
-            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "ortak" ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-700 hover:text-gray-900"}`}>
+            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "ortak" ? "bg-white text-red-700 shadow-sm italic" : "text-gray-700 hover:text-gray-900"}`}>
             🌐 Ortak Reçeteler
           </button>
         </div>
@@ -276,7 +276,7 @@ export default function RecetelerPage() {
           </div>
           {aktifSekme === "benim" && (
             <button onClick={handleYeniAc}
-              className="bg-primary-900 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition shadow-lg shadow-red-900/20">
+              className="bg-red-700 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition shadow-lg shadow-red-900/20">
               + Yeni Tarif Ekle
             </button>
           )}
@@ -285,7 +285,7 @@ export default function RecetelerPage() {
         {/* Kartlar */}
         {(veriYukleniyor || ortakYukleniyor) ? (
           <div className="py-20 text-center text-gray-400 text-sm flex items-center justify-center gap-3">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-900"></div>
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-700"></div>
             Yükleniyor...
           </div>
         ) : gosterilecek.length === 0 ? (
@@ -298,7 +298,7 @@ export default function RecetelerPage() {
               {aktifSekme === "benim" ? "Yıllarca işinize yarayacak tariflerinizi buraya ekleyin." : "Admin henüz ortak reçete eklememiş."}
             </p>
             {aktifSekme === "benim" && (
-              <button onClick={handleYeniAc} className="bg-primary-900 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition shadow-lg shadow-red-900/20">
+              <button onClick={handleYeniAc} className="bg-red-700 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition shadow-lg shadow-red-900/20">
                 + İlk Tarifinizi Ekleyin
               </button>
             )}
@@ -310,7 +310,7 @@ export default function RecetelerPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h3 className="font-black text-gray-800 text-sm tracking-tight mb-1">{r.ad}</h3>
-                    <span className="text-[9px] font-black text-primary-900 bg-primary-900/10 px-2.5 py-1 rounded-full uppercase tracking-widest">{r.kategori}</span>
+                    <span className="text-[9px] font-black text-red-700 bg-red-700/10 px-2.5 py-1 rounded-full uppercase tracking-widest">{r.kategori}</span>
                   </div>
                   <div className="flex gap-1 shrink-0">
                     {aktifSekme === "ortak" ? (
@@ -515,7 +515,7 @@ export default function RecetelerPage() {
                 <button onClick={() => setModalAcik(false)}
                   className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">İptal</button>
                 <button onClick={handleKaydet} disabled={formYukleniyor}
-                  className="flex-1 bg-primary-900 hover:bg-red-800 text-white text-sm font-bold py-2.5 rounded-xl transition disabled:opacity-50 shadow-lg shadow-red-900/20">
+                  className="flex-1 bg-red-700 hover:bg-red-800 text-white text-sm font-bold py-2.5 rounded-xl transition disabled:opacity-50 shadow-lg shadow-red-900/20">
                   {formYukleniyor ? "Kaydediliyor..." : "Tarif Defterime Kaydet"}
                 </button>
               </div>

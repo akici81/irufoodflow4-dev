@@ -60,7 +60,7 @@ export default function SiparislerimPage() {
     return (
       <DashboardLayout title="Siparişlerim" subtitle="Yükleniyor...">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
         </div>
       </DashboardLayout>
     );
@@ -77,7 +77,7 @@ export default function SiparislerimPage() {
             <span className="text-5xl mb-6 block grayscale opacity-30">📋</span>
             <h3 className="text-xl font-black text-gray-800 mb-2 tracking-tight">Henüz bir siparişiniz yok</h3>
             <p className="text-gray-400 text-sm font-medium mb-8">Haftalık malzeme talebi oluşturarak başlayabilirsiniz.</p>
-            <a href="/talep" className="inline-flex items-center px-8 py-3 bg-primary-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-800 transition-all shadow-lg shadow-red-900/20">
+            <a href="/talep" className="inline-flex items-center px-8 py-3 bg-red-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-800 transition-all shadow-lg shadow-red-900/20">
               Yeni Talep Oluştur
             </a>
           </div>
@@ -97,7 +97,7 @@ export default function SiparislerimPage() {
                     <h3 className="text-lg font-black text-gray-800 tracking-tight leading-tight mb-1">
                       {siparis.dersAdi}
                     </h3>
-                    <p className="text-sm font-bold text-primary-900 italic">{siparis.hafta}</p>
+                    <p className="text-sm font-bold text-red-700 italic">{siparis.hafta}</p>
                   </div>
 
                   {/* Orta Kısım: Ürün Sayısı */}
@@ -114,7 +114,7 @@ export default function SiparislerimPage() {
                         ₺{siparis.genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                       </p>
                     </div>
-                    <button className="w-12 h-12 flex items-center justify-center bg-gray-50 text-gray-400 group-hover:bg-primary-900 group-hover:text-white rounded-2xl transition-all">
+                    <button className="w-12 h-12 flex items-center justify-center bg-gray-50 text-gray-400 group-hover:bg-red-700 group-hover:text-white rounded-2xl transition-all">
                       <span className="text-xl">→</span>
                     </button>
                   </div>

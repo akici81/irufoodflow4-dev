@@ -73,7 +73,7 @@ export default function UrunHavuzuPage() {
   if (authYukleniyor) return (
     <DashboardLayout title="Ürün Havuzu">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -208,7 +208,7 @@ export default function UrunHavuzuPage() {
               </label>
               <button
                 onClick={() => { setForm(BOSH_FORM); setDuzenleId(null); setPanelAcik(true); }}
-                className="bg-primary-900 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-2xl transition-all shadow-lg shadow-red-900/20"
+                className="bg-red-700 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-2xl transition-all shadow-lg shadow-red-900/20"
               >
                 + YENİ ÜRÜN
               </button>
@@ -220,7 +220,7 @@ export default function UrunHavuzuPage() {
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           {veriYukleniyor ? (
             <div className="p-20 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700 mx-auto mb-4"></div>
               <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Veriler Yükleniyor...</p>
             </div>
           ) : (
@@ -360,7 +360,7 @@ export default function UrunHavuzuPage() {
             <div className="p-10 bg-gray-50/50 flex gap-4">
               <button
                 onClick={handleFormKaydet}
-                className="flex-1 bg-primary-900 text-white font-black py-5 rounded-2xl shadow-xl shadow-red-900/20 hover:bg-red-800 transition-all uppercase text-xs tracking-widest"
+                className="flex-1 bg-red-700 text-white font-black py-5 rounded-2xl shadow-xl shadow-red-900/20 hover:bg-red-800 transition-all uppercase text-xs tracking-widest"
               >
                 {duzenleId ? "DEĞİŞİKLİKLERİ KAYDET" : "HAVUZA EKLE"}
               </button>

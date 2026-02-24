@@ -60,7 +60,7 @@ export default function SiparisYonetimiPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Sipariş Yönetimi">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -86,13 +86,13 @@ export default function SiparisYonetimiPage() {
           <div className="bg-white p-1.5 rounded-2xl border border-gray-200 flex gap-1 shadow-sm">
             <button 
               onClick={() => setSekme("hepsi")}
-              className={`px-6 py-2.5 rounded-xl text-[13px] font-black transition-all ${sekme === "hepsi" ? "bg-primary-900 text-white shadow-lg shadow-red-900/20" : "text-gray-500 hover:bg-gray-50"}`}
+              className={`px-6 py-2.5 rounded-xl text-[13px] font-black transition-all ${sekme === "hepsi" ? "bg-red-700 text-white shadow-lg shadow-red-900/20" : "text-gray-500 hover:bg-gray-50"}`}
             >
               Tüm Siparişler ({siparisler.length})
             </button>
             <button 
               onClick={() => setSekme("filtre")}
-              className={`px-6 py-2.5 rounded-xl text-[13px] font-black transition-all ${sekme === "filtre" ? "bg-primary-900 text-white shadow-lg shadow-red-900/20" : "text-gray-500 hover:bg-gray-50"}`}
+              className={`px-6 py-2.5 rounded-xl text-[13px] font-black transition-all ${sekme === "filtre" ? "bg-red-700 text-white shadow-lg shadow-red-900/20" : "text-gray-500 hover:bg-gray-50"}`}
             >
               Filtrele
             </button>
@@ -105,14 +105,14 @@ export default function SiparisYonetimiPage() {
             <div className="flex flex-col gap-2 flex-1 min-w-[200px]">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Öğretim Görevlisi</label>
               <select value={filtreOgretmen} onChange={(e) => setFiltreOgretmen(e.target.value)}
-                className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-900/10">
+                className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-700/10">
                 {ogretmenler.map((o) => <option key={o} value={o}>{o === "tumu" ? "Herkes" : o}</option>)}
               </select>
             </div>
             <div className="flex flex-col gap-2 flex-1 min-w-[200px]">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Ders Adı</label>
               <select value={filtreDers} onChange={(e) => setFiltreDers(e.target.value)}
-                className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-900/10">
+                className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-700/10">
                 {dersler.map((d) => <option key={d} value={d}>{d === "tumu" ? "Tüm Dersler" : d}</option>)}
               </select>
             </div>
@@ -156,14 +156,14 @@ export default function SiparisYonetimiPage() {
                         </span>
                       </td>
                       <td className="px-8 py-5 text-right">
-                        <p className="font-black text-primary-900 text-sm leading-none">
+                        <p className="font-black text-red-700 text-sm leading-none">
                           ₺{s.genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                         </p>
                         <span className="text-[9px] text-gray-400 font-bold">{s.urunler.length} Kalem</span>
                       </td>
                       <td className="px-8 py-5">
                         <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => setDetaySiparis(s)} className="p-2 bg-gray-900 text-white rounded-xl hover:bg-primary-900 transition-colors shadow-sm">
+                          <button onClick={() => setDetaySiparis(s)} className="p-2 bg-gray-900 text-white rounded-xl hover:bg-red-700 transition-colors shadow-sm">
                             👁️‍🗨️
                           </button>
                           <button onClick={() => handleSil(s.id)} className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
@@ -224,14 +224,14 @@ export default function SiparisYonetimiPage() {
                         <p className="text-xs font-black text-gray-800 truncate tracking-tight">{u.urunAdi}</p>
                         <p className="text-[10px] text-gray-400 font-medium italic">{u.miktar} {u.olcu} · {u.marka}</p>
                       </div>
-                      <span className="text-xs font-black text-gray-600 ml-4 group-hover:text-primary-900 transition-colors">₺{u.toplam.toFixed(2)}</span>
+                      <span className="text-xs font-black text-gray-600 ml-4 group-hover:text-red-700 transition-colors">₺{u.toplam.toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
 
                 <div className="mt-8 pt-6 border-t-2 border-dashed border-gray-100 flex justify-between items-center">
                   <span className="text-xs font-black text-gray-800 uppercase tracking-widest">Genel Toplam</span>
-                  <span className="text-2xl font-black text-primary-900 tracking-tighter">₺{detaySiparis.genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}</span>
+                  <span className="text-2xl font-black text-red-700 tracking-tighter">₺{detaySiparis.genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
             </div>

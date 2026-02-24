@@ -44,7 +44,7 @@ export default function DerslerPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Ders Yönetimi">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
       </div>
     </DashboardLayout>
   );
@@ -127,7 +127,7 @@ export default function DerslerPage() {
         <div className="px-10 py-6 border-b border-gray-100 flex items-center justify-between flex-wrap gap-4 bg-gray-50/30">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-black text-gray-800 tracking-tighter">{baslik}</h2>
-            <span className="bg-primary-900/10 text-primary-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+            <span className="bg-red-700/10 text-red-700 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
               {grup.length} Ders
             </span>
           </div>
@@ -147,7 +147,7 @@ export default function DerslerPage() {
             )}
             {duzenleniyor ? (
               <div className="flex gap-2">
-                <button onClick={handleDuzenleKaydet} className="bg-primary-900 text-white text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest shadow-lg shadow-red-900/20">KAYDET</button>
+                <button onClick={handleDuzenleKaydet} className="bg-red-700 text-white text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest shadow-lg shadow-red-900/20">KAYDET</button>
                 <button onClick={() => setDuzenleGrup(null)} className="bg-gray-200 text-gray-600 text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest">İPTAL</button>
               </div>
             ) : (
@@ -243,10 +243,10 @@ export default function DerslerPage() {
       <div className="space-y-8 max-w-6xl">
         {/* Yeni Ders Ekleme Kartı */}
         <div className="bg-white rounded-2xl border border-gray-200 p-10 shadow-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-900/5 rounded-bl-full -mr-10 -mt-10 transition-all group-hover:scale-110"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-red-700/5 rounded-bl-full -mr-10 -mt-10 transition-all group-hover:scale-110"></div>
           
           <h2 className="text-xl font-black text-gray-800 mb-8 flex items-center gap-3 tracking-tighter italic">
-            <span className="w-8 h-8 rounded-xl bg-primary-900 text-white flex items-center justify-center not-italic text-sm">+</span>
+            <span className="w-8 h-8 rounded-xl bg-red-700 text-white flex items-center justify-center not-italic text-sm">+</span>
             YENİ DERS TANIMLA
           </h2>
 
@@ -266,7 +266,7 @@ export default function DerslerPage() {
               <div className="flex bg-gray-100 p-1.5 rounded-2xl">
                 {["guz", "bahar", "secmeli"].map((d) => (
                   <button key={d} onClick={() => setYeniDonem(d)}
-                    className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${yeniDonem === d ? "bg-white text-primary-900 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}>
+                    className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${yeniDonem === d ? "bg-white text-red-700 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}>
                     {d === "guz" ? "Güz" : d === "bahar" ? "Bahar" : "Seç"}
                   </button>
                 ))}
@@ -275,7 +275,7 @@ export default function DerslerPage() {
           </div>
           
           <button onClick={handleDersEkle}
-            className="mt-8 w-full bg-primary-900 hover:bg-red-800 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-red-900/20 uppercase text-xs tracking-[0.2em]">
+            className="mt-8 w-full bg-red-700 hover:bg-red-800 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-red-900/20 uppercase text-xs tracking-[0.2em]">
             SİSTEME KAYDET
           </button>
         </div>

@@ -155,7 +155,7 @@ export default function AlisverisListeleriPage() {
             <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-900"></span> Sorumlu Olduğunuz Ders
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-700"></span> Sorumlu Olduğunuz Ders
                 </label>
                 <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)}
                   className="w-full bg-gray-100 border-2 border-transparent focus:border-gray-300 focus:bg-white rounded-2xl px-6 py-4 text-sm font-bold text-gray-900 outline-none transition-all appearance-none cursor-pointer">
@@ -166,13 +166,13 @@ export default function AlisverisListeleriPage() {
 
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-900"></span> Planlanacak Hafta
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-700"></span> Planlanacak Hafta
                 </label>
                 <div className="flex gap-1.5 flex-wrap">
                   {HAFTALAR.map(h => (
                     <button key={h} onClick={() => setSecilenHafta(h)}
                       className={`w-10 h-10 rounded-xl text-[11px] font-black transition-all transform active:scale-90 ${
-                        secilenHafta === h ? "bg-primary-900 text-white shadow-lg shadow-primary-900/20 scale-110" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        secilenHafta === h ? "bg-red-700 text-white shadow-lg shadow-red-700/20 scale-110" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}>
                       {h.split(".")[0]}
                     </button>
@@ -188,7 +188,7 @@ export default function AlisverisListeleriPage() {
                 <div className="relative">
                   <input value={aramaMetni} onChange={e => setAramaMetni(e.target.value)}
                     placeholder="Malzeme ara..."
-                    className="bg-white border border-gray-200 rounded-full px-6 py-2.5 text-xs w-64 outline-none focus:ring-4 focus:ring-primary-900/10 focus:border-primary-900/30 transition-all font-medium" />
+                    className="bg-white border border-gray-200 rounded-full px-6 py-2.5 text-xs w-64 outline-none focus:ring-4 focus:ring-red-700/10 focus:border-red-700/30 transition-all font-medium" />
                 </div>
               </div>
 
@@ -208,13 +208,13 @@ export default function AlisverisListeleriPage() {
                       const secili = u.id in liste;
                       const miktar = liste[u.id] ?? 0;
                       return (
-                        <tr key={u.id} className={`transition-colors ${secili ? "bg-primary-900/5" : "hover:bg-gray-50/50"}`}>
+                        <tr key={u.id} className={`transition-colors ${secili ? "bg-red-700/5" : "hover:bg-gray-50/50"}`}>
                           <td className="px-10 py-4">
                             <input type="checkbox" checked={secili} onChange={(e) => handleCheckbox(u, e.target.checked)}
-                              className="w-6 h-6 accent-primary-900 rounded-lg cursor-pointer transition-transform hover:scale-110" />
+                              className="w-6 h-6 accent-red-700 rounded-lg cursor-pointer transition-transform hover:scale-110" />
                           </td>
                           <td className="px-4 py-4">
-                            <p className={`font-bold text-sm transition-colors ${secili ? "text-primary-900" : "text-gray-900"}`}>{u.urunAdi}</p>
+                            <p className={`font-bold text-sm transition-colors ${secili ? "text-red-700" : "text-gray-900"}`}>{u.urunAdi}</p>
                             <span className="text-[9px] text-gray-700 font-black uppercase tracking-tighter">{u.marka || "—"} • {u.olcu}</span>
                           </td>
                           <td className="px-4 py-4 text-xs font-bold text-gray-700 italic">₺{u.fiyat.toFixed(2)}</td>
@@ -222,17 +222,17 @@ export default function AlisverisListeleriPage() {
                             {secili && (
                               <div className="flex items-center justify-center animate-in zoom-in-95 duration-200">
                                 {olcuBilgisi(u.olcu).serbest ? (
-                                  <div className="flex items-center gap-2 bg-white border border-primary-900/20 rounded-xl px-3 py-1 shadow-sm">
+                                  <div className="flex items-center gap-2 bg-white border border-red-700/20 rounded-xl px-3 py-1 shadow-sm">
                                     <input type="text" value={kgInputler[u.id] !== undefined ? kgInputler[u.id] : (miktar > 0 ? String(miktar).replace(".", ",") : "")}
                                       onChange={(e) => handleKgInput(u.id, e.target.value)}
-                                      className="w-16 text-center text-xs font-black text-primary-900 outline-none" placeholder="0,00" />
+                                      className="w-16 text-center text-xs font-black text-red-700 outline-none" placeholder="0,00" />
                                     <span className="text-[10px] font-black text-gray-700 uppercase">{u.olcu}</span>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center bg-white border border-primary-900/20 rounded-xl overflow-hidden shadow-sm">
+                                  <div className="flex items-center bg-white border border-red-700/20 rounded-xl overflow-hidden shadow-sm">
                                     <button onClick={() => setListe(p => ({...p, [u.id]: Math.max(0, (p[u.id] || 0) - 1)}))} className="w-8 h-8 hover:bg-gray-100 text-gray-500 font-bold transition-colors">-</button>
-                                    <span className="w-10 text-center text-[11px] font-black text-primary-900 border-x border-gray-200">{miktar}</span>
-                                    <button onClick={() => setListe(p => ({...p, [u.id]: (p[u.id] || 0) + 1}))} className="w-8 h-8 hover:bg-gray-100 text-primary-900 font-bold transition-colors">+</button>
+                                    <span className="w-10 text-center text-[11px] font-black text-red-700 border-x border-gray-200">{miktar}</span>
+                                    <button onClick={() => setListe(p => ({...p, [u.id]: (p[u.id] || 0) + 1}))} className="w-8 h-8 hover:bg-gray-100 text-red-700 font-bold transition-colors">+</button>
                                   </div>
                                 )}
                               </div>
@@ -253,7 +253,7 @@ export default function AlisverisListeleriPage() {
           {/* Sağ Panel: Fiş Görünümü */}
           <div className="col-span-12 lg:col-span-3">
             <div className="bg-white rounded-2xl border border-gray-200 shadow-xl flex flex-col sticky top-8 overflow-hidden">
-              <div className="bg-primary-900 p-8 text-white">
+              <div className="bg-red-700 p-8 text-white">
                 <h3 className="font-black text-xs uppercase tracking-[0.3em] opacity-60 mb-1">Talep Özeti</h3>
                 <p className="text-xl font-black italic tracking-tighter uppercase">{secilenHafta || "Hafta Seçin"}</p>
               </div>
@@ -284,7 +284,7 @@ export default function AlisverisListeleriPage() {
                   <div className="flex justify-between items-end mb-8">
                     <div>
                       <p className="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1">Tahmini Toplam</p>
-                      <p className="text-3xl font-black text-primary-900 tracking-tighter italic">
+                      <p className="text-3xl font-black text-red-700 tracking-tighter italic">
                         ₺{haftaToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                       </p>
                     </div>
@@ -293,7 +293,7 @@ export default function AlisverisListeleriPage() {
                   <button
                     onClick={handleHaftaKaydet}
                     disabled={kaydediliyor || Object.keys(liste).length === 0}
-                    className="w-full bg-primary-900 disabled:bg-gray-300 text-white font-black py-4 rounded-2xl hover:bg-primary-800 active:scale-95 transition-all uppercase text-[11px] tracking-[0.2em] shadow-lg shadow-primary-900/20">
+                    className="w-full bg-red-700 disabled:bg-gray-300 text-white font-black py-4 rounded-2xl hover:bg-red-800 active:scale-95 transition-all uppercase text-[11px] tracking-[0.2em] shadow-lg shadow-red-700/20">
                     {kaydediliyor ? "GÖNDERİLİYOR..." : "TALEBİ TAMAMLA"}
                   </button>
                 </div>

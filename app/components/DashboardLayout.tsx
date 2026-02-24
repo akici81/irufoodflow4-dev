@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -13,35 +12,33 @@ type Kullanici = {
   role: string;
 };
 
-const ROLE_MENUS: Record<string, { name: string; path: string; icon: string }[]> = {
+const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
   admin: [
-    { name: "Genel Bakış", path: "/admin", icon: "📊" },
-    { name: "Ürün Havuzu", path: "/urun-havuzu", icon: "📦" },
-    { name: "Reçete Havuzu", path: "/receteler", icon: "🍲" },
-    { name: "Kullanıcı Yönetimi", path: "/kullanicilar", icon: "👥" },
-    { name: "Ders Planlama", path: "/dersler", icon: "📖" },
-    { name: "Alışveriş Listeleri", path: "/siparisler", icon: "🛒" },
-    { name: "Sipariş Onayları", path: "/siparis-yonetimi", icon: "⚙️" },
+    { name: "Ana Sayfa", path: "/admin" },
+    { name: "Ürün Havuzu", path: "/urun-havuzu" },
+    { name: "Kullanıcılar", path: "/kullanicilar" },
+    { name: "Dersler", path: "/dersler" },
+    { name: "Alışveriş Listeleri", path: "/siparisler" },
+    { name: "Sipariş Yönetimi", path: "/siparis-yonetimi" },
   ],
   ogretmen: [
-    { name: "Öğretmen Paneli", path: "/ogretmen", icon: "🏠" },
-    { name: "Ürün Kataloğu", path: "/urun-havuzu", icon: "📦" },
-    { name: "Reçete Arşivi", path: "/receteler", icon: "🍲" },
-    { name: "Talep Listelerim", path: "/alisveris-listelerim", icon: "📋" },
-    { name: "Sipariş Takibi", path: "/siparislerim", icon: "🛍️" },
-    { name: "Malzeme Talebi Yap", path: "/talep", icon: "✨" },
+    { name: "Ana Sayfa", path: "/ogretmen" },
+    { name: "Ürün Havuzu", path: "/urun-havuzu" },
+    { name: "Alışveriş Listelerim", path: "/alisveris-listelerim" },
+    { name: "Siparişlerim", path: "/siparislerim" },
+    { name: "Talep Oluştur", path: "/talep" },
   ],
   satin_alma: [
-    { name: "Satın Alma Paneli", path: "/satin", icon: "🏠" },
-    { name: "Aktif Siparişler", path: "/siparisler", icon: "🛒" },
+    { name: "Satın Alma Paneli", path: "/satin" },
+    { name: "Aktif Siparişler", path: "/siparisler" },
   ],
   "bolum-baskani": [
-    { name: "Bölüm Yönetimi", path: "/bolum-baskani", icon: "🏛️" },
-    { name: "Ders Atamaları", path: "/dersler", icon: "📚" },
+    { name: "Bölüm Yönetimi", path: "/bolum-baskani" },
+    { name: "Ders Atamaları", path: "/dersler" },
   ],
   bolum_baskani: [
-    { name: "Bölüm Yönetimi", path: "/bolum-baskani", icon: "🏛️" },
-    { name: "Ders Atamaları", path: "/dersler", icon: "📚" },
+    { name: "Bölüm Yönetimi", path: "/bolum-baskani" },
+    { name: "Ders Atamaları", path: "/dersler" },
   ],
 };
 
@@ -66,7 +63,6 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [kullanici, setKullanici] = useState<Kullanici | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchKullanici = async () => {
@@ -85,56 +81,34 @@ export default function DashboardLayout({
   const initials = (kullanici.ad_soyad || kullanici.username).split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
   return (
-    <div className="min-h-screen flex bg-gray-50 text-gray-900 font-geist">
-
-      {/* Mobil Menü Butonu */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed bottom-6 right-6 z-50 bg-primary-900 hover:bg-primary-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 border border-primary-700 transition-all"
-      >
-        {sidebarOpen ? '✕ Kapat' : '☰ Menü'}
-      </button>
-
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
+    <div className="min-h-screen flex bg-gray-100 text-gray-900">
 
       {/* Yan Menü (Sidebar) */}
-      <aside className={`w-80 bg-white border-r border-gray-200 flex flex-col fixed lg:static h-screen z-40 transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className="w-60 flex flex-col fixed h-screen z-40" style={{backgroundColor: '#ffffff', borderRight: '1px solid #e5e7eb'}}>
 
         {/* Logo Alanı */}
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center justify-center h-16 mb-2">
-            <Image
-              src="/logo.png"
-              alt="İRÜ FoodFlow Logo"
-              width={200}
-              height={64}
-              className="h-14 w-auto object-contain"
-              priority
-            />
+        <div className="p-5 border-b border-gray-100 flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{backgroundColor: '#b91c1c'}}>
+            <span className="text-white font-black text-xs">İRÜ</span>
           </div>
-          <p className="text-center text-xs font-semibold text-gray-600 uppercase tracking-widest">
-            Eğitim Mutfağı Yönetim Sistemi
-          </p>
+          <span className="font-bold text-gray-900 text-sm">İRÜFoodFlow</span>
         </div>
 
         {/* Menü Öğeleri */}
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {menu.map((item) => {
             const aktif = pathname === item.path;
             return (
               <Link
                 key={item.path}
                 href={item.path}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-[1.5rem] text-sm font-medium transition-all ${
+                className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   aktif
-                    ? "bg-primary-900 text-white shadow-lg shadow-primary-900/20"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-primary-900"
+                    ? "text-white shadow-sm"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 }`}
+                style={aktif ? {backgroundColor: '#b91c1c'} : {}}
               >
-                <span className="text-lg">{item.icon}</span>
                 <span>{item.name}</span>
               </Link>
             );
@@ -142,46 +116,41 @@ export default function DashboardLayout({
         </nav>
 
         {/* Kullanıcı Bilgisi */}
-        <div className="p-6 mt-auto">
-          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary-900 to-primary-700 rounded-xl shadow-sm flex items-center justify-center font-bold text-white">
-                {initials}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-gray-900 truncate">{kullanici.ad_soyad}</p>
-                <p className="text-xs text-gray-700 font-medium">{ROL_LABEL[kullanici.role]}</p>
-              </div>
+        <div className="p-4 border-t border-gray-100">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-sm flex-shrink-0" style={{backgroundColor: '#b91c1c'}}>
+              {initials}
             </div>
-            <button
-              onClick={() => { localStorage.clear(); router.push("/"); }}
-              className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold text-xs py-2.5 rounded-xl border border-gray-200 transition-all uppercase tracking-tight"
-            >
-              Sistemden Çık
-            </button>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-gray-900 truncate">{kullanici.ad_soyad}</p>
+              <p className="text-xs text-gray-500">{ROL_LABEL[kullanici.role]}</p>
+            </div>
           </div>
+          <button
+            onClick={() => { localStorage.clear(); router.push("/"); }}
+            className="w-full text-sm font-medium py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all"
+            style={{color: '#b91c1c'}}
+          >
+            Çıkış Yap
+          </button>
         </div>
       </aside>
 
       {/* İçerik Alanı */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden" style={{marginLeft: '240px'}}>
         {title && (
-          <header className="bg-white border-b border-gray-200 px-10 py-6 flex-shrink-0">
-            <div className="max-w-7xl mx-auto">
-              {subtitle && (
-                <span className="text-primary-900 text-xs font-bold uppercase tracking-widest mb-2 block">
-                  {subtitle}
-                </span>
-              )}
-              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{title}</h1>
-            </div>
+          <header className="px-8 py-5 flex-shrink-0 text-white" style={{backgroundColor: '#b91c1c'}}>
+            {subtitle && (
+              <span className="text-red-200 text-xs font-semibold uppercase tracking-widest mb-1 block">
+                {subtitle}
+              </span>
+            )}
+            <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
           </header>
         )}
 
-        <div className="flex-1 overflow-auto p-10">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
+        <div className="flex-1 overflow-auto p-8 bg-gray-50">
+          {children}
         </div>
       </main>
     </div>
