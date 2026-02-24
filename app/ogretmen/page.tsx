@@ -76,18 +76,18 @@ export default function OgretmenAnaSayfa() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-xl font-black text-gray-800 mb-3 tracking-tight">Nasıl Başlarım?</h2>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-6">
+                  <p className="text-gray-700 text-sm leading-relaxed mb-6">
                     Dersleriniz için malzeme talebinde bulunmak için önce sol menüden <span className="font-bold text-gray-700">"Malzeme Talebi Yap"</span> kısmına gidebilir veya mevcut listelerinizi <span className="font-bold text-gray-700">"Talep Listelerim"</span> altından kontrol edebilirsiniz.
                   </p>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                     <div className="p-4 rounded-2xl bg-primary-900/5 border border-primary-900/10">
                       <p className="text-primary-900 text-[11px] font-black uppercase tracking-widest mb-1 italic">İpucu 01</p>
-                      <p className="text-gray-600 text-xs">Ürünleri işaretleyip haftalık planlamanızı saniyeler içinde yapın.</p>
+                      <p className="text-gray-700 text-xs">Ürünleri işaretleyip haftalık planlamanızı saniyeler içinde yapın.</p>
                     </div>
                     <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
                       <p className="text-gray-400 text-[11px] font-black uppercase tracking-widest mb-1 italic">İpucu 02</p>
-                      <p className="text-gray-600 text-xs">Onaylanan siparişlerinizin durumunu anlık takip edin.</p>
+                      <p className="text-gray-700 text-xs">Onaylanan siparişlerinizin durumunu anlık takip edin.</p>
                     </div>
                   </div>
 
@@ -107,15 +107,15 @@ export default function OgretmenAnaSayfa() {
                 <h2 className="font-black text-gray-800 tracking-tight flex items-center gap-2">
                   <span className="text-red-700">📚</span> Derslerim
                 </h2>
-                <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
+                <span className="bg-gray-100 text-gray-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
                   {atananDersler.length} Aktif
                 </span>
               </div>
 
               {atananDersler.length === 0 ? (
                 <div className="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                  <p className="text-gray-400 text-sm font-medium">Henüz ders atanmamış.</p>
-                  <p className="text-gray-300 text-[10px] mt-1 italic">Lütfen Bölüm Başkanı ile iletişime geçin.</p>
+                  <p className="text-gray-700 text-sm font-medium">Henüz ders atanmamış.</p>
+                  <p className="text-gray-600 text-[10px] mt-1 italic">Lütfen Bölüm Başkanı ile iletişime geçin.</p>
                 </div>
               ) : (
                 <div className="space-y-3">

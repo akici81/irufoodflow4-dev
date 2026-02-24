@@ -228,11 +228,11 @@ export default function UrunHavuzuPage() {
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50/50 text-left border-b border-gray-100">
-                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ürün Bilgisi</th>
-                    <th className="px-4 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Birim Fiyat</th>
-                    <th className="px-4 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Kategori</th>
-                    <th className="px-4 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Stok</th>
-                    <th className="px-4 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Kod</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-gray-700 uppercase tracking-widest">Ürün Bilgisi</th>
+                    <th className="px-4 py-5 text-[10px] font-black text-gray-700 uppercase tracking-widest">Birim Fiyat</th>
+                    <th className="px-4 py-5 text-[10px] font-black text-gray-700 uppercase tracking-widest">Kategori</th>
+                    <th className="px-4 py-5 text-[10px] font-black text-gray-700 uppercase tracking-widest">Stok</th>
+                    <th className="px-4 py-5 text-[10px] font-black text-gray-700 uppercase tracking-widest">Kod</th>
                     <th className="px-8 py-5 text-right"></th>
                   </tr>
                 </thead>
@@ -252,13 +252,13 @@ export default function UrunHavuzuPage() {
                     >
                       <td className="px-8 py-5">
                         <p className="font-black text-gray-800 text-sm tracking-tight">{u.urunAdi}</p>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase">{u.marka || "Standart"} • {u.olcu}</p>
+                        <p className="text-[10px] font-bold text-gray-700 uppercase">{u.marka || "Standart"} • {u.olcu}</p>
                       </td>
-                      <td className="px-4 py-5 font-bold text-gray-600 text-sm italic">
+                      <td className="px-4 py-5 font-bold text-gray-700 text-sm italic">
                         {u.fiyat > 0 ? `₺${u.fiyat.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}
                       </td>
                       <td className="px-4 py-5">
-                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
                           {u.kategori || "Genel"}
                         </span>
                       </td>
@@ -311,7 +311,7 @@ export default function UrunHavuzuPage() {
             <div className="flex-1 px-10 py-4 overflow-y-auto space-y-6 custom-scrollbar">
               <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Ürün Adı *</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest block mb-2">Ürün Adı *</label>
                   <input
                     value={form.urunAdi}
                     onChange={(e) => setForm(f => ({ ...f, urunAdi: e.target.value }))}
@@ -319,7 +319,7 @@ export default function UrunHavuzuPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Marka</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest block mb-2">Marka</label>
                   <input
                     value={form.marka}
                     onChange={(e) => setForm(f => ({ ...f, marka: e.target.value }))}
@@ -327,7 +327,7 @@ export default function UrunHavuzuPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Birim Fiyat (₺)</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest block mb-2">Birim Fiyat (₺)</label>
                   <input
                     type="number"
                     value={form.fiyat}
@@ -336,7 +336,7 @@ export default function UrunHavuzuPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Kategori</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest block mb-2">Kategori</label>
                   <input
                     value={form.kategori}
                     onChange={(e) => setForm(f => ({ ...f, kategori: e.target.value }))}
@@ -345,7 +345,7 @@ export default function UrunHavuzuPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Ölçü Birimi</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest block mb-2">Ölçü Birimi</label>
                   <select
                     value={form.olcu}
                     onChange={(e) => setForm(f => ({ ...f, olcu: e.target.value }))}

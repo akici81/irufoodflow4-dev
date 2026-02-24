@@ -183,17 +183,17 @@ export default function KullanicilarPage() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-gray-50/50 border-b border-gray-100">
-                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Kullanıcı</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ad Soyad</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Yetki</th>
-                    <th className="px-8 py-4 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Yönet</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Kullanıcı</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Ad Soyad</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Yetki</th>
+                    <th className="px-8 py-4 text-right text-[10px] font-black text-gray-700 uppercase tracking-widest">Yönet</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {kullanicilar.map((k) => (
                     <tr key={k.id} className="hover:bg-gray-50/30 transition-colors group">
                       <td className="px-8 py-4 font-bold text-gray-700 text-sm">{k.username}</td>
-                      <td className="px-6 py-4 text-sm text-gray-500">{k.ad_soyad}</td>
+                      <td className="px-6 py-4 text-sm text-gray-700">{k.ad_soyad}</td>
                       <td className="px-6 py-4">
                         <span className={`text-[9px] font-black px-3 py-1 rounded-full border uppercase ${ROL_RENK[k.role]}`}>
                           {ROLLER.find((r) => r.value === k.role)?.label}
@@ -215,22 +215,22 @@ export default function KullanicilarPage() {
             <div className="p-8 lg:p-12 max-w-4xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Kullanıcı Adı</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase ml-1">Kullanıcı Adı</label>
                   <input className={inputClass} value={form.username} disabled={sekme === "guncelle"}
                     onChange={(e) => setForm({ ...form, username: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Ad Soyad</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase ml-1">Ad Soyad</label>
                   <input className={inputClass} value={form.ad_soyad}
                     onChange={(e) => setForm({ ...form, ad_soyad: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Şifre</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase ml-1">Şifre</label>
                   <input type="password" className={inputClass} placeholder="••••••••" value={form.password_hash}
                     onChange={(e) => setForm({ ...form, password_hash: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Rol</label>
+                  <label className="text-[10px] font-black text-gray-700 uppercase ml-1">Rol</label>
                   <select className={inputClass} value={form.role}
                     onChange={(e) => setForm({ ...form, role: e.target.value })}>
                     {ROLLER.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
@@ -239,7 +239,7 @@ export default function KullanicilarPage() {
 
                 {form.role === "ogretmen" && (
                   <div className="md:col-span-2 space-y-3 pt-4">
-                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Ders Atamaları</label>
+                    <label className="text-[10px] font-black text-gray-700 uppercase ml-1">Ders Atamaları</label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-gray-50 p-4 rounded-[1.5rem] border border-gray-200">
                       {dersler.map((d) => (
                         <button key={d.id} type="button" onClick={() => toggleDers(d.id)}

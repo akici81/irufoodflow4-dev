@@ -132,7 +132,7 @@ export default function AlisverisListeleriPage() {
     }
   };
 
-  if (yukleniyor) return <DashboardLayout title="Yükleniyor..."><div className="p-20 text-center animate-pulse text-gray-400 font-black tracking-widest uppercase">Veri Bağlantısı Kuruluyor...</div></DashboardLayout>;
+  if (yukleniyor) return <DashboardLayout title="Yükleniyor..."><div className="p-20 text-center animate-pulse text-gray-700 font-black tracking-widest uppercase">Veri Bağlantısı Kuruluyor...</div></DashboardLayout>;
 
   return (
     <DashboardLayout title="Alışveriş Listelerim" subtitle="Eğitim mutfağı için haftalık malzeme taleplerinizi oluşturun">
@@ -154,7 +154,7 @@ export default function AlisverisListeleriPage() {
             {/* Ders ve Hafta Seçimi */}
             <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                <label className="text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary-900"></span> Sorumlu Olduğunuz Ders
                 </label>
                 <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)}
@@ -165,14 +165,14 @@ export default function AlisverisListeleriPage() {
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                <label className="text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary-900"></span> Planlanacak Hafta
                 </label>
                 <div className="flex gap-1.5 flex-wrap">
                   {HAFTALAR.map(h => (
                     <button key={h} onClick={() => setSecilenHafta(h)}
                       className={`w-10 h-10 rounded-xl text-[11px] font-black transition-all transform active:scale-90 ${
-                        secilenHafta === h ? "bg-primary-900 text-white shadow-lg shadow-primary-900/20 scale-110" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                        secilenHafta === h ? "bg-primary-900 text-white shadow-lg shadow-primary-900/20 scale-110" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}>
                       {h.split(".")[0]}
                     </button>
@@ -195,7 +195,7 @@ export default function AlisverisListeleriPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-100">
+                    <tr className="text-[10px] font-black text-gray-700 uppercase tracking-widest border-b border-gray-100">
                       <th className="px-10 py-5">Durum</th>
                       <th className="px-4 py-5">Malzeme Bilgisi</th>
                       <th className="px-4 py-5">Birim Fiyat</th>
@@ -215,9 +215,9 @@ export default function AlisverisListeleriPage() {
                           </td>
                           <td className="px-4 py-4">
                             <p className={`font-bold text-sm transition-colors ${secili ? "text-primary-900" : "text-gray-900"}`}>{u.urunAdi}</p>
-                            <span className="text-[9px] text-gray-500 font-black uppercase tracking-tighter">{u.marka || "—"} • {u.olcu}</span>
+                            <span className="text-[9px] text-gray-700 font-black uppercase tracking-tighter">{u.marka || "—"} • {u.olcu}</span>
                           </td>
-                          <td className="px-4 py-4 text-xs font-bold text-gray-500 italic">₺{u.fiyat.toFixed(2)}</td>
+                          <td className="px-4 py-4 text-xs font-bold text-gray-700 italic">₺{u.fiyat.toFixed(2)}</td>
                           <td className="px-4 py-4">
                             {secili && (
                               <div className="flex items-center justify-center animate-in zoom-in-95 duration-200">
@@ -226,7 +226,7 @@ export default function AlisverisListeleriPage() {
                                     <input type="text" value={kgInputler[u.id] !== undefined ? kgInputler[u.id] : (miktar > 0 ? String(miktar).replace(".", ",") : "")}
                                       onChange={(e) => handleKgInput(u.id, e.target.value)}
                                       className="w-16 text-center text-xs font-black text-primary-900 outline-none" placeholder="0,00" />
-                                    <span className="text-[10px] font-black text-gray-400 uppercase">{u.olcu}</span>
+                                    <span className="text-[10px] font-black text-gray-700 uppercase">{u.olcu}</span>
                                   </div>
                                 ) : (
                                   <div className="flex items-center bg-white border border-primary-900/20 rounded-xl overflow-hidden shadow-sm">
@@ -238,7 +238,7 @@ export default function AlisverisListeleriPage() {
                               </div>
                             )}
                           </td>
-                          <td className={`px-10 py-4 text-right font-black text-sm transition-all ${secili ? "text-gray-900 scale-105" : "text-gray-300"}`}>
+                          <td className={`px-10 py-4 text-right font-black text-sm transition-all ${secili ? "text-gray-900 scale-105" : "text-gray-500"}`}>
                             ₺{(u.fiyat * miktar).toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                           </td>
                         </tr>
@@ -262,7 +262,7 @@ export default function AlisverisListeleriPage() {
                 <div className="space-y-4 mb-8 custom-scrollbar max-h-[400px] overflow-y-auto">
                   {Object.entries(liste).length === 0 ? (
                     <div className="text-center py-10">
-                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">Liste Henüz Boş</p>
+                      <p className="text-gray-700 text-[10px] font-black uppercase tracking-widest">Liste Henüz Boş</p>
                     </div>
                   ) : (
                     Object.entries(liste).map(([id, m]) => {
@@ -271,7 +271,7 @@ export default function AlisverisListeleriPage() {
                         <div key={id} className="flex justify-between items-start gap-4 animate-in slide-in-from-bottom-2">
                           <div className="flex-1">
                             <p className="text-[11px] font-bold text-gray-900 leading-tight">{u.urunAdi}</p>
-                            <p className="text-[9px] font-black text-gray-500 uppercase">{m} {u.olcu}</p>
+                            <p className="text-[9px] font-black text-gray-700 uppercase">{m} {u.olcu}</p>
                           </div>
                           <span className="text-[11px] font-black text-gray-900">₺{(u.fiyat * m).toFixed(2)}</span>
                         </div>
@@ -283,7 +283,7 @@ export default function AlisverisListeleriPage() {
                 <div className="border-t-2 border-dashed border-gray-200 pt-6">
                   <div className="flex justify-between items-end mb-8">
                     <div>
-                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Tahmini Toplam</p>
+                      <p className="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1">Tahmini Toplam</p>
                       <p className="text-3xl font-black text-primary-900 tracking-tighter italic">
                         ₺{haftaToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                       </p>
@@ -300,7 +300,7 @@ export default function AlisverisListeleriPage() {
               </div>
 
               <div className="bg-gray-50 p-6">
-                <p className="text-[9px] text-gray-500 font-bold text-center leading-relaxed">
+                <p className="text-[9px] text-gray-700 font-bold text-center leading-relaxed">
                   * Talebiniz onaylandıktan sonra satın alma süreci başlayacaktır.
                 </p>
               </div>

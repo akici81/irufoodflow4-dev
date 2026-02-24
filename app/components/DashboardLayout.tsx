@@ -114,7 +114,7 @@ export default function DashboardLayout({
               priority
             />
           </div>
-          <p className="text-center text-xs font-semibold text-gray-500 uppercase tracking-widest">
+          <p className="text-center text-xs font-semibold text-gray-600 uppercase tracking-widest">
             Eğitim Mutfağı Yönetim Sistemi
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function DashboardLayout({
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-bold text-gray-900 truncate">{kullanici.ad_soyad}</p>
-                <p className="text-xs text-gray-500 font-medium">{ROL_LABEL[kullanici.role]}</p>
+                <p className="text-xs text-gray-700 font-medium">{ROL_LABEL[kullanici.role]}</p>
               </div>
             </div>
             <button

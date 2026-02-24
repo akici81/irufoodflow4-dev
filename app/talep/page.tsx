@@ -153,7 +153,7 @@ export default function TalepPage() {
         {/* Üst Bilgi Kartı */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 flex flex-wrap items-center gap-8">
           <div className="flex-1 min-w-[280px]">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2 block">Ders Seçimi</label>
+            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1 mb-2 block">Ders Seçimi</label>
             <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)}
               className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-primary-900/10 outline-none transition-all">
               <option value="">Lütfen Ders Seçiniz...</option>
@@ -161,7 +161,7 @@ export default function TalepPage() {
             </select>
           </div>
           <div className="w-full md:w-64">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2 block">Uygulama Haftası</label>
+            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1 mb-2 block">Uygulama Haftası</label>
             <select value={secilenHafta} onChange={(e) => setSecilenHafta(e.target.value)}
               className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-primary-900/10 outline-none">
               {HAFTALAR.map((h) => <option key={h}>{h}</option>)}
@@ -211,7 +211,7 @@ export default function TalepPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
+                    <tr className="text-[10px] font-black text-gray-700 uppercase tracking-widest border-b border-gray-50">
                       <th className="px-8 py-5 w-16">Seç</th>
                       <th className="px-8 py-5">Malzeme Bilgisi</th>
                       <th className="px-8 py-5 text-center">Birim Fiyat</th>
@@ -231,10 +231,10 @@ export default function TalepPage() {
                           </td>
                           <td className="px-8 py-5">
                             <p className="font-black text-gray-800 text-sm tracking-tight">{u.urunAdi}</p>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase">{u.marka || "Standart"}</span>
+                            <span className="text-[10px] font-bold text-gray-700 uppercase">{u.marka || "Standart"}</span>
                           </td>
                           <td className="px-8 py-5 text-center">
-                            <span className="text-xs font-bold text-gray-500 italic">₺{u.fiyat.toFixed(2)} / {u.olcu}</span>
+                            <span className="text-xs font-bold text-gray-700 italic">₺{u.fiyat.toFixed(2)} / {u.olcu}</span>
                           </td>
                           <td className="px-8 py-5">
                             {secili ? (

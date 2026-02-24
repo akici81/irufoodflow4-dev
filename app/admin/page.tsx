@@ -103,13 +103,13 @@ export default function AdminAnaSayfa() {
             <div key={k.label} className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm hover:shadow-md transition-all">
               <div className="flex justify-between items-start mb-4">
                 <span className="text-2xl opacity-80">{k.ikon}</span>
-                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none pt-1">{k.label}</span>
+                <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest leading-none pt-1">{k.label}</span>
               </div>
               <div className="flex items-baseline gap-1">
                 <span className={`text-4xl font-black italic bg-gradient-to-br ${k.renk} bg-clip-text text-transparent`}>
                   {k.deger}
                 </span>
-                <span className="text-gray-400 font-bold text-xs uppercase italic tracking-tighter">Birim</span>
+                <span className="text-gray-600 font-bold text-xs uppercase italic tracking-tighter">Birim</span>
               </div>
             </div>
           ))}
@@ -118,7 +118,7 @@ export default function AdminAnaSayfa() {
         {/* Hızlı Erişim Başlığı */}
         <div className="flex items-center gap-4">
           <div className="h-[1px] flex-1 bg-gray-200"></div>
-          <h2 className="text-[11px] font-black text-gray-500 uppercase tracking-[0.3em] italic">Hızlı Erişim Menüsü</h2>
+          <h2 className="text-[11px] font-black text-gray-700 uppercase tracking-[0.3em] italic">Hızlı Erişim Menüsü</h2>
           <div className="h-[1px] flex-1 bg-gray-200"></div>
         </div>
 
@@ -136,10 +136,10 @@ export default function AdminAnaSayfa() {
                     →
                   </div>
                 </div>
-                <p className="text-gray-600 text-sm font-medium leading-relaxed mb-8">{i.aciklama}</p>
+                <p className="text-gray-800 text-sm font-medium leading-relaxed mb-8">{i.aciklama}</p>
                 <div className="flex flex-wrap gap-2">
                   {i.ozellikler.map((o) => (
-                    <span key={o} className="bg-gray-100 text-gray-500 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full group-hover:bg-white group-hover:text-gray-700 transition-colors border border-transparent group-hover:border-gray-200">
+                    <span key={o} className="bg-gray-100 text-gray-700 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full group-hover:bg-white group-hover:text-gray-700 transition-colors border border-transparent group-hover:border-gray-200">
                       {o}
                     </span>
                   ))}

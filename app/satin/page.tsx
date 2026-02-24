@@ -171,14 +171,14 @@ export default function SatinAlmaPage() {
         )}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-wrap gap-4 items-end">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">Hafta</label>
+            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1 block">Hafta</label>
             <select value={secilenHafta} onChange={(e) => setSecilenHafta(e.target.value)}
               className="bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20">
               {haftalar.map((h) => <option key={h} value={h}>{h === "tumu" ? "Tüm Haftalar" : h}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">Ders</label>
+            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1 block">Ders</label>
             <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)}
               className="bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20 min-w-[220px]">
               {dersler.map((d) => <option key={d} value={d}>{d === "tumu" ? "Tüm Dersler" : d}</option>)}
@@ -195,11 +195,11 @@ export default function SatinAlmaPage() {
         {satirlar.length > 0 && (
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Liste Toplamı</p>
+              <p className="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2">Liste Toplamı</p>
               <p className="text-2xl font-black text-gray-800">{genelToplam > 0 ? `₺${genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}</p>
             </div>
             <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm p-6 text-center">
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Satın Alınacak Tutar</p>
+              <p className="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2">Satın Alınacak Tutar</p>
               <p className="text-2xl font-black text-emerald-700">{satinAlinacakToplam > 0 ? `₺${satinAlinacakToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}</p>
             </div>
           </div>
@@ -214,13 +214,13 @@ export default function SatinAlmaPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100 text-left">
-                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">ÜRÜN</th>
-                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">MARKA</th>
-                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">LİSTE MİKT.</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">ÜRÜN</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">MARKA</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">LİSTE MİKT.</th>
                   <th className="px-5 py-4 text-[10px] font-black text-amber-600 uppercase tracking-widest">DEPODA</th>
                   <th className="px-5 py-4 text-[10px] font-black text-emerald-600 uppercase tracking-widest">SATIN ALINACAK</th>
-                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">B.FİYAT</th>
-                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">İŞLEM</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">B.FİYAT</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">İŞLEM</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">

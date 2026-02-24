@@ -81,7 +81,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Kullanıcı Adı</label>
+              <label className="text-[11px] font-black text-gray-700 uppercase tracking-widest ml-1">Kullanıcı Adı</label>
               <input
                 type="text"
                 value={username}
@@ -93,7 +93,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Şifre</label>
+              <label className="text-[11px] font-black text-gray-700 uppercase tracking-widest ml-1">Şifre</label>
               <input
                 type="password"
                 value={password}
@@ -119,9 +119,9 @@ export default function LoginPage() {
 
           {/* Alt Bilgi */}
           <div className="mt-12 pt-8 border-t border-gray-50 text-center">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] leading-relaxed">
+            <p className="text-[10px] text-gray-700 font-bold uppercase tracking-[0.2em] leading-relaxed">
               İstanbul Rumeli Üniversitesi<br />
-              <span className="text-gray-300">İrÜFoodFlow v4.0.0</span>
+              <span className="text-gray-600">İrÜFoodFlow v4.0.0</span>
             </p>
           </div>
         </div>

@@ -159,7 +159,7 @@ export default function DerslerPage() {
         <div className="divide-y divide-gray-50">
           {grup.length === 0 ? (
             <div className="py-20 text-center">
-              <p className="text-gray-300 font-bold text-sm uppercase tracking-widest italic">Bu dönem için henüz ders tanımlanmamış.</p>
+              <p className="text-gray-300 text-sm font-medium">Henüz ders atanmamış.</p>
             </div>
           ) : duzenleniyor ? (
             grup.map((d) => (
@@ -252,17 +252,17 @@ export default function DerslerPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end relative z-10">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">DERS KODU</label>
+              <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1">DERS KODU</label>
               <input value={yeniKod} onChange={(e) => setYeniKod(e.target.value)}
                 placeholder="Örn: ASC112" className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20" />
             </div>
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">DERS ADI</label>
+              <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1">DERS ADI</label>
               <input value={yeniAd} onChange={(e) => setYeniAd(e.target.value)}
                 placeholder="Mutfak Uygulamaları I" className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20" />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">DÖNEM</label>
+              <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1">DÖNEM</label>
               <div className="flex bg-gray-100 p-1.5 rounded-2xl">
                 {["guz", "bahar", "secmeli"].map((d) => (
                   <button key={d} onClick={() => setYeniDonem(d)}

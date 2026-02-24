@@ -251,11 +251,11 @@ export default function RecetelerPage() {
         {/* Sekmeler */}
         <div className="flex bg-gray-100/50 p-1 rounded-2xl w-fit border border-gray-200/60">
           <button onClick={() => setAktifSekme("benim")}
-            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "benim" ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-400 hover:text-gray-600"}`}>
+            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "benim" ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-700 hover:text-gray-900"}`}>
             📒 Tarif Defterim ({receteler.length})
           </button>
           <button onClick={handleOrtakSekme}
-            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "ortak" ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-400 hover:text-gray-600"}`}>
+            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "ortak" ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-700 hover:text-gray-900"}`}>
             🌐 Ortak Reçeteler
           </button>
         </div>
@@ -263,14 +263,14 @@ export default function RecetelerPage() {
         {/* Filtre + Ekle */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-wrap gap-4 items-end">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Kategori</label>
+            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1">Kategori</label>
             <select value={filtreKat} onChange={e => setFiltreKat(e.target.value)}
               className="bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-[primary-900]/20 outline-none">
               {KATEGORILER.map(k => <option key={k}>{k}</option>)}
             </select>
           </div>
           <div className="flex-1 min-w-[200px] space-y-1.5">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Arama</label>
+            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1">Arama</label>
             <input value={aramaMetni} onChange={e => setAramaMetni(e.target.value)} placeholder="Tarif ara..."
               className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-[primary-900]/20 outline-none" />
           </div>
@@ -328,11 +328,11 @@ export default function RecetelerPage() {
                     )}
                   </div>
                 </div>
-                {r.aciklama && <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{r.aciklama}</p>}
+                {r.aciklama && <p className="text-xs text-gray-700 line-clamp-2 leading-relaxed">{r.aciklama}</p>}
                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{r.porsiyon} kişilik baz</span>
+                  <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">{r.porsiyon} kişilik baz</span>
                   <button onClick={() => handleDetay(r)}
-                    className="text-[10px] font-black text-gray-500 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-xl transition uppercase tracking-widest">
+                    className="text-[10px] font-black text-gray-700 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-xl transition uppercase tracking-widest">
                     Malzemeler →
                   </button>
                 </div>
@@ -358,26 +358,26 @@ export default function RecetelerPage() {
             </div>
             <div className="p-6 space-y-5">
               <div>
-                <h3 className="font-semibold text-gray-700 mb-3">Malzemeler <span className="text-xs text-gray-400 font-normal">({detayRecete.porsiyon} kişilik baz)</span></h3>
+                <h3 className="font-semibold text-gray-800 mb-3">Malzemeler <span className="text-xs text-gray-600 font-normal">({detayRecete.porsiyon} kişilik baz)</span></h3>
                 {(detayRecete.malzemeler || []).length === 0 ? (
-                  <p className="text-sm text-gray-400">Malzeme eklenmemiş.</p>
+                  <p className="text-sm text-gray-700">Malzeme eklenmemiş.</p>
                 ) : (
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-gray-50 text-left">
-                        <th className="px-3 py-2 text-xs text-gray-500 font-semibold">Ürün</th>
-                        <th className="px-3 py-2 text-xs text-gray-500 font-semibold">Marka</th>
-                        <th className="px-3 py-2 text-xs text-gray-500 font-semibold">Miktar/Kişi</th>
-                        <th className="px-3 py-2 text-xs text-gray-500 font-semibold">Notlar</th>
+                        <th className="px-3 py-2 text-xs text-gray-700 font-semibold">Ürün</th>
+                        <th className="px-3 py-2 text-xs text-gray-700 font-semibold">Marka</th>
+                        <th className="px-3 py-2 text-xs text-gray-700 font-semibold">Miktar/Kişi</th>
+                        <th className="px-3 py-2 text-xs text-gray-700 font-semibold">Notlar</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
                       {detayRecete.malzemeler!.map((m, i) => (
                         <tr key={i} className="hover:bg-gray-50">
                           <td className="px-3 py-2 font-medium text-gray-800">{m.urun_adi}</td>
-                          <td className="px-3 py-2 text-gray-500">{m.marka || "—"}</td>
-                          <td className="px-3 py-2 text-gray-700">{m.miktar_kisi} {m.birim}</td>
-                          <td className="px-3 py-2 text-gray-400 text-xs">{m.notlar || "—"}</td>
+                          <td className="px-3 py-2 text-gray-700">{m.marka || "—"}</td>
+                          <td className="px-3 py-2 text-gray-800">{m.miktar_kisi} {m.birim}</td>
+                          <td className="px-3 py-2 text-gray-600 text-xs">{m.notlar || "—"}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -386,8 +386,8 @@ export default function RecetelerPage() {
               </div>
               {detayRecete.hazirlanis && (
                 <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Hazırlanış</h3>
-                  <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">{detayRecete.hazirlanis}</p>
+                  <h3 className="font-semibold text-gray-800 mb-2">Hazırlanış</h3>
+                  <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">{detayRecete.hazirlanis}</p>
                 </div>
               )}
             </div>
