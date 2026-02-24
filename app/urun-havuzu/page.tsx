@@ -127,12 +127,19 @@ export default function UrunHavuzuPage() {
  const kategoriler = ["Tümü", ...Array.from(new Set(urunler.map((u) => u.kategori).filter(Boolean))).sort()];
  const markalar = ["Tümü", ...Array.from(new Set(urunler.map((u) => u.marka).filter(Boolean))).sort()];
 
- const filtrelenmis = urunler.filter((u) => {
- const aramaUygun = !aramaMetni || (u.urunAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (u.marka || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (u.kod || "").toLowerCase().includes(aramaMetni.toLowerCase());
- const kategoriUygun = secilenKategori === "Tümü" || u.kategori === secilenKategori;
- const markaUygun = secilenMarka === "Tümü" || u.marka === secilenMarka;
- return aramaUygun && kategoriUygun && markaUygun;
- });
+ const filtrelenmis = (() => {
+  const kategoriUygun = (u: typeof urunler[0]) => secilenKategori === "Tümü" || u.kategori === secilenKategori;
+  const markaUygun = (u: typeof urunler[0]) => secilenMarka === "Tümü" || u.marka === secilenMarka;
+  const temel = urunler.filter(u => kategoriUygun(u) && markaUygun(u));
+  if (!aramaMetni.trim()) return temel;
+  const q = aramaMetni.toLowerCase();
+  const exact   = temel.filter(u => (u.urunAdi || "").toLowerCase() === q);
+  const starts  = temel.filter(u => (u.urunAdi || "").toLowerCase().startsWith(q) && (u.urunAdi || "").toLowerCase() !== q);
+  const contains = temel.filter(u => { const ad = (u.urunAdi || "").toLowerCase(); return ad.includes(q) && !ad.startsWith(q); });
+  const marka   = temel.filter(u => (u.marka || "").toLowerCase().includes(q) && !(u.urunAdi || "").toLowerCase().includes(q));
+  const kod     = temel.filter(u => (u.kod || "").toLowerCase().includes(q) && !(u.urunAdi || "").toLowerCase().includes(q) && !(u.marka || "").toLowerCase().includes(q));
+  return [...exact, ...starts, ...contains, ...marka, ...kod];
+ })();
 
  if (authYukleniyor || !yetkili) return null;
  return (
