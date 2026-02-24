@@ -4,12 +4,12 @@ import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-geist-sans",
 });
 
 export const metadata: Metadata = {
-  title: "IRU FoodFlow",
-  description: "Okul yemek talep yönetim sistemi",
+  title: "IRÜ FoodFlow - Eğitim Mutfağı Yönetim Sistemi",
+  description: "İstanbul Rumeli Üniversitesi Eğitim Mutfağı Yönetim ve Talep Sistemi",
 };
 
 export default function RootLayout({
@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} font-geist antialiased bg-gray-50`}>
         {children}
       </body>
     </html>

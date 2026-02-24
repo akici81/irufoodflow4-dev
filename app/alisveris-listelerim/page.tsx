@@ -95,7 +95,7 @@ export default function AlisverisListeleriPage() {
 
     setKaydediliyor(true);
     const secilenDersObj = atananDersler.find(d => d.id === secilenDers);
-    
+
     const kaydedilecekUrunler: SiparisUrun[] = Object.entries(liste).map(([id, miktar]) => {
       const urun = urunler.find(u => u.id === id)!;
       return {
@@ -132,12 +132,12 @@ export default function AlisverisListeleriPage() {
     }
   };
 
-  if (yukleniyor) return <DashboardLayout title="Yükleniyor..."><div className="p-20 text-center animate-pulse text-slate-300 font-black tracking-widest uppercase">Veri Bağlantısı Kuruluyor...</div></DashboardLayout>;
+  if (yukleniyor) return <DashboardLayout title="Yükleniyor..."><div className="p-20 text-center animate-pulse text-gray-400 font-black tracking-widest uppercase">Veri Bağlantısı Kuruluyor...</div></DashboardLayout>;
 
   return (
     <DashboardLayout title="Alışveriş Listelerim" subtitle="Eğitim mutfağı için haftalık malzeme taleplerinizi oluşturun">
       <div className="max-w-7xl space-y-6">
-        
+
         {/* Bildirim */}
         {bildirim && (
           <div className={`fixed top-6 right-6 z-50 px-8 py-4 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in slide-in-from-right-10 ${
@@ -149,30 +149,30 @@ export default function AlisverisListeleriPage() {
         )}
 
         <div className="grid grid-cols-12 gap-8">
-          
+
           <div className="col-span-12 lg:col-span-9 space-y-6">
             {/* Ders ve Hafta Seçimi */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#8B1A1A]"></span> Sorumlu Olduğunuz Ders
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-900"></span> Sorumlu Olduğunuz Ders
                 </label>
-                <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)} 
-                  className="w-full bg-slate-50 border-2 border-transparent focus:border-slate-100 focus:bg-white rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 outline-none transition-all appearance-none cursor-pointer">
+                <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)}
+                  className="w-full bg-gray-100 border-2 border-transparent focus:border-gray-300 focus:bg-white rounded-2xl px-6 py-4 text-sm font-bold text-gray-900 outline-none transition-all appearance-none cursor-pointer">
                   <option value="">Ders Seçiniz...</option>
                   {atananDersler.map(d => <option key={d.id} value={d.id}>{d.kod} - {d.ad}</option>)}
                 </select>
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#8B1A1A]"></span> Planlanacak Hafta
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-900"></span> Planlanacak Hafta
                 </label>
                 <div className="flex gap-1.5 flex-wrap">
                   {HAFTALAR.map(h => (
-                    <button key={h} onClick={() => setSecilenHafta(h)} 
+                    <button key={h} onClick={() => setSecilenHafta(h)}
                       className={`w-10 h-10 rounded-xl text-[11px] font-black transition-all transform active:scale-90 ${
-                        secilenHafta === h ? "bg-[#8B1A1A] text-white shadow-lg shadow-red-900/20 scale-110" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                        secilenHafta === h ? "bg-primary-900 text-white shadow-lg shadow-primary-900/20 scale-110" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                       }`}>
                       {h.split(".")[0]}
                     </button>
@@ -182,20 +182,20 @@ export default function AlisverisListeleriPage() {
             </div>
 
             {/* Ürün Listesi */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-10 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
-                <h3 className="font-black text-slate-800 tracking-tighter uppercase italic text-sm">Ürün Kataloğu</h3>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="px-10 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 className="font-black text-gray-900 tracking-tighter uppercase italic text-sm">Ürün Kataloğu</h3>
                 <div className="relative">
-                  <input value={aramaMetni} onChange={e => setAramaMetni(e.target.value)} 
-                    placeholder="Malzeme ara..." 
-                    className="bg-white border border-slate-200 rounded-full px-6 py-2.5 text-xs w-64 outline-none focus:ring-4 focus:ring-[#8B1A1A]/5 focus:border-[#8B1A1A]/20 transition-all font-medium" />
+                  <input value={aramaMetni} onChange={e => setAramaMetni(e.target.value)}
+                    placeholder="Malzeme ara..."
+                    className="bg-white border border-gray-200 rounded-full px-6 py-2.5 text-xs w-64 outline-none focus:ring-4 focus:ring-primary-900/10 focus:border-primary-900/30 transition-all font-medium" />
                 </div>
               </div>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="text-[10px] font-black text-slate-300 uppercase tracking-widest border-b border-slate-50">
+                    <tr className="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-100">
                       <th className="px-10 py-5">Durum</th>
                       <th className="px-4 py-5">Malzeme Bilgisi</th>
                       <th className="px-4 py-5">Birim Fiyat</th>
@@ -203,42 +203,42 @@ export default function AlisverisListeleriPage() {
                       <th className="px-10 py-5 text-right">Ara Toplam</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-50">
+                  <tbody className="divide-y divide-gray-100">
                     {urunler.filter(u => !aramaMetni || u.urunAdi.toLowerCase().includes(aramaMetni.toLowerCase())).map(u => {
                       const secili = u.id in liste;
                       const miktar = liste[u.id] ?? 0;
                       return (
-                        <tr key={u.id} className={`transition-colors ${secili ? "bg-[#8B1A1A]/5" : "hover:bg-slate-50/50"}`}>
+                        <tr key={u.id} className={`transition-colors ${secili ? "bg-primary-900/5" : "hover:bg-gray-50/50"}`}>
                           <td className="px-10 py-4">
-                            <input type="checkbox" checked={secili} onChange={(e) => handleCheckbox(u, e.target.checked)} 
-                              className="w-6 h-6 accent-[#8B1A1A] rounded-lg cursor-pointer transition-transform hover:scale-110" />
+                            <input type="checkbox" checked={secili} onChange={(e) => handleCheckbox(u, e.target.checked)}
+                              className="w-6 h-6 accent-primary-900 rounded-lg cursor-pointer transition-transform hover:scale-110" />
                           </td>
                           <td className="px-4 py-4">
-                            <p className={`font-bold text-sm transition-colors ${secili ? "text-[#8B1A1A]" : "text-slate-700"}`}>{u.urunAdi}</p>
-                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-tighter">{u.marka || "—"} • {u.olcu}</span>
+                            <p className={`font-bold text-sm transition-colors ${secili ? "text-primary-900" : "text-gray-900"}`}>{u.urunAdi}</p>
+                            <span className="text-[9px] text-gray-500 font-black uppercase tracking-tighter">{u.marka || "—"} • {u.olcu}</span>
                           </td>
-                          <td className="px-4 py-4 text-xs font-bold text-slate-400 italic">₺{u.fiyat.toFixed(2)}</td>
+                          <td className="px-4 py-4 text-xs font-bold text-gray-500 italic">₺{u.fiyat.toFixed(2)}</td>
                           <td className="px-4 py-4">
                             {secili && (
                               <div className="flex items-center justify-center animate-in zoom-in-95 duration-200">
                                 {olcuBilgisi(u.olcu).serbest ? (
-                                  <div className="flex items-center gap-2 bg-white border border-[#8B1A1A]/20 rounded-xl px-3 py-1 shadow-sm">
-                                    <input type="text" value={kgInputler[u.id] !== undefined ? kgInputler[u.id] : (miktar > 0 ? String(miktar).replace(".", ",") : "")} 
-                                      onChange={(e) => handleKgInput(u.id, e.target.value)} 
-                                      className="w-16 text-center text-xs font-black text-[#8B1A1A] outline-none" placeholder="0,00" />
-                                    <span className="text-[10px] font-black text-slate-300 uppercase">{u.olcu}</span>
+                                  <div className="flex items-center gap-2 bg-white border border-primary-900/20 rounded-xl px-3 py-1 shadow-sm">
+                                    <input type="text" value={kgInputler[u.id] !== undefined ? kgInputler[u.id] : (miktar > 0 ? String(miktar).replace(".", ",") : "")}
+                                      onChange={(e) => handleKgInput(u.id, e.target.value)}
+                                      className="w-16 text-center text-xs font-black text-primary-900 outline-none" placeholder="0,00" />
+                                    <span className="text-[10px] font-black text-gray-400 uppercase">{u.olcu}</span>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center bg-white border border-[#8B1A1A]/20 rounded-xl overflow-hidden shadow-sm">
-                                    <button onClick={() => setListe(p => ({...p, [u.id]: Math.max(0, (p[u.id] || 0) - 1)}))} className="w-8 h-8 hover:bg-slate-50 text-slate-400 font-bold transition-colors">-</button>
-                                    <span className="w-10 text-center text-[11px] font-black text-[#8B1A1A] border-x border-slate-100">{miktar}</span>
-                                    <button onClick={() => setListe(p => ({...p, [u.id]: (p[u.id] || 0) + 1}))} className="w-8 h-8 hover:bg-slate-50 text-[#8B1A1A] font-bold transition-colors">+</button>
+                                  <div className="flex items-center bg-white border border-primary-900/20 rounded-xl overflow-hidden shadow-sm">
+                                    <button onClick={() => setListe(p => ({...p, [u.id]: Math.max(0, (p[u.id] || 0) - 1)}))} className="w-8 h-8 hover:bg-gray-100 text-gray-500 font-bold transition-colors">-</button>
+                                    <span className="w-10 text-center text-[11px] font-black text-primary-900 border-x border-gray-200">{miktar}</span>
+                                    <button onClick={() => setListe(p => ({...p, [u.id]: (p[u.id] || 0) + 1}))} className="w-8 h-8 hover:bg-gray-100 text-primary-900 font-bold transition-colors">+</button>
                                   </div>
                                 )}
                               </div>
                             )}
                           </td>
-                          <td className={`px-10 py-4 text-right font-black text-sm transition-all ${secili ? "text-slate-800 scale-105" : "text-slate-200"}`}>
+                          <td className={`px-10 py-4 text-right font-black text-sm transition-all ${secili ? "text-gray-900 scale-105" : "text-gray-300"}`}>
                             ₺{(u.fiyat * miktar).toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                           </td>
                         </tr>
@@ -252,17 +252,17 @@ export default function AlisverisListeleriPage() {
 
           {/* Sağ Panel: Fiş Görünümü */}
           <div className="col-span-12 lg:col-span-3">
-            <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl flex flex-col sticky top-8 overflow-hidden">
-              <div className="bg-[#8B1A1A] p-8 text-white">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl flex flex-col sticky top-8 overflow-hidden">
+              <div className="bg-primary-900 p-8 text-white">
                 <h3 className="font-black text-xs uppercase tracking-[0.3em] opacity-60 mb-1">Talep Özeti</h3>
                 <p className="text-xl font-black italic tracking-tighter uppercase">{secilenHafta || "Hafta Seçin"}</p>
               </div>
-              
+
               <div className="p-8 flex-1 min-h-[300px]">
                 <div className="space-y-4 mb-8 custom-scrollbar max-h-[400px] overflow-y-auto">
                   {Object.entries(liste).length === 0 ? (
                     <div className="text-center py-10">
-                      <p className="text-slate-300 text-[10px] font-black uppercase tracking-widest">Liste Henüz Boş</p>
+                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">Liste Henüz Boş</p>
                     </div>
                   ) : (
                     Object.entries(liste).map(([id, m]) => {
@@ -270,37 +270,37 @@ export default function AlisverisListeleriPage() {
                       return u ? (
                         <div key={id} className="flex justify-between items-start gap-4 animate-in slide-in-from-bottom-2">
                           <div className="flex-1">
-                            <p className="text-[11px] font-bold text-slate-700 leading-tight">{u.urunAdi}</p>
-                            <p className="text-[9px] font-black text-slate-400 uppercase">{m} {u.olcu}</p>
+                            <p className="text-[11px] font-bold text-gray-900 leading-tight">{u.urunAdi}</p>
+                            <p className="text-[9px] font-black text-gray-500 uppercase">{m} {u.olcu}</p>
                           </div>
-                          <span className="text-[11px] font-black text-slate-800">₺{(u.fiyat * m).toFixed(2)}</span>
+                          <span className="text-[11px] font-black text-gray-900">₺{(u.fiyat * m).toFixed(2)}</span>
                         </div>
                       ) : null;
                     })
                   )}
                 </div>
 
-                <div className="border-t-2 border-dashed border-slate-100 pt-6">
+                <div className="border-t-2 border-dashed border-gray-200 pt-6">
                   <div className="flex justify-between items-end mb-8">
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tahmini Toplam</p>
-                      <p className="text-3xl font-black text-[#8B1A1A] tracking-tighter italic">
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Tahmini Toplam</p>
+                      <p className="text-3xl font-black text-primary-900 tracking-tighter italic">
                         ₺{haftaToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                       </p>
                     </div>
                   </div>
 
-                  <button 
-                    onClick={handleHaftaKaydet} 
+                  <button
+                    onClick={handleHaftaKaydet}
                     disabled={kaydediliyor || Object.keys(liste).length === 0}
-                    className="w-full bg-[#8B1A1A] disabled:bg-slate-200 text-white font-black py-4 rounded-2xl hover:bg-red-800 active:scale-95 transition-all uppercase text-[11px] tracking-[0.2em] shadow-lg shadow-red-900/20">
+                    className="w-full bg-primary-900 disabled:bg-gray-300 text-white font-black py-4 rounded-2xl hover:bg-primary-800 active:scale-95 transition-all uppercase text-[11px] tracking-[0.2em] shadow-lg shadow-primary-900/20">
                     {kaydediliyor ? "GÖNDERİLİYOR..." : "TALEBİ TAMAMLA"}
                   </button>
                 </div>
               </div>
-              
-              <div className="bg-slate-50 p-6">
-                <p className="text-[9px] text-slate-400 font-bold text-center leading-relaxed">
+
+              <div className="bg-gray-50 p-6">
+                <p className="text-[9px] text-gray-500 font-bold text-center leading-relaxed">
                   * Talebiniz onaylandıktan sonra satın alma süreci başlayacaktır.
                 </p>
               </div>

@@ -73,7 +73,7 @@ export default function UrunHavuzuPage() {
   if (authYukleniyor) return (
     <DashboardLayout title="Ürün Havuzu">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
       </div>
     </DashboardLayout>
   );
@@ -180,7 +180,7 @@ export default function UrunHavuzuPage() {
       <div className="space-y-6 animate-in fade-in duration-700">
         
         {/* Üst Araç Çubuğu */}
-        <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm space-y-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm space-y-6">
           <div className="flex flex-wrap gap-4 items-center justify-between">
             <div className="flex flex-wrap gap-3 flex-1 min-w-[300px]">
               <div className="relative flex-1">
@@ -188,27 +188,27 @@ export default function UrunHavuzuPage() {
                   value={aramaMetni}
                   onChange={(e) => setAramaMetni(e.target.value)}
                   placeholder="Ürün adı, marka veya kod ara..."
-                  className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20 transition-all pl-12"
+                  className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20 transition-all pl-12"
                 />
-                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
               </div>
               <select
                 value={secilenKategori}
                 onChange={(e) => setSecilenKategori(e.target.value)}
-                className="bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20 transition-all min-w-[150px]"
+                className="bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20 transition-all min-w-[150px]"
               >
                 {kategoriler.map((k) => <option key={k}>{k}</option>)}
               </select>
             </div>
 
             <div className="flex gap-3">
-              <label className="cursor-pointer bg-white border border-slate-200 hover:border-slate-400 text-slate-700 text-xs font-black uppercase tracking-widest px-6 py-4 rounded-2xl transition-all shadow-sm">
+              <label className="cursor-pointer bg-white border border-gray-200 hover:border-gray-400 text-gray-700 text-xs font-black uppercase tracking-widest px-6 py-4 rounded-2xl transition-all shadow-sm">
                 EXCEL YÜKLE
                 <input ref={dosyaRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleExcelYukle} />
               </label>
               <button
                 onClick={() => { setForm(BOSH_FORM); setDuzenleId(null); setPanelAcik(true); }}
-                className="bg-[#8B1A1A] hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-2xl transition-all shadow-lg shadow-red-900/20"
+                className="bg-primary-900 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-2xl transition-all shadow-lg shadow-red-900/20"
               >
                 + YENİ ÜRÜN
               </button>
@@ -217,26 +217,26 @@ export default function UrunHavuzuPage() {
         </div>
 
         {/* Ürün Listesi Tablosu */}
-        <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           {veriYukleniyor ? (
             <div className="p-20 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A] mx-auto mb-4"></div>
-              <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Veriler Yükleniyor...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900 mx-auto mb-4"></div>
+              <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Veriler Yükleniyor...</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-slate-50/50 text-left border-b border-slate-100">
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ürün Bilgisi</th>
-                    <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Birim Fiyat</th>
-                    <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori</th>
-                    <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Stok</th>
-                    <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kod</th>
+                  <tr className="bg-gray-50/50 text-left border-b border-gray-100">
+                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ürün Bilgisi</th>
+                    <th className="px-4 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Birim Fiyat</th>
+                    <th className="px-4 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Kategori</th>
+                    <th className="px-4 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Stok</th>
+                    <th className="px-4 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Kod</th>
                     <th className="px-8 py-5 text-right"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-gray-50">
                   {filtrelenmis.map((u) => (
                     <tr 
                       key={u.id} 
@@ -248,17 +248,17 @@ export default function UrunHavuzuPage() {
                           setPanelAcik(true);
                         }
                       }}
-                      className="group hover:bg-slate-50 transition-all cursor-pointer"
+                      className="group hover:bg-gray-50 transition-all cursor-pointer"
                     >
                       <td className="px-8 py-5">
-                        <p className="font-black text-slate-800 text-sm tracking-tight">{u.urunAdi}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase">{u.marka || "Standart"} • {u.olcu}</p>
+                        <p className="font-black text-gray-800 text-sm tracking-tight">{u.urunAdi}</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase">{u.marka || "Standart"} • {u.olcu}</p>
                       </td>
-                      <td className="px-4 py-5 font-bold text-slate-600 text-sm italic">
+                      <td className="px-4 py-5 font-bold text-gray-600 text-sm italic">
                         {u.fiyat > 0 ? `₺${u.fiyat.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}
                       </td>
                       <td className="px-4 py-5">
-                        <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
                           {u.kategori || "Genel"}
                         </span>
                       </td>
@@ -267,7 +267,7 @@ export default function UrunHavuzuPage() {
                           {u.stok}
                         </span>
                       </td>
-                      <td className="px-4 py-5 font-mono text-[10px] text-slate-300 group-hover:text-slate-500 transition-colors">
+                      <td className="px-4 py-5 font-mono text-[10px] text-gray-300 group-hover:text-gray-500 transition-colors">
                         {u.kod || "—"}
                       </td>
                       <td className="px-8 py-5 text-right" onClick={(e) => e.stopPropagation()}>
@@ -291,18 +291,18 @@ export default function UrunHavuzuPage() {
 
       {/* Modern Sağ Panel / Modal */}
       {panelAcik && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-end p-0 md:p-6 transition-all animate-in fade-in">
-          <div className="bg-white w-full max-w-xl h-full md:h-auto md:max-h-[90vh] md:rounded-[3rem] shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right-20 duration-500">
+        <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-end p-0 md:p-6 transition-all animate-in fade-in">
+          <div className="bg-white w-full max-w-xl h-full md:h-auto md:max-h-[90vh] md:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right-20 duration-500">
             <div className="px-10 pt-10 pb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-slate-800 tracking-tighter">
+                <h2 className="text-2xl font-black text-gray-800 tracking-tighter">
                   {duzenleId ? "Ürünü Güncelle" : "Yeni Malzeme Ekle"}
                 </h2>
-                <p className="text-sm text-slate-400 font-medium">Havuz bilgilerini eksiksiz doldurun</p>
+                <p className="text-sm text-gray-400 font-medium">Havuz bilgilerini eksiksiz doldurun</p>
               </div>
               <button
                 onClick={() => { setPanelAcik(false); setDuzenleId(null); setForm(BOSH_FORM); }}
-                className="w-12 h-12 flex items-center justify-center bg-slate-100 text-slate-400 hover:text-slate-800 rounded-2xl transition-all"
+                className="w-12 h-12 flex items-center justify-center bg-gray-100 text-gray-400 hover:text-gray-800 rounded-2xl transition-all"
               >
                 ✕
               </button>
@@ -311,45 +311,45 @@ export default function UrunHavuzuPage() {
             <div className="flex-1 px-10 py-4 overflow-y-auto space-y-6 custom-scrollbar">
               <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Ürün Adı *</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Ürün Adı *</label>
                   <input
                     value={form.urunAdi}
                     onChange={(e) => setForm(f => ({ ...f, urunAdi: e.target.value }))}
-                    className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20"
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Marka</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Marka</label>
                   <input
                     value={form.marka}
                     onChange={(e) => setForm(f => ({ ...f, marka: e.target.value }))}
-                    className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20"
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Birim Fiyat (₺)</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Birim Fiyat (₺)</label>
                   <input
                     type="number"
                     value={form.fiyat}
                     onChange={(e) => setForm(f => ({ ...f, fiyat: Number(e.target.value) }))}
-                    className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20"
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Kategori</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Kategori</label>
                   <input
                     value={form.kategori}
                     onChange={(e) => setForm(f => ({ ...f, kategori: e.target.value }))}
-                    className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20"
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20"
                     placeholder="Et, Süt, Manav vb."
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Ölçü Birimi</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Ölçü Birimi</label>
                   <select
                     value={form.olcu}
                     onChange={(e) => setForm(f => ({ ...f, olcu: e.target.value }))}
-                    className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20"
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20"
                   >
                     {OLCU_SECENEKLERI.map(o => <option key={o}>{o}</option>)}
                   </select>
@@ -357,10 +357,10 @@ export default function UrunHavuzuPage() {
               </div>
             </div>
 
-            <div className="p-10 bg-slate-50/50 flex gap-4">
+            <div className="p-10 bg-gray-50/50 flex gap-4">
               <button
                 onClick={handleFormKaydet}
-                className="flex-1 bg-[#8B1A1A] text-white font-black py-5 rounded-3xl shadow-xl shadow-red-900/20 hover:bg-red-800 transition-all uppercase text-xs tracking-widest"
+                className="flex-1 bg-primary-900 text-white font-black py-5 rounded-2xl shadow-xl shadow-red-900/20 hover:bg-red-800 transition-all uppercase text-xs tracking-widest"
               >
                 {duzenleId ? "DEĞİŞİKLİKLERİ KAYDET" : "HAVUZA EKLE"}
               </button>

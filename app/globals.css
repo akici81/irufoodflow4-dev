@@ -3,21 +3,23 @@
 @tailwind utilities;
 
 :root {
-  --background: #9b0b0b;
-  --foreground: #171717;
+  --background: #ffffff;
+  --foreground: #1f2937;
+  --primary: #a01f1f;
+  --primary-light: #d94f6b;
+  --accent: #f59e0b;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #9b0b0b;
-    --foreground: #ededed;
+    --background: #111827;
+    --foreground: #f9fafb;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Form input text rengi her zaman siyah */
@@ -29,9 +31,67 @@ input[type="week"],
 textarea,
 select {
   color: #000000 !important;
+  background-color: #ffffff !important;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #6b7280 !important;
+  color: #9ca3af !important;
+}
+
+/* Smooth transitions */
+button,
+a,
+input,
+select,
+textarea {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Primary button style */
+.btn-primary {
+  @apply text-white font-semibold py-2 px-4 rounded-lg transition-colors;
+  background-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: #8B1F2A;
+}
+
+/* Secondary button style */
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold py-2 px-4 rounded-lg transition-colors;
+}
+
+/* Card style */
+.card {
+  @apply bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-6;
+}
+
+/* Badge style */
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
+}
+
+.badge-primary {
+  @apply badge text-white;
+  background-color: #f5d5d7;
+  color: var(--primary) !important;
+}
+
+.badge-accent {
+  @apply badge text-accent-900;
+  background-color: fef3c7;
+}
+
+.badge-success {
+  @apply badge bg-green-100 text-green-900;
+}
+
+.badge-warning {
+  @apply badge bg-yellow-100 text-yellow-900;
+}
+
+.badge-error {
+  @apply badge bg-red-100 text-red-900;
 }

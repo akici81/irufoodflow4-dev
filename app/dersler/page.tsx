@@ -44,7 +44,7 @@ export default function DerslerPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Ders Yönetimi">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
       </div>
     </DashboardLayout>
   );
@@ -123,11 +123,11 @@ export default function DerslerPage() {
     const duzenleniyor = duzenleGrup === donem;
 
     return (
-      <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden mb-8 animate-in fade-in duration-500">
-        <div className="px-10 py-6 border-b border-slate-100 flex items-center justify-between flex-wrap gap-4 bg-slate-50/30">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8 animate-in fade-in duration-500">
+        <div className="px-10 py-6 border-b border-gray-100 flex items-center justify-between flex-wrap gap-4 bg-gray-50/30">
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-black text-slate-800 tracking-tighter">{baslik}</h2>
-            <span className="bg-[#8B1A1A]/10 text-[#8B1A1A] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+            <h2 className="text-xl font-black text-gray-800 tracking-tighter">{baslik}</h2>
+            <span className="bg-primary-900/10 text-primary-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
               {grup.length} Ders
             </span>
           </div>
@@ -140,26 +140,26 @@ export default function DerslerPage() {
                   TÜMÜNÜ AKTİF YAP
                 </button>
                 <button onClick={() => handleTopluAktif(donem, false)}
-                  className="text-[10px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest px-4 py-2 bg-slate-100 rounded-xl transition-all">
+                  className="text-[10px] font-black text-gray-400 hover:text-gray-600 uppercase tracking-widest px-4 py-2 bg-gray-100 rounded-xl transition-all">
                   TÜMÜNÜ PASİF YAP
                 </button>
               </>
             )}
             {duzenleniyor ? (
               <div className="flex gap-2">
-                <button onClick={handleDuzenleKaydet} className="bg-[#8B1A1A] text-white text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest shadow-lg shadow-red-900/20">KAYDET</button>
-                <button onClick={() => setDuzenleGrup(null)} className="bg-slate-200 text-slate-600 text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest">İPTAL</button>
+                <button onClick={handleDuzenleKaydet} className="bg-primary-900 text-white text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest shadow-lg shadow-red-900/20">KAYDET</button>
+                <button onClick={() => setDuzenleGrup(null)} className="bg-gray-200 text-gray-600 text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest">İPTAL</button>
               </div>
             ) : (
-              <button onClick={() => handleDuzenleAc(donem, grup)} className="border border-slate-200 text-slate-400 hover:text-slate-800 text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest transition-all hover:bg-white">DÜZENLE</button>
+              <button onClick={() => handleDuzenleAc(donem, grup)} className="border border-gray-200 text-gray-400 hover:text-gray-800 text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest transition-all hover:bg-white">DÜZENLE</button>
             )}
           </div>
         </div>
 
-        <div className="divide-y divide-slate-50">
+        <div className="divide-y divide-gray-50">
           {grup.length === 0 ? (
             <div className="py-20 text-center">
-              <p className="text-slate-300 font-bold text-sm uppercase tracking-widest italic">Bu dönem için henüz ders tanımlanmamış.</p>
+              <p className="text-gray-300 font-bold text-sm uppercase tracking-widest italic">Bu dönem için henüz ders tanımlanmamış.</p>
             </div>
           ) : duzenleniyor ? (
             grup.map((d) => (
@@ -167,12 +167,12 @@ export default function DerslerPage() {
                 <input
                   value={duzenleData[d.id]?.kod || ""}
                   onChange={(e) => setDuzenleData(prev => ({ ...prev, [d.id]: { ...prev[d.id], kod: e.target.value } }))}
-                  className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold w-32 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none"
+                  className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold w-32 focus:ring-2 focus:ring-[primary-900]/20 outline-none"
                 />
                 <input
                   value={duzenleData[d.id]?.ad || ""}
                   onChange={(e) => setDuzenleData(prev => ({ ...prev, [d.id]: { ...prev[d.id], ad: e.target.value } }))}
-                  className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold flex-1 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none"
+                  className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold flex-1 focus:ring-2 focus:ring-[primary-900]/20 outline-none"
                 />
                 <button onClick={() => handleDersSil(d.id)} className="text-red-500 hover:text-red-700 p-2">🗑</button>
               </div>
@@ -181,13 +181,13 @@ export default function DerslerPage() {
             grup.map((d) => {
               const atananlar = dersinOgretmenleri(d.id);
               return (
-                <div key={d.id} className={`px-10 py-6 transition-all hover:bg-slate-50/50 ${!d.aktif ? "bg-slate-50/40" : ""}`}>
+                <div key={d.id} className={`px-10 py-6 transition-all hover:bg-gray-50/50 ${!d.aktif ? "bg-gray-50/40" : ""}`}>
                   <div className="flex items-center justify-between gap-8">
                     <div className="flex-1 space-y-3">
                       <div className="flex items-center gap-3">
-                        <span className="bg-slate-800 text-white text-[10px] font-black px-2 py-1 rounded-md tracking-tighter italic">{d.kod}</span>
-                        <h3 className={`font-black text-lg tracking-tight ${!d.aktif ? "text-slate-400 line-through" : "text-slate-800"}`}>{d.ad}</h3>
-                        {!d.aktif && <span className="text-[10px] font-black text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full uppercase tracking-widest bg-white">Pasif</span>}
+                        <span className="bg-gray-800 text-white text-[10px] font-black px-2 py-1 rounded-md tracking-tighter italic">{d.kod}</span>
+                        <h3 className={`font-black text-lg tracking-tight ${!d.aktif ? "text-gray-400 line-through" : "text-gray-800"}`}>{d.ad}</h3>
+                        {!d.aktif && <span className="text-[10px] font-black text-gray-400 border border-gray-200 px-2 py-0.5 rounded-full uppercase tracking-widest bg-white">Pasif</span>}
                       </div>
                       
                       {d.aktif && (
@@ -200,7 +200,7 @@ export default function DerslerPage() {
                                 className={`text-[10px] font-black px-4 py-2 rounded-xl border transition-all uppercase tracking-widest ${
                                   atanmis 
                                   ? "bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-500/20" 
-                                  : "bg-white border-slate-200 text-slate-400 hover:border-slate-400 hover:text-slate-600"
+                                  : "bg-white border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-600"
                                 }`}>
                                 {o.ad_soyad || o.username}
                               </button>
@@ -215,7 +215,7 @@ export default function DerslerPage() {
                         await supabase.from("dersler").update({ aktif: !d.aktif }).eq("id", d.id);
                         fetchData();
                       }}
-                      className={`w-14 h-7 rounded-full relative transition-all shadow-inner ${d.aktif ? "bg-emerald-500" : "bg-slate-200"}`}
+                      className={`w-14 h-7 rounded-full relative transition-all shadow-inner ${d.aktif ? "bg-emerald-500" : "bg-gray-200"}`}
                     >
                       <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-all ${d.aktif ? "left-8" : "left-1"}`} />
                     </button>
@@ -242,31 +242,31 @@ export default function DerslerPage() {
 
       <div className="space-y-8 max-w-6xl">
         {/* Yeni Ders Ekleme Kartı */}
-        <div className="bg-white rounded-[2.5rem] border border-slate-200 p-10 shadow-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#8B1A1A]/5 rounded-bl-full -mr-10 -mt-10 transition-all group-hover:scale-110"></div>
+        <div className="bg-white rounded-2xl border border-gray-200 p-10 shadow-sm relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-900/5 rounded-bl-full -mr-10 -mt-10 transition-all group-hover:scale-110"></div>
           
-          <h2 className="text-xl font-black text-slate-800 mb-8 flex items-center gap-3 tracking-tighter italic">
-            <span className="w-8 h-8 rounded-xl bg-[#8B1A1A] text-white flex items-center justify-center not-italic text-sm">+</span>
+          <h2 className="text-xl font-black text-gray-800 mb-8 flex items-center gap-3 tracking-tighter italic">
+            <span className="w-8 h-8 rounded-xl bg-primary-900 text-white flex items-center justify-center not-italic text-sm">+</span>
             YENİ DERS TANIMLA
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end relative z-10">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">DERS KODU</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">DERS KODU</label>
               <input value={yeniKod} onChange={(e) => setYeniKod(e.target.value)}
-                placeholder="Örn: ASC112" className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20" />
+                placeholder="Örn: ASC112" className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20" />
             </div>
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">DERS ADI</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">DERS ADI</label>
               <input value={yeniAd} onChange={(e) => setYeniAd(e.target.value)}
-                placeholder="Mutfak Uygulamaları I" className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#8B1A1A]/20" />
+                placeholder="Mutfak Uygulamaları I" className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[primary-900]/20" />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">DÖNEM</label>
-              <div className="flex bg-slate-100 p-1.5 rounded-2xl">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">DÖNEM</label>
+              <div className="flex bg-gray-100 p-1.5 rounded-2xl">
                 {["guz", "bahar", "secmeli"].map((d) => (
                   <button key={d} onClick={() => setYeniDonem(d)}
-                    className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${yeniDonem === d ? "bg-white text-[#8B1A1A] shadow-sm" : "text-slate-400 hover:text-slate-600"}`}>
+                    className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${yeniDonem === d ? "bg-white text-primary-900 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}>
                     {d === "guz" ? "Güz" : d === "bahar" ? "Bahar" : "Seç"}
                   </button>
                 ))}
@@ -275,7 +275,7 @@ export default function DerslerPage() {
           </div>
           
           <button onClick={handleDersEkle}
-            className="mt-8 w-full bg-[#8B1A1A] hover:bg-red-800 text-white font-black py-5 rounded-3xl transition-all shadow-xl shadow-red-900/20 uppercase text-xs tracking-[0.2em]">
+            className="mt-8 w-full bg-primary-900 hover:bg-red-800 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-red-900/20 uppercase text-xs tracking-[0.2em]">
             SİSTEME KAYDET
           </button>
         </div>

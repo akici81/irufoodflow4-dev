@@ -84,7 +84,7 @@ export default function StokPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Stok Paneli">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
       </div>
     </DashboardLayout>
   );
@@ -110,79 +110,79 @@ export default function StokPage() {
 
                 <div className="grid grid-cols-3 gap-4">
                     {[
-                        { label: "Toplam Ürün", deger: urunler.length, renk: "text-slate-800" },
+                        { label: "Toplam Ürün", deger: urunler.length, renk: "text-gray-800" },
                         { label: "Stokta Var", deger: stokluUrun, renk: "text-emerald-600" },
-                        { label: "Stok Yok", deger: urunler.length - stokluUrun, renk: "text-[#8B1A1A]" },
+                        { label: "Stok Yok", deger: urunler.length - stokluUrun, renk: "text-primary-900" },
                     ].map((k) => (
-                        <div key={k.label} className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 text-center">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{k.label}</p>
+                        <div key={k.label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{k.label}</p>
                             <p className={`text-3xl font-black ${k.renk}`}>{k.deger}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Miktar Giriş Rehberi */}
-                <div className="bg-blue-50 border border-blue-100 rounded-[2rem] px-6 py-4">
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl px-6 py-4">
                     <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-3">Miktar Giriş Rehberi</p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-2 text-xs">
                         <div className="flex items-start gap-2">
                             <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap text-[10px]">Kg / L</span>
-                            <span className="text-slate-500 text-[10px]">Elle girin — orn: <b>0,100</b> · <b>1,500</b></span>
+                            <span className="text-gray-500 text-[10px]">Elle girin — orn: <b>0,100</b> · <b>1,500</b></span>
                         </div>
                         <div className="flex items-start gap-2">
                             <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap text-[10px]">G / Ml</span>
-                            <span className="text-slate-500 text-[10px]">+ / - ile <b>50'şer</b> artır/azalt</span>
+                            <span className="text-gray-500 text-[10px]">+ / - ile <b>50'şer</b> artır/azalt</span>
                         </div>
                         <div className="flex items-start gap-2">
                             <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap text-[10px]">Adet</span>
-                            <span className="text-slate-500 text-[10px]">+ / - ile <b>1'er</b> artır/azalt</span>
+                            <span className="text-gray-500 text-[10px]">+ / - ile <b>1'er</b> artır/azalt</span>
                         </div>
                         <div className="flex items-start gap-2">
                             <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap text-[10px]">Paket / Kutu</span>
-                            <span className="text-slate-500 text-[10px]">+ / - ile <b>1'er</b> artır/azalt</span>
+                            <span className="text-gray-500 text-[10px]">+ / - ile <b>1'er</b> artır/azalt</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-5">
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
                     <input value={aramaMetni} onChange={(e) => setAramaMetni(e.target.value)}
                         placeholder="Ürün adı veya marka ara..."
-                        className="w-full bg-slate-50 border-none rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none" />
+                        className="w-full bg-gray-50 border-none rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-[primary-900]/20 outline-none" />
                 </div>
 
-                <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-                    <div className="px-8 py-5 border-b border-slate-50 flex items-center justify-between">
-                        <h2 className="font-black text-slate-800 tracking-tight">Depo Stok Miktarları</h2>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{filtrelenmis.length} ürün · Enter/Tab ile kaydedin</span>
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div className="px-8 py-5 border-b border-gray-50 flex items-center justify-between">
+                        <h2 className="font-black text-gray-800 tracking-tight">Depo Stok Miktarları</h2>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{filtrelenmis.length} ürün · Enter/Tab ile kaydedin</span>
                     </div>
                     {veriYukleniyor ? (
-                        <div className="py-20 text-center flex items-center justify-center gap-3 text-slate-400 text-sm">
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#8B1A1A]"></div>
+                        <div className="py-20 text-center flex items-center justify-center gap-3 text-gray-400 text-sm">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-900"></div>
                             Yükleniyor...
                         </div>
                     ) : filtrelenmis.length === 0 ? (
-                        <div className="py-20 text-center text-slate-400 text-sm">Ürün bulunamadı.</div>
+                        <div className="py-20 text-center text-gray-400 text-sm">Ürün bulunamadı.</div>
                     ) : (
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="bg-slate-50 border-b border-slate-100 text-left">
-                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">ÜRÜN</th>
-                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">MARKA</th>
-                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">ÖLÇÜ</th>
-                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-52">DEPODA MEVCUT</th>
-                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-24">DURUM</th>
+                                <tr className="bg-gray-50 border-b border-gray-100 text-left">
+                                    <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">ÜRÜN</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">MARKA</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">ÖLÇÜ</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest w-52">DEPODA MEVCUT</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest w-24">DURUM</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-50">
+                            <tbody className="divide-y divide-gray-50">
                                 {filtrelenmis.map((u) => {
                                     const deger = stokMap[u.id] ?? u.stok;
                                     const degisti = deger !== u.stok;
                                     const bilgi = olcuBilgisi(u.olcu);
                                     return (
-                                        <tr key={u.id} className={`transition-colors ${degisti ? "bg-amber-50/50" : "hover:bg-slate-50"}`}>
-                                            <td className="px-5 py-3.5 font-bold text-slate-800">{u.urunAdi}</td>
-                                            <td className="px-5 py-3.5 text-slate-500">{u.marka || "—"}</td>
-                                            <td className="px-5 py-3.5 text-slate-500">{u.olcu}</td>
+                                        <tr key={u.id} className={`transition-colors ${degisti ? "bg-amber-50/50" : "hover:bg-gray-50"}`}>
+                                            <td className="px-5 py-3.5 font-bold text-gray-800">{u.urunAdi}</td>
+                                            <td className="px-5 py-3.5 text-gray-500">{u.marka || "—"}</td>
+                                            <td className="px-5 py-3.5 text-gray-500">{u.olcu}</td>
                                             <td className="px-5 py-3">
                                                 {bilgi.serbest ? (
                                                     /* Kg / L → serbest metin girişi */

@@ -81,7 +81,7 @@ export default function SatinAlmaPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Satın Alma Paneli">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
       </div>
     </DashboardLayout>
   );
@@ -169,24 +169,24 @@ export default function SatinAlmaPage() {
             <p className="font-bold text-xs uppercase tracking-widest">{bildirim.metin}</p>
           </div>
         )}
-        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 flex flex-wrap gap-4 items-end">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-wrap gap-4 items-end">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Hafta</label>
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">Hafta</label>
             <select value={secilenHafta} onChange={(e) => setSecilenHafta(e.target.value)}
-              className="bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20">
+              className="bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20">
               {haftalar.map((h) => <option key={h} value={h}>{h === "tumu" ? "Tüm Haftalar" : h}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Ders</label>
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">Ders</label>
             <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)}
-              className="bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20 min-w-[220px]">
+              className="bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20 min-w-[220px]">
               {dersler.map((d) => <option key={d} value={d}>{d === "tumu" ? "Tüm Dersler" : d}</option>)}
             </select>
           </div>
           <div className="ml-auto flex items-end gap-3">
             <button type="button" onClick={handlePdf} disabled={satirlar.length === 0}
-              className="bg-[#8B1A1A] hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition disabled:opacity-40 shadow-lg shadow-red-900/20">PDF</button>
+              className="bg-primary-900 hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition disabled:opacity-40 shadow-lg shadow-red-900/20">PDF</button>
             <button type="button" onClick={handleExcel} disabled={satirlar.length === 0}
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition disabled:opacity-40 shadow-sm">Excel</button>
           </div>
@@ -194,36 +194,36 @@ export default function SatinAlmaPage() {
 
         {satirlar.length > 0 && (
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Liste Toplamı</p>
-              <p className="text-2xl font-black text-slate-800">{genelToplam > 0 ? `₺${genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}</p>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Liste Toplamı</p>
+              <p className="text-2xl font-black text-gray-800">{genelToplam > 0 ? `₺${genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}</p>
             </div>
-            <div className="bg-white rounded-[2rem] border border-emerald-100 shadow-sm p-6 text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Satın Alınacak Tutar</p>
+            <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm p-6 text-center">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Satın Alınacak Tutar</p>
               <p className="text-2xl font-black text-emerald-700">{satinAlinacakToplam > 0 ? `₺${satinAlinacakToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}</p>
             </div>
           </div>
         )}
 
-        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           {satirlar.length === 0 ? (
-            <div className="py-20 text-center text-slate-400 text-sm">
+            <div className="py-20 text-center text-gray-400 text-sm">
               {siparisler.length === 0 ? "Henüz sipariş bulunmuyor." : "Bu filtreye uygun veri yok."}
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-100 text-left">
-                  <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">ÜRÜN</th>
-                  <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">MARKA</th>
-                  <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">LİSTE MİKT.</th>
+                <tr className="bg-gray-50 border-b border-gray-100 text-left">
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">ÜRÜN</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">MARKA</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">LİSTE MİKT.</th>
                   <th className="px-5 py-4 text-[10px] font-black text-amber-600 uppercase tracking-widest">DEPODA</th>
                   <th className="px-5 py-4 text-[10px] font-black text-emerald-600 uppercase tracking-widest">SATIN ALINACAK</th>
-                  <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">B.FİYAT</th>
-                  <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">İŞLEM</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">B.FİYAT</th>
+                  <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">İŞLEM</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-gray-50">
                 {(() => {
                   const gruplar: Record<string, { satir: OzetSatir; idx: number }[]> = {};
                   satirlar.forEach((u, i) => {
@@ -232,28 +232,28 @@ export default function SatinAlmaPage() {
                     gruplar[kat].push({ satir: u, idx: i });
                   });
                   return Object.entries(gruplar).flatMap(([kategori, satirGrubu]) => [
-                    <tr key={`kat-${kategori}`} className="bg-slate-50/80 border-t border-slate-100">
+                    <tr key={`kat-${kategori}`} className="bg-gray-50/80 border-t border-gray-100">
                       <td colSpan={7} className="px-5 py-2.5">
-                        <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{kategori}</span>
-                        <span className="ml-2 text-[10px] font-black text-slate-400">({satirGrubu.length} ürün)</span>
+                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{kategori}</span>
+                        <span className="ml-2 text-[10px] font-black text-gray-400">({satirGrubu.length} ürün)</span>
                       </td>
                     </tr>,
                     ...satirGrubu.map(({ satir: u, idx: i }) => (
-                      <tr key={i} className={`hover:bg-slate-50 transition-colors ${u.dususYapildi ? "bg-emerald-50/50" : ""}`}>
-                        <td className="px-5 py-4 font-bold text-slate-800">{u.urunAdi}</td>
-                        <td className="px-5 py-4 text-slate-500">{u.marka || "—"}</td>
-                        <td className="px-5 py-4 font-bold text-slate-700">{u.listeMiktar} {u.olcu}</td>
+                      <tr key={i} className={`hover:bg-gray-50 transition-colors ${u.dususYapildi ? "bg-emerald-50/50" : ""}`}>
+                        <td className="px-5 py-4 font-bold text-gray-800">{u.urunAdi}</td>
+                        <td className="px-5 py-4 text-gray-500">{u.marka || "—"}</td>
+                        <td className="px-5 py-4 font-bold text-gray-700">{u.listeMiktar} {u.olcu}</td>
                         <td className="px-5 py-4">
-                          <span className={`font-black text-sm ${u.depodaMiktar > 0 ? "text-amber-600" : "text-slate-300"}`}>
+                          <span className={`font-black text-sm ${u.depodaMiktar > 0 ? "text-amber-600" : "text-gray-300"}`}>
                             {u.depodaMiktar > 0 ? `${u.depodaMiktar} ${u.olcu}` : "—"}
                           </span>
                         </td>
                         <td className="px-5 py-4">
-                          <span className={`font-black text-sm ${u.satinAlinacak > 0 ? "text-emerald-700" : "text-slate-400"}`}>
+                          <span className={`font-black text-sm ${u.satinAlinacak > 0 ? "text-emerald-700" : "text-gray-400"}`}>
                             {u.satinAlinacak > 0 ? `${u.satinAlinacak} ${u.olcu}` : "Depoda yeterli"}
                           </span>
                         </td>
-                        <td className="px-5 py-4 font-bold text-slate-500 italic">
+                        <td className="px-5 py-4 font-bold text-gray-500 italic">
                           {u.birimFiyat > 0 ? `₺${u.birimFiyat.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}` : "—"}
                         </td>
                         <td className="px-5 py-4">
@@ -265,7 +265,7 @@ export default function SatinAlmaPage() {
                               Stoktan Düş
                             </button>
                           ) : (
-                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Stok yok</span>
+                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Stok yok</span>
                           )}
                         </td>
                       </tr>

@@ -40,7 +40,7 @@ export default function AdminAnaSayfa() {
   if (yukleniyor) return (
     <DashboardLayout title="Yükleniyor...">
       <div className="min-h-[400px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B1A1A]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-900"></div>
       </div>
     </DashboardLayout>
   );
@@ -100,16 +100,16 @@ export default function AdminAnaSayfa() {
         {/* İstatistik Kartları */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {kartlar.map((k) => (
-            <div key={k.label} className="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm hover:shadow-md transition-all">
+            <div key={k.label} className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm hover:shadow-md transition-all">
               <div className="flex justify-between items-start mb-4">
                 <span className="text-2xl opacity-80">{k.ikon}</span>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none pt-1">{k.label}</span>
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none pt-1">{k.label}</span>
               </div>
               <div className="flex items-baseline gap-1">
                 <span className={`text-4xl font-black italic bg-gradient-to-br ${k.renk} bg-clip-text text-transparent`}>
                   {k.deger}
                 </span>
-                <span className="text-slate-300 font-bold text-xs uppercase italic tracking-tighter">Birim</span>
+                <span className="text-gray-400 font-bold text-xs uppercase italic tracking-tighter">Birim</span>
               </div>
             </div>
           ))}
@@ -117,29 +117,29 @@ export default function AdminAnaSayfa() {
 
         {/* Hızlı Erişim Başlığı */}
         <div className="flex items-center gap-4">
-          <div className="h-[1px] flex-1 bg-slate-100"></div>
-          <h2 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] italic">Hızlı Erişim Menüsü</h2>
-          <div className="h-[1px] flex-1 bg-slate-100"></div>
+          <div className="h-[1px] flex-1 bg-gray-200"></div>
+          <h2 className="text-[11px] font-black text-gray-500 uppercase tracking-[0.3em] italic">Hızlı Erişim Menüsü</h2>
+          <div className="h-[1px] flex-1 bg-gray-200"></div>
         </div>
 
         {/* Hızlı Erişim Kartları */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
           {islemler.map((i) => (
             <Link key={i.link} href={i.link} className="group">
-              <div className={`bg-white rounded-[2.5rem] border border-slate-200 p-10 h-full transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-xl group-hover:shadow-slate-200/50 ${i.renk}`}>
+              <div className={`bg-white rounded-2xl border border-gray-200 p-10 h-full transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-xl group-hover:shadow-gray-200/50 ${i.renk}`}>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-4">
                     <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">{i.ikon}</span>
                     <h3 className={`text-xl font-black uppercase italic tracking-tighter ${i.baslikRenk}`}>{i.baslik}</h3>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-[#8B1A1A] group-hover:text-white transition-all">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-primary-900 group-hover:text-white transition-all">
                     →
                   </div>
                 </div>
-                <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">{i.aciklama}</p>
+                <p className="text-gray-600 text-sm font-medium leading-relaxed mb-8">{i.aciklama}</p>
                 <div className="flex flex-wrap gap-2">
                   {i.ozellikler.map((o) => (
-                    <span key={o} className="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full group-hover:bg-white group-hover:text-slate-600 transition-colors border border-transparent group-hover:border-slate-100">
+                    <span key={o} className="bg-gray-100 text-gray-500 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full group-hover:bg-white group-hover:text-gray-700 transition-colors border border-transparent group-hover:border-gray-200">
                       {o}
                     </span>
                   ))}
@@ -150,12 +150,12 @@ export default function AdminAnaSayfa() {
         </div>
 
         {/* Bilgilendirme Banner */}
-        <div className="bg-[#8B1A1A] rounded-[3rem] p-10 text-white flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden relative">
+        <div className="bg-primary-900 rounded-2xl p-10 text-white flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden relative">
           <div className="relative z-10">
             <h3 className="text-2xl font-black italic tracking-tighter mb-2 uppercase">Sistem Durumu: Çevrimiçi</h3>
             <p className="text-white/60 text-sm font-medium max-w-md">Veritabanı bağlantısı aktif. Tüm modüller sorunsuz çalışıyor. Son yedekleme: Bugün 04:00.</p>
           </div>
-          <Link href="/ayarlar" className="relative z-10 bg-white text-[#8B1A1A] px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all shadow-lg">
+          <Link href="/ayarlar" className="relative z-10 bg-white text-primary-900 px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all shadow-lg">
             Sistem Ayarları →
           </Link>
           <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>

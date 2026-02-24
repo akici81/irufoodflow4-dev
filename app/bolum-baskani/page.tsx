@@ -255,7 +255,7 @@ export default function BolumBaskaniPage() {
   if (yukleniyor) return (
     <DashboardLayout title="Bölüm Başkanı Paneli">
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
       </div>
     </DashboardLayout>
   );
@@ -279,19 +279,19 @@ export default function BolumBaskaniPage() {
           </div>
         )}
 
-        <div className="bg-gradient-to-r from-[#8B1A1A] to-[#a32626] text-white rounded-[2rem] px-8 py-7">
+        <div className="bg-gradient-to-r from-[primary-900] to-[#a32626] text-white rounded-2xl px-8 py-7">
           <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 mb-1">Bölüm Başkanı Paneli</p>
           <h1 className="text-2xl font-black tracking-tight">Merhaba, {adSoyad}!</h1>
           <p className="text-red-200 text-sm font-medium mt-1">Hoş Geldiniz — tüm yönetim araçları burada.</p>
         </div>
 
         {/* Sekmeler */}
-        <div className="flex gap-1 bg-slate-100/50 p-1 rounded-2xl border border-slate-200/60">
+        <div className="flex gap-1 bg-gray-100/50 p-1 rounded-2xl border border-gray-200/60">
           {sekmeler.map((s) => (
             <button key={s.key} onClick={() => setAktifSekme(s.key)}
-              className={`flex-1 px-3 py-2.5 text-[11px] font-black rounded-xl transition flex items-center justify-center gap-2 uppercase tracking-tighter ${aktifSekme === s.key ? "bg-white text-[#8B1A1A] shadow-sm italic" : "text-slate-400 hover:text-slate-600"}`}>
+              className={`flex-1 px-3 py-2.5 text-[11px] font-black rounded-xl transition flex items-center justify-center gap-2 uppercase tracking-tighter ${aktifSekme === s.key ? "bg-white text-primary-900 shadow-sm italic" : "text-gray-400 hover:text-gray-600"}`}>
               {s.label}
-              {s.badge ? <span className="bg-[#8B1A1A] text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">{s.badge}</span> : null}
+              {s.badge ? <span className="bg-primary-900 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">{s.badge}</span> : null}
             </button>
           ))}
         </div>
@@ -301,13 +301,13 @@ export default function BolumBaskaniPage() {
           <div className="space-y-5">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "Toplam Ders", deger: dersler.length, emoji: "📚", renk: "text-[#8B1A1A]" },
+                { label: "Toplam Ders", deger: dersler.length, emoji: "📚", renk: "text-primary-900" },
                 { label: "Öğretmen Sayısı", deger: ogretmenler.length, emoji: "🧑‍🏫", renk: "text-blue-600" },
                 { label: "Atanmış Ders", deger: atanmisDersSayisi, emoji: "🔗", renk: "text-emerald-600" },
                 { label: "Bekleyen Sipariş", deger: bekleyenSayisi, emoji: "⏳", renk: "text-amber-600" },
               ].map((k) => (
-                <div key={k.label} className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 text-center">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{k.label}</p>
+                <div key={k.label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">{k.label}</p>
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-2xl">{k.emoji}</span>
                     <span className={`text-3xl font-black ${k.renk}`}>{k.deger}</span>
@@ -316,10 +316,10 @@ export default function BolumBaskaniPage() {
               ))}
             </div>
             <Link href="/dersler">
-              <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#8B1A1A]/10 rounded-2xl flex items-center justify-center flex-shrink-0"><span className="text-2xl">📖</span></div>
-                <div><h3 className="font-black text-[#8B1A1A] tracking-tight">Ders Yönetimi</h3><p className="text-slate-500 text-sm">Dersleri ekleyin, silin ve öğretmenlere atayın</p></div>
-                <span className="ml-auto text-sm font-black text-[#8B1A1A]">Git →</span>
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary-900/10 rounded-2xl flex items-center justify-center flex-shrink-0"><span className="text-2xl">📖</span></div>
+                <div><h3 className="font-black text-primary-900 tracking-tight">Ders Yönetimi</h3><p className="text-gray-500 text-sm">Dersleri ekleyin, silin ve öğretmenlere atayın</p></div>
+                <span className="ml-auto text-sm font-black text-primary-900">Git →</span>
               </div>
             </Link>
           </div>
@@ -328,63 +328,63 @@ export default function BolumBaskaniPage() {
         {/* KULLANICILAR İÇERİĞİ */}
         {aktifSekme === "kullanici" && (
           <div className="space-y-5">
-            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 space-y-6">
-              <h2 className="font-black text-slate-800 tracking-tight">Yeni Kullanıcı Ekle</h2>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 space-y-6">
+              <h2 className="font-black text-gray-800 tracking-tight">Yeni Kullanıcı Ekle</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Ad Soyad</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">Ad Soyad</label>
                   <input value={yeniAd} onChange={(e) => setYeniAd(e.target.value)} placeholder="Ad Soyad"
-                    className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none" />
+                    className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-[primary-900]/20 outline-none" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Kullanıcı Adı</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">Kullanıcı Adı</label>
                   <input value={yeniKadi} onChange={(e) => setYeniKadi(e.target.value)} placeholder="kullanici_adi"
-                    className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none" />
+                    className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-[primary-900]/20 outline-none" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Şifre</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">Şifre</label>
                   <input type="password" value={yeniSifre} onChange={(e) => setYeniSifre(e.target.value)} placeholder="Şifre"
-                    className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none" />
+                    className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-[primary-900]/20 outline-none" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Rol</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">Rol</label>
                   <select value={yeniRol} onChange={(e) => setYeniRol(e.target.value)}
-                    className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none">
+                    className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-[primary-900]/20 outline-none">
                     {ROLLER.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
                   </select>
                 </div>
               </div>
-              <button onClick={handleKullaniciEkle} className="w-full bg-[#8B1A1A] hover:bg-red-800 text-white font-black py-4 rounded-2xl transition text-xs uppercase tracking-widest shadow-lg shadow-red-900/20">+ Kullanıcı Ekle</button>
+              <button onClick={handleKullaniciEkle} className="w-full bg-primary-900 hover:bg-red-800 text-white font-black py-4 rounded-2xl transition text-xs uppercase tracking-widest shadow-lg shadow-red-900/20">+ Kullanıcı Ekle</button>
             </div>
 
-            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-8 py-5 border-b border-slate-50"><h2 className="font-black text-slate-800 tracking-tight">Mevcut Kullanıcılar</h2></div>
-              <div className="divide-y divide-slate-50">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="px-8 py-5 border-b border-gray-50"><h2 className="font-black text-gray-800 tracking-tight">Mevcut Kullanıcılar</h2></div>
+              <div className="divide-y divide-gray-50">
                 {kullanicilar.map((k) => (
                   <div key={k.id} className="px-8 py-5">
                     {duzenleKullanici?.id === k.id ? (
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-3">
-                          <input value={duzenleKullanici.ad_soyad} onChange={(e) => setDuzenleKullanici({ ...duzenleKullanici, ad_soyad: e.target.value })} className="bg-slate-50 border-none rounded-2xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20" />
-                          <input value={duzenleKullanici.username} onChange={(e) => setDuzenleKullanici({ ...duzenleKullanici, username: e.target.value })} className="bg-slate-50 border-none rounded-2xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20" />
-                          <input type="password" placeholder="Yeni şifre (boş bırakılabilir)" onChange={(e) => setDuzenleKullanici({ ...duzenleKullanici, password_hash: e.target.value })} className="bg-slate-50 border-none rounded-2xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20" />
-                          <select value={duzenleKullanici.role} onChange={(e) => setDuzenleKullanici({ ...duzenleKullanici, role: e.target.value })} className="bg-slate-50 border-none rounded-2xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20">
+                          <input value={duzenleKullanici.ad_soyad} onChange={(e) => setDuzenleKullanici({ ...duzenleKullanici, ad_soyad: e.target.value })} className="bg-gray-50 border-none rounded-2xl px-3 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20" />
+                          <input value={duzenleKullanici.username} onChange={(e) => setDuzenleKullanici({ ...duzenleKullanici, username: e.target.value })} className="bg-gray-50 border-none rounded-2xl px-3 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20" />
+                          <input type="password" placeholder="Yeni şifre (boş bırakılabilir)" onChange={(e) => setDuzenleKullanici({ ...duzenleKullanici, password_hash: e.target.value })} className="bg-gray-50 border-none rounded-2xl px-3 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20" />
+                          <select value={duzenleKullanici.role} onChange={(e) => setDuzenleKullanici({ ...duzenleKullanici, role: e.target.value })} className="bg-gray-50 border-none rounded-2xl px-3 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20">
                             {ROLLER.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
                           </select>
                         </div>
                         <div className="flex gap-2">
                           <button onClick={handleKullaniciGuncelle} className="bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest">Kaydet</button>
-                          <button onClick={() => setDuzenleKullanici(null)} className="bg-slate-100 text-slate-600 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest">İptal</button>
+                          <button onClick={() => setDuzenleKullanici(null)} className="bg-gray-100 text-gray-600 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest">İptal</button>
                         </div>
                       </div>
                     ) : (
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-bold text-slate-800 text-sm">{k.ad_soyad || k.username}</p>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">@{k.username}</p>
+                          <p className="font-bold text-gray-800 text-sm">{k.ad_soyad || k.username}</p>
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">@{k.username}</p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${ROL_RENK[k.role] || "bg-slate-100 text-slate-600"}`}>{ROL_LABEL[k.role] || k.role}</span>
+                          <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${ROL_RENK[k.role] || "bg-gray-100 text-gray-600"}`}>{ROL_LABEL[k.role] || k.role}</span>
                           <button onClick={() => setDuzenleKullanici(k)} className="text-[10px] font-black text-blue-600 hover:text-blue-700 uppercase tracking-widest px-3 py-1.5 rounded-xl hover:bg-blue-50 transition">Düzenle</button>
                           <button onClick={() => handleKullaniciSil(k.id, k.ad_soyad || k.username)} className="text-[10px] font-black text-red-500 hover:text-red-600 uppercase tracking-widest px-3 py-1.5 rounded-xl hover:bg-red-50 transition">Sil</button>
                         </div>
@@ -400,20 +400,20 @@ export default function BolumBaskaniPage() {
         {/* DİĞER SEKMELER (Siparişler, Ürünler vb.) kodda aşağı doğru devam ediyor... */}
         {/* LİSTELER */}
         {aktifSekme === "listeler" && (
-          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-            <div className="px-8 py-6 border-b border-slate-50">
-              <h2 className="font-black text-slate-800 tracking-tight">Öğretmen Bazlı Liste İndir</h2>
-              <p className="text-xs text-slate-400 font-medium mt-1">Seçilen öğretmenin tüm ders ve hafta listelerini Excel olarak indir</p>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="px-8 py-6 border-b border-gray-50">
+              <h2 className="font-black text-gray-800 tracking-tight">Öğretmen Bazlı Liste İndir</h2>
+              <p className="text-xs text-gray-400 font-medium mt-1">Seçilen öğretmenin tüm ders ve hafta listelerini Excel olarak indir</p>
             </div>
             {ogretmenler.length === 0 ? (
-              <div className="py-20 text-center text-slate-400 text-sm">Henüz öğretmen bulunmuyor.</div>
+              <div className="py-20 text-center text-gray-400 text-sm">Henüz öğretmen bulunmuyor.</div>
             ) : ogretmenler.map((o) => {
               const dc = (o.dersler || []).length;
               return (
-                <div key={o.id} className="px-8 py-5 flex items-center justify-between border-b border-slate-50 last:border-0">
+                <div key={o.id} className="px-8 py-5 flex items-center justify-between border-b border-gray-50 last:border-0">
                   <div>
-                    <p className="font-bold text-slate-800 text-sm">{o.ad_soyad || o.username}</p>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{dc > 0 ? `${dc} ders` : "Ders atanmamış"}</p>
+                    <p className="font-bold text-gray-800 text-sm">{o.ad_soyad || o.username}</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{dc > 0 ? `${dc} ders` : "Ders atanmamış"}</p>
                   </div>
                   <button onClick={() => handleListeIndir(o.id)} disabled={listeYukleniyor || dc === 0}
                     className="text-xs font-black bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white uppercase tracking-widest px-5 py-2.5 rounded-2xl transition shadow-sm">
@@ -428,37 +428,37 @@ export default function BolumBaskaniPage() {
         {/* SİPARİŞLER */}
         {aktifSekme === "siparisler" && (
           <div className="space-y-4">
-            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 flex flex-wrap gap-3 items-center">
-              <select value={sipFiltreHafta} onChange={(e) => setSipFiltreHafta(e.target.value)} className="bg-slate-50 border-none rounded-2xl px-4 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-wrap gap-3 items-center">
+              <select value={sipFiltreHafta} onChange={(e) => setSipFiltreHafta(e.target.value)} className="bg-gray-50 border-none rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20">
                 {sipHaftalar.map((h) => <option key={h} value={h}>{h === "tumu" ? "Tüm Haftalar" : h}</option>)}
               </select>
-              <select value={sipFiltreDurum} onChange={(e) => setSipFiltreDurum(e.target.value)} className="bg-slate-50 border-none rounded-2xl px-4 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20">
+              <select value={sipFiltreDurum} onChange={(e) => setSipFiltreDurum(e.target.value)} className="bg-gray-50 border-none rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20">
                 <option value="tumu">Tüm Durumlar</option>
                 <option value="bekliyor">⏳ Bekliyor</option>
                 <option value="onaylandi">✅ Onaylandı</option>
                 <option value="teslim_alindi">📦 Teslim Alındı</option>
               </select>
             </div>
-            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-100">
+                <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
-                    <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">ÖĞRETMEN</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">DERS/HAFTA</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">DURUM</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">İŞLEM</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">ÖĞRETMEN</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">DERS/HAFTA</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">DURUM</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">İŞLEM</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-gray-50">
                   {filtreliSiparisler.map((s) => (
-                    <tr key={s.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 font-bold text-slate-800">{s.ogretmenAdi}</td>
-                      <td className="px-6 py-4"><p className="text-xs font-bold text-slate-600 truncate max-w-[180px]">{s.dersAdi}</p><span className="text-[10px] font-black text-slate-400">{s.hafta}</span></td>
+                    <tr key={s.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 font-bold text-gray-800">{s.ogretmenAdi}</td>
+                      <td className="px-6 py-4"><p className="text-xs font-bold text-gray-600 truncate max-w-[180px]">{s.dersAdi}</p><span className="text-[10px] font-black text-gray-400">{s.hafta}</span></td>
                       <td className="px-6 py-4"><span className={`text-[10px] font-black px-3 py-1 rounded-xl border uppercase tracking-widest ${DURUM_STIL[s.durum]}`}>{DURUM_LABEL[s.durum]}</span></td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
                           <button onClick={() => handleDurumGuncelle(s.id, "onaylandi")} className="text-[10px] font-black text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-xl transition uppercase tracking-widest">Onayla</button>
-                          <button onClick={() => handleDurumGuncelle(s.id, "bekliyor")} className="text-[10px] font-black text-slate-400 hover:bg-slate-100 px-3 py-1.5 rounded-xl transition uppercase tracking-widest">Geri Al</button>
+                          <button onClick={() => handleDurumGuncelle(s.id, "bekliyor")} className="text-[10px] font-black text-gray-400 hover:bg-gray-100 px-3 py-1.5 rounded-xl transition uppercase tracking-widest">Geri Al</button>
                         </div>
                       </td>
                     </tr>
@@ -473,23 +473,23 @@ export default function BolumBaskaniPage() {
         {aktifSekme === "urunler" && (
           <div className="space-y-4">
             <div className="flex gap-3">
-              <input value={urunArama} onChange={(e) => setUrunArama(e.target.value)} placeholder="Ürün ara..." className="flex-1 bg-white border border-slate-200 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#8B1A1A]/20" />
-              <button onClick={() => setUrunPanel(true)} className="bg-[#8B1A1A] hover:bg-red-800 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-lg shadow-red-900/20">+ Ekle</button>
+              <input value={urunArama} onChange={(e) => setUrunArama(e.target.value)} placeholder="Ürün ara..." className="flex-1 bg-white border border-gray-200 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[primary-900]/20" />
+              <button onClick={() => setUrunPanel(true)} className="bg-primary-900 hover:bg-red-800 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-lg shadow-red-900/20">+ Ekle</button>
             </div>
-            <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-100">
+                <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
-                    <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Ürün</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Fiyat</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Ürün</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Fiyat</th>
                     <th className="px-6 py-4"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-gray-50">
                   {filtreliUrunler.map((u) => (
-                    <tr key={u.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 font-bold text-slate-800">{u.urunAdi}</td>
-                      <td className="px-6 py-4 font-bold text-slate-500 italic">₺{u.fiyat.toFixed(2)}</td>
+                    <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 font-bold text-gray-800">{u.urunAdi}</td>
+                      <td className="px-6 py-4 font-bold text-gray-500 italic">₺{u.fiyat.toFixed(2)}</td>
                       <td className="px-6 py-4 text-right">
                         <button onClick={() => handleUrunSil(u.id)} className="text-[10px] font-black text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-xl transition uppercase tracking-widest">Sil</button>
                       </td>

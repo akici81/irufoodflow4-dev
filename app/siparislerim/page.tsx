@@ -60,7 +60,7 @@ export default function SiparislerimPage() {
     return (
       <DashboardLayout title="Siparişlerim" subtitle="Yükleniyor...">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
         </div>
       </DashboardLayout>
     );
@@ -73,18 +73,18 @@ export default function SiparislerimPage() {
       <div className="max-w-6xl animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         {siparisler.length === 0 ? (
-          <div className="bg-white rounded-[2.5rem] border border-slate-200 p-20 text-center shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-200 p-20 text-center shadow-sm">
             <span className="text-5xl mb-6 block grayscale opacity-30">📋</span>
-            <h3 className="text-xl font-black text-slate-800 mb-2 tracking-tight">Henüz bir siparişiniz yok</h3>
-            <p className="text-slate-400 text-sm font-medium mb-8">Haftalık malzeme talebi oluşturarak başlayabilirsiniz.</p>
-            <a href="/talep" className="inline-flex items-center px-8 py-3 bg-[#8B1A1A] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-800 transition-all shadow-lg shadow-red-900/20">
+            <h3 className="text-xl font-black text-gray-800 mb-2 tracking-tight">Henüz bir siparişiniz yok</h3>
+            <p className="text-gray-400 text-sm font-medium mb-8">Haftalık malzeme talebi oluşturarak başlayabilirsiniz.</p>
+            <a href="/talep" className="inline-flex items-center px-8 py-3 bg-primary-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-800 transition-all shadow-lg shadow-red-900/20">
               Yeni Talep Oluştur
             </a>
           </div>
         ) : (
           <div className="grid gap-6">
             {siparisler.map((siparis) => (
-              <div key={siparis.id} className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-all group">
+              <div key={siparis.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all group">
                 <div className="p-6 md:p-8 flex flex-wrap items-center justify-between gap-6">
                   {/* Sol Kısım: Ders Bilgisi */}
                   <div className="flex-1 min-w-[240px]">
@@ -92,43 +92,43 @@ export default function SiparislerimPage() {
                       <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${getDurumStil(siparis.durum)}`}>
                         {siparis.durum === "onaylandi" ? "Onaylandı" : siparis.durum === "teslim_alindi" ? "Teslim Edildi" : "Beklemede"}
                       </span>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{siparis.tarih}</span>
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{siparis.tarih}</span>
                     </div>
-                    <h3 className="text-lg font-black text-slate-800 tracking-tight leading-tight mb-1">
+                    <h3 className="text-lg font-black text-gray-800 tracking-tight leading-tight mb-1">
                       {siparis.dersAdi}
                     </h3>
-                    <p className="text-sm font-bold text-[#8B1A1A] italic">{siparis.hafta}</p>
+                    <p className="text-sm font-bold text-primary-900 italic">{siparis.hafta}</p>
                   </div>
 
                   {/* Orta Kısım: Ürün Sayısı */}
-                  <div className="hidden md:block px-8 border-x border-slate-50">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Malzeme Sayısı</p>
-                    <p className="text-sm font-black text-slate-700">{siparis.urunler.length} Kalem Ürün</p>
+                  <div className="hidden md:block px-8 border-x border-gray-50">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Malzeme Sayısı</p>
+                    <p className="text-sm font-black text-gray-700">{siparis.urunler.length} Kalem Ürün</p>
                   </div>
 
                   {/* Sağ Kısım: Tutar ve Detay */}
                   <div className="flex items-center gap-8">
                     <div className="text-right">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tahmini Tutar</p>
-                      <p className="text-xl font-black text-slate-900 tracking-tighter">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tahmini Tutar</p>
+                      <p className="text-xl font-black text-gray-900 tracking-tighter">
                         ₺{siparis.genelToplam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                       </p>
                     </div>
-                    <button className="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 group-hover:bg-[#8B1A1A] group-hover:text-white rounded-2xl transition-all">
+                    <button className="w-12 h-12 flex items-center justify-center bg-gray-50 text-gray-400 group-hover:bg-primary-900 group-hover:text-white rounded-2xl transition-all">
                       <span className="text-xl">→</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Alt Kısım: Ürünlerin Mini Listesi (Opsiyonel) */}
-                <div className="px-8 py-4 bg-slate-50/50 border-t border-slate-50 flex gap-3 overflow-x-auto no-scrollbar">
+                <div className="px-8 py-4 bg-gray-50/50 border-t border-gray-50 flex gap-3 overflow-x-auto no-scrollbar">
                   {siparis.urunler.slice(0, 5).map((u, i) => (
-                    <span key={i} className="whitespace-nowrap bg-white border border-slate-100 text-[10px] font-bold text-slate-500 px-3 py-1 rounded-full">
+                    <span key={i} className="whitespace-nowrap bg-white border border-gray-100 text-[10px] font-bold text-gray-500 px-3 py-1 rounded-full">
                       {u.urunAdi}
                     </span>
                   ))}
                   {siparis.urunler.length > 5 && (
-                    <span className="text-[10px] font-black text-slate-300 py-1">+{siparis.urunler.length - 5} daha</span>
+                    <span className="text-[10px] font-black text-gray-300 py-1">+{siparis.urunler.length - 5} daha</span>
                   )}
                 </div>
               </div>
