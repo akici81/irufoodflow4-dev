@@ -79,7 +79,8 @@ textarea {
   }
 
   .badge-accent {
-    @apply bg-amber-100 text-amber-900;
+    @apply bg-amber-100;
+    color: #b45309;
   }
 
   .badge-success {
