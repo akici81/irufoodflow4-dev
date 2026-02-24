@@ -272,21 +272,28 @@ export default function RecetelerPage() {
   };
 
   // ── Autocomplete ──────────────────────────────────────
+  const aramaFiltre = (liste: Urun[], val: string) => {
+    if (!val.trim()) return liste.slice(0, 8);
+    const q = val.toLowerCase();
+    const exact = liste.filter(u => (u.urun_adi || "").toLowerCase() === q);
+    const starts = liste.filter(u => (u.urun_adi || "").toLowerCase().startsWith(q) && (u.urun_adi || "").toLowerCase() !== q);
+    const contains = liste.filter(u => {
+      const ad = (u.urun_adi || "").toLowerCase();
+      return ad.includes(q) && !ad.startsWith(q);
+    });
+    const markaContains = liste.filter(u => (u.marka || "").toLowerCase().includes(q) && !(u.urun_adi || "").toLowerCase().includes(q));
+    return [...exact, ...starts, ...contains, ...markaContains].slice(0, 8);
+  };
+
   const handleUrunAra = (val: string) => {
     setYeniMalzeme(p => ({ ...p, urun_adi: val, urun_id: "" }));
-    const filtre = val.trim().length === 0
-      ? urunHavuzu.slice(0, 8)
-      : urunHavuzu.filter(u =>
-          (u.urun_adi || "").toLowerCase().includes(val.toLowerCase()) ||
-          (u.marka || "").toLowerCase().includes(val.toLowerCase())
-        ).slice(0, 8);
+    const filtre = aramaFiltre(urunHavuzu, val);
     setUrunOneri(filtre);
     setOneriAcik(filtre.length > 0);
   };
 
   const handleUrunOdak = () => {
-    const filtre = yeniMalzeme.urun_adi.trim().length === 0 ? urunHavuzu.slice(0, 8)
-      : urunHavuzu.filter(u => (u.urun_adi || "").toLowerCase().includes((yeniMalzeme.urun_adi || "").toLowerCase())).slice(0, 8);
+    const filtre = aramaFiltre(urunHavuzu, yeniMalzeme.urun_adi);
     setUrunOneri(filtre);
     setOneriAcik(filtre.length > 0);
   };
