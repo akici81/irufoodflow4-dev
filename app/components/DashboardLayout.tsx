@@ -51,6 +51,8 @@ const ROL_LABEL: Record<string, string> = {
   bolum_baskani: "Bölüm Başkanı",
 };
 
+const RED = "#B71C1C";
+
 export default function DashboardLayout({
   children,
   title,
@@ -68,7 +70,11 @@ export default function DashboardLayout({
     const fetchKullanici = async () => {
       const id = localStorage.getItem("aktifKullaniciId");
       if (!id) { router.push("/"); return; }
-      const { data, error } = await supabase.from("kullanicilar").select("id, username, ad_soyad, role").eq("id", id).single();
+      const { data, error } = await supabase
+        .from("kullanicilar")
+        .select("id, username, ad_soyad, role")
+        .eq("id", id)
+        .single();
       if (error || !data) { router.push("/"); return; }
       setKullanici(data);
     };
@@ -78,78 +84,136 @@ export default function DashboardLayout({
   if (!kullanici) return null;
 
   const menu = ROLE_MENUS[kullanici.role] ?? [];
-  const initials = (kullanici.ad_soyad || kullanici.username).split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+  const initials = (kullanici.ad_soyad || kullanici.username)
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <div className="min-h-screen flex bg-gray-100 text-gray-900">
+    <div style={{ display: "flex", minHeight: "100vh", background: "#F4F4F5", fontFamily: "'Cargan', serif" }}>
 
-      {/* Yan Menü (Sidebar) */}
-      <aside className="w-60 flex flex-col fixed h-screen z-40" style={{backgroundColor: '#ffffff', borderRight: '1px solid #e5e7eb'}}>
+      {/* SIDEBAR */}
+      <aside style={{
+        width: 248,
+        minWidth: 248,
+        background: RED,
+        display: "flex",
+        flexDirection: "column",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        height: "100vh",
+        zIndex: 50,
+      }}>
 
-        {/* Logo Alanı */}
-        <div className="p-5 border-b border-gray-100 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{backgroundColor: '#b91c1c'}}>
-            <span className="text-white font-black text-xs">İRÜ</span>
+        {/* Logo */}
+        <div style={{ padding: "28px 24px 24px", borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{
+              width: 36, height: 36,
+              background: "white",
+              borderRadius: 8,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <span style={{ color: RED, fontWeight: 900, fontSize: 11, letterSpacing: 0.5 }}>İRÜ</span>
+            </div>
+            <div>
+              <div style={{ color: "white", fontWeight: 700, fontSize: 15, lineHeight: "1.2" }}>FoodFlow</div>
+              <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 10, letterSpacing: 0.5 }}>Yönetim Sistemi</div>
+            </div>
           </div>
-          <span className="font-bold text-gray-900 text-sm">İRÜFoodFlow</span>
         </div>
 
-        {/* Menü Öğeleri */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        {/* Nav */}
+        <nav style={{ flex: 1, padding: "16px 12px", overflowY: "auto" }}>
           {menu.map((item) => {
             const aktif = pathname === item.path;
             return (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  aktif
-                    ? "text-white shadow-sm"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                }`}
-                style={aktif ? {backgroundColor: '#b91c1c'} : {}}
-              >
-                <span>{item.name}</span>
+              <Link key={item.path} href={item.path} style={{
+                display: "block",
+                padding: "10px 14px",
+                borderRadius: 8,
+                marginBottom: 2,
+                fontSize: 13.5,
+                fontWeight: aktif ? 700 : 500,
+                color: aktif ? RED : "rgba(255,255,255,0.8)",
+                background: aktif ? "white" : "transparent",
+                textDecoration: "none",
+                letterSpacing: 0.2,
+                transition: "all 0.15s",
+              }}>
+                {item.name}
               </Link>
             );
           })}
         </nav>
 
-        {/* Kullanıcı Bilgisi */}
-        <div className="p-4 border-t border-gray-100">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-sm flex-shrink-0" style={{backgroundColor: '#b91c1c'}}>
+        {/* Kullanici */}
+        <div style={{ padding: "16px 16px 20px", borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+            <div style={{
+              width: 38, height: 38,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.15)",
+              border: "2px solid rgba(255,255,255,0.25)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "white", fontWeight: 700, fontSize: 13, flexShrink: 0,
+            }}>
               {initials}
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-gray-900 truncate">{kullanici.ad_soyad}</p>
-              <p className="text-xs text-gray-500">{ROL_LABEL[kullanici.role]}</p>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ color: "white", fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {kullanici.ad_soyad}
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>
+                {ROL_LABEL[kullanici.role]}
+              </div>
             </div>
           </div>
           <button
             onClick={() => { localStorage.clear(); router.push("/"); }}
-            className="w-full text-sm font-medium py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all"
-            style={{color: '#b91c1c'}}
+            style={{
+              width: "100%", padding: "9px",
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: 8,
+              color: "rgba(255,255,255,0.8)",
+              fontSize: 12, fontWeight: 600,
+              cursor: "pointer",
+              fontFamily: "'Cargan', serif",
+              letterSpacing: 0.3,
+            }}
           >
             Çıkış Yap
           </button>
         </div>
       </aside>
 
-      {/* İçerik Alanı */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden" style={{marginLeft: '240px'}}>
+      {/* MAIN */}
+      <main style={{ marginLeft: 248, flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+
+        {/* Header */}
         {title && (
-          <header className="px-8 py-5 flex-shrink-0 text-white" style={{backgroundColor: '#b91c1c'}}>
+          <header style={{
+            background: "white",
+            borderBottom: "1px solid #E4E4E7",
+            padding: "20px 36px",
+          }}>
             {subtitle && (
-              <span className="text-red-200 text-xs font-semibold uppercase tracking-widest mb-1 block">
+              <div style={{ fontSize: 11, fontWeight: 600, color: RED, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 4 }}>
                 {subtitle}
-              </span>
+              </div>
             )}
-            <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#18181B", margin: 0, letterSpacing: 0.2 }}>
+              {title}
+            </h1>
           </header>
         )}
 
-        <div className="flex-1 overflow-auto p-8 bg-gray-50">
+        <div style={{ flex: 1, overflow: "auto", padding: "32px 36px", background: "#F4F4F5" }}>
           {children}
         </div>
       </main>

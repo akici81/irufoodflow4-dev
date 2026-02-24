@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
+const RED = "#B71C1C";
+
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -42,85 +44,185 @@ export default function LoginPage() {
         bolum_baskani: "/bolum-baskani",
         "bolum-baskani": "/bolum-baskani",
       };
-      
+
       router.push(rota[data.role] ?? "/");
-    } catch (err) {
+    } catch {
       setError("Bağlantı sırasında bir hata oluştu.");
       setYukleniyor(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{backgroundColor: '#b91c1c'}}>
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-2xl p-10">
-          {/* Logo ve Başlık */}
-          <div className="flex flex-col items-center mb-8 text-center">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-lg" style={{backgroundColor: '#b91c1c'}}>
-              <span className="text-white font-black text-xl tracking-tighter">İRÜ</span>
-            </div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1">
-              İRÜFoodFlow
-            </h1>
-            <p className="text-sm text-gray-500">
-              Alışveriş Yönetim Platformu
-            </p>
+    <div style={{
+      minHeight: "100vh",
+      background: RED,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontFamily: "'Cargan', serif",
+      padding: 24,
+    }}>
+      {/* Subtle background texture */}
+      <div style={{
+        position: "fixed", inset: 0,
+        backgroundImage: "radial-gradient(circle at 20% 80%, rgba(255,255,255,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0,0,0,0.1) 0%, transparent 50%)",
+        pointerEvents: "none",
+      }} />
+
+      <div style={{
+        width: "100%", maxWidth: 420,
+        background: "white",
+        borderRadius: 16,
+        padding: "44px 40px",
+        boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
+        position: "relative",
+      }}>
+
+        {/* Logo alanı */}
+        <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <div style={{
+            width: 56, height: 56,
+            background: RED,
+            borderRadius: 14,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 16,
+            boxShadow: "0 8px 24px rgba(183,28,28,0.3)",
+          }}>
+            <span style={{ color: "white", fontWeight: 900, fontSize: 14, letterSpacing: 0.5 }}>İRÜ</span>
+          </div>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: "#18181B", margin: "0 0 6px", letterSpacing: 0.3 }}>
+            İRÜFoodFlow
+          </h1>
+          <p style={{ fontSize: 13, color: "#71717A", margin: 0, fontWeight: 500 }}>
+            Alışveriş Yönetim Platformu
+          </p>
+        </div>
+
+        {/* Hata mesajı */}
+        {error && (
+          <div style={{
+            background: "#FEF2F2",
+            border: "1px solid #FECACA",
+            borderRadius: 8,
+            padding: "12px 16px",
+            marginBottom: 20,
+            fontSize: 13,
+            color: "#991B1B",
+            textAlign: "center",
+            fontWeight: 500,
+          }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleLogin}>
+          {/* Kullanici adi */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#3F3F46", marginBottom: 6, letterSpacing: 0.3 }}>
+              Kullanıcı Adı
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Kullanıcı adınızı giriniz"
+              required
+              style={{
+                width: "100%",
+                padding: "12px 14px",
+                border: "1.5px solid #E4E4E7",
+                borderRadius: 8,
+                fontSize: 14,
+                color: "#18181B",
+                background: "#FAFAFA",
+                outline: "none",
+                fontFamily: "'Cargan', serif",
+                boxSizing: "border-box",
+                transition: "border-color 0.15s",
+              }}
+              onFocus={e => (e.target.style.borderColor = RED)}
+              onBlur={e => (e.target.style.borderColor = "#E4E4E7")}
+            />
           </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-800 text-sm rounded-lg px-4 py-3 mb-6 text-center">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kullanıcı Adı</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Kullanıcı adınızı giriniz"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
-                style={{"--tw-ring-color": "#b91c1c"} as React.CSSProperties}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Şifrenizi giriniz"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={yukleniyor}
-              className="w-full text-white font-semibold py-3 rounded-lg transition-all text-sm mt-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              style={{backgroundColor: '#b91c1c'}}
-            >
-              {yukleniyor ? (
-                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                "Giriş Yap"
-              )}
-            </button>
-          </form>
-
-          <div className="mt-8 text-center">
-            <p className="text-xs text-gray-400">
-              System Administrator&apos;a iletişime geçiniz.<br />
-              İRÜFoodFlow v2.0
-            </p>
+          {/* Sifre */}
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#3F3F46", marginBottom: 6, letterSpacing: 0.3 }}>
+              Şifre
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Şifrenizi giriniz"
+              required
+              style={{
+                width: "100%",
+                padding: "12px 14px",
+                border: "1.5px solid #E4E4E7",
+                borderRadius: 8,
+                fontSize: 14,
+                color: "#18181B",
+                background: "#FAFAFA",
+                outline: "none",
+                fontFamily: "'Cargan', serif",
+                boxSizing: "border-box",
+                transition: "border-color 0.15s",
+              }}
+              onFocus={e => (e.target.style.borderColor = RED)}
+              onBlur={e => (e.target.style.borderColor = "#E4E4E7")}
+            />
           </div>
+
+          {/* Buton */}
+          <button
+            type="submit"
+            disabled={yukleniyor}
+            style={{
+              width: "100%",
+              padding: "13px",
+              background: yukleniyor ? "#D4D4D8" : RED,
+              border: "none",
+              borderRadius: 8,
+              color: "white",
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: yukleniyor ? "not-allowed" : "pointer",
+              fontFamily: "'Cargan', serif",
+              letterSpacing: 0.4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              transition: "background 0.15s",
+              boxShadow: yukleniyor ? "none" : "0 4px 16px rgba(183,28,28,0.25)",
+            }}
+          >
+            {yukleniyor ? (
+              <span style={{
+                width: 18, height: 18,
+                border: "2px solid rgba(255,255,255,0.3)",
+                borderTopColor: "white",
+                borderRadius: "50%",
+                display: "inline-block",
+                animation: "spin 0.7s linear infinite",
+              }} />
+            ) : "Giriş Yap"}
+          </button>
+        </form>
+
+        {/* Alt bilgi */}
+        <div style={{ textAlign: "center", marginTop: 28, paddingTop: 20, borderTop: "1px solid #F4F4F5" }}>
+          <p style={{ fontSize: 11, color: "#A1A1AA", margin: 0, lineHeight: 1.7, fontWeight: 500 }}>
+            Hesap sorunları için Sistem Yöneticisi ile iletişime geçiniz.<br />
+            <span style={{ color: "#D4D4D8" }}>İRÜFoodFlow v2.0</span>
+          </p>
         </div>
       </div>
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

@@ -6,6 +6,54 @@ import DashboardLayout from "../components/DashboardLayout";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "../hooks/useAuth";
 
+const RED = "#B71C1C";
+
+const KARTLAR = [
+  { label: "Toplam Kullanıcı", key: "kullaniciSayisi", renk: "#2563EB" },
+  { label: "Toplam Ürün",      key: "urunSayisi",      renk: "#EA580C" },
+  { label: "Toplam Ders",      key: "dersSayisi",      renk: "#16A34A" },
+  { label: "Alışveriş Listeleri", key: "siparisSayisi", renk: "#7C3AED" },
+];
+
+const ISLEMLER = [
+  {
+    baslik: "Kullanıcı Yönetimi",
+    aciklama: "Tüm kullanıcıları ekleyin, düzenleyin, silin ve yetkilendirin",
+    ozellikler: ["Kullanıcı CRUD İşlemleri", "Rol ve Yetki Atama", "Ders Atama", "Şifre Yönetimi"],
+    link: "/kullanicilar",
+    renk: "#2563EB",
+    bg: "#EFF6FF",
+    border: "#BFDBFE",
+  },
+  {
+    baslik: "Ürün Yönetimi",
+    aciklama: "Tüm ürün işlemlerini tam kontrolle yönetin",
+    ozellikler: ["Ürün Ekleme / Silme / Düzenleme", "Excel'den Toplu Yükleme", "Fiyat ve Miktar Yönetimi", "Kategori Yönetimi"],
+    link: "/urun-havuzu",
+    renk: "#EA580C",
+    bg: "#FFF7ED",
+    border: "#FED7AA",
+  },
+  {
+    baslik: "Alışveriş Listeleri",
+    aciklama: "Sistem genelindeki tüm alışveriş listelerini yönetin",
+    ozellikler: ["Tüm Listeleri Görme", "Onay ve Kontrol", "Düzenlemeler Yapma"],
+    link: "/siparisler",
+    renk: "#16A34A",
+    bg: "#F0FDF4",
+    border: "#BBF7D0",
+  },
+  {
+    baslik: "Sipariş Yönetimi",
+    aciklama: "Sistem genelinde raporlar ve istatistikler",
+    ozellikler: ["Tüm Siparişleri Görme", "Öğretmen / Ders Filtresi", "Detay ve Silme"],
+    link: "/siparis-yonetimi",
+    renk: "#7C3AED",
+    bg: "#F5F3FF",
+    border: "#DDD6FE",
+  },
+];
+
 export default function AdminAnaSayfa() {
   const { yetkili, yukleniyor } = useAuth("/admin");
 
@@ -17,30 +65,27 @@ export default function AdminAnaSayfa() {
   });
 
   useEffect(() => {
-    const fetchIstatistik = async () => {
-      // Count sorgularını optimize ederek çekiyoruz
-      const [kullanicilar, urunler, dersler, siparisler] = await Promise.all([
+    const fetch = async () => {
+      const [k, u, d, s] = await Promise.all([
         supabase.from("kullanicilar").select("id", { count: "exact", head: true }),
         supabase.from("urunler").select("id", { count: "exact", head: true }),
         supabase.from("dersler").select("id", { count: "exact", head: true }),
         supabase.from("siparisler").select("id", { count: "exact", head: true }),
       ]);
-
       setIstatistik({
-        kullaniciSayisi: kullanicilar.count ?? 0,
-        urunSayisi: urunler.count ?? 0,
-        dersSayisi: dersler.count ?? 0,
-        siparisSayisi: siparisler.count ?? 0,
+        kullaniciSayisi: k.count ?? 0,
+        urunSayisi: u.count ?? 0,
+        dersSayisi: d.count ?? 0,
+        siparisSayisi: s.count ?? 0,
       });
     };
-
-    if (yetkili) fetchIstatistik();
+    if (yetkili) fetch();
   }, [yetkili]);
 
   if (yukleniyor) return (
     <DashboardLayout title="Yükleniyor...">
-      <div className="min-h-[400px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-700"></div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400 }}>
+        <div style={{ width: 40, height: 40, border: `3px solid #E4E4E7`, borderTopColor: RED, borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
       </div>
     </DashboardLayout>
   );
@@ -49,88 +94,67 @@ export default function AdminAnaSayfa() {
 
   return (
     <DashboardLayout title="Sistem Yöneticisi Paneli" subtitle="Tüm Sistem İşlevlerine Tam Erişim">
-      <div className="space-y-6">
+      <div style={{ maxWidth: 960 }}>
 
-        {/* İstatistik Kartları */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Toplam Kullanıcı</p>
-            <p className="text-4xl font-bold" style={{color: '#2563eb'}}>{istatistik.kullaniciSayisi}</p>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Toplam Ürün</p>
-            <p className="text-4xl font-bold" style={{color: '#f97316'}}>{istatistik.urunSayisi}</p>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Toplam Ders</p>
-            <p className="text-4xl font-bold" style={{color: '#16a34a'}}>{istatistik.dersSayisi}</p>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Alışveriş Listeleri</p>
-            <p className="text-4xl font-bold" style={{color: '#9333ea'}}>{istatistik.siparisSayisi}</p>
-          </div>
+        {/* Istatistik kartlari */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+          {KARTLAR.map((k) => (
+            <div key={k.key} style={{
+              background: "white",
+              borderRadius: 12,
+              padding: "20px 24px",
+              border: "1px solid #E4E4E7",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: "#71717A", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+                {k.label}
+              </div>
+              <div style={{ fontSize: 36, fontWeight: 800, color: k.renk, lineHeight: 1 }}>
+                {(istatistik as Record<string, number>)[k.key]}
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Yönetim Kartları */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link href="/kullanicilar" className="block">
-            <div className="bg-white rounded-xl border-2 border-blue-100 p-6 shadow-sm hover:shadow-md transition-all hover:border-blue-300">
-              <h3 className="text-lg font-bold mb-1" style={{color: '#1d4ed8'}}>Kullanıcı Yönetimi</h3>
-              <p className="text-sm text-gray-500 mb-4">Tüm kullanıcıları ekleyin, düzenleyin, silin ve yetkilendirin</p>
-              <ul className="space-y-1">
-                {["Kullanıcı CRUD İşlemleri", "Rol ve Yetki Atama", "Ders Atama", "Şifre Yönetimi"].map(f => (
-                  <li key={f} className="text-sm text-gray-600 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0"></span>{f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Link>
-
-          <Link href="/urun-havuzu" className="block">
-            <div className="bg-white rounded-xl border-2 border-orange-100 p-6 shadow-sm hover:shadow-md transition-all hover:border-orange-300">
-              <h3 className="text-lg font-bold mb-1" style={{color: '#c2410c'}}>Ürün Yönetimi</h3>
-              <p className="text-sm text-gray-500 mb-4">Tüm ürün işlemlerini tam kontrolle yönetin</p>
-              <ul className="space-y-1">
-                {["Ürün Ekleme/Silme/Düzenleme", "Excel&apos;den Toplu Yükleme", "Fiyat ve Miktar Yönetimi", "Kategori Yönetimi"].map(f => (
-                  <li key={f} className="text-sm text-gray-600 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0"></span>{f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Link>
-
-          <Link href="/siparisler" className="block">
-            <div className="bg-white rounded-xl border-2 border-green-100 p-6 shadow-sm hover:shadow-md transition-all hover:border-green-300">
-              <h3 className="text-lg font-bold mb-1" style={{color: '#15803d'}}>Alışveriş Listeleri</h3>
-              <p className="text-sm text-gray-500 mb-4">Sistem genelindeki tüm alışveriş listelerini yönetin</p>
-              <ul className="space-y-1">
-                {["Tüm Listeleri Görme", "Onay ve Kontrol", "Düzenlemeler Yapma"].map(f => (
-                  <li key={f} className="text-sm text-gray-600 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0"></span>{f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Link>
-
-          <Link href="/siparis-yonetimi" className="block">
-            <div className="bg-white rounded-xl border-2 border-purple-100 p-6 shadow-sm hover:shadow-md transition-all hover:border-purple-300">
-              <h3 className="text-lg font-bold mb-1" style={{color: '#7e22ce'}}>Sipariş Yönetimi</h3>
-              <p className="text-sm text-gray-500 mb-4">Sistem genelinde raporlar ve istatistikler</p>
-              <ul className="space-y-1">
-                {["Tüm Siparişleri Görme", "Öğretmen/Ders Filtresi", "Detay ve Silme"].map(f => (
-                  <li key={f} className="text-sm text-gray-600 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0"></span>{f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Link>
+        {/* Yonetim kartlari */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          {ISLEMLER.map((i) => (
+            <Link key={i.link} href={i.link} style={{ textDecoration: "none" }}>
+              <div style={{
+                background: "white",
+                borderRadius: 12,
+                padding: "24px",
+                border: `1.5px solid ${i.border}`,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                transition: "box-shadow 0.15s, transform 0.15s",
+                cursor: "pointer",
+              }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.1)";
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.04)";
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                }}
+              >
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: i.renk, margin: "0 0 6px" }}>{i.baslik}</h3>
+                <p style={{ fontSize: 13, color: "#71717A", margin: "0 0 16px", lineHeight: 1.5 }}>{i.aciklama}</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {i.ozellikler.map((o) => (
+                    <div key={o} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 5, height: 5, borderRadius: "50%", background: i.renk, flexShrink: 0, opacity: 0.6 }} />
+                      <span style={{ fontSize: 12.5, color: "#52525B" }}>{o}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
 
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </DashboardLayout>
   );
 }

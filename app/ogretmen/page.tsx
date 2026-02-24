@@ -8,6 +8,8 @@ import { supabase } from "@/lib/supabase";
 
 type Ders = { id: string; kod: string; ad: string };
 
+const RED = "#B71C1C";
+
 export default function OgretmenAnaSayfa() {
   const { yetkili, yukleniyor } = useAuth("/ogretmen");
   const [adSoyad, setAdSoyad] = useState("");
@@ -18,20 +20,20 @@ export default function OgretmenAnaSayfa() {
       const id = localStorage.getItem("aktifKullaniciId");
       if (!id) return;
 
-      const { data: kullanici } = await supabase
+      const { data: k } = await supabase
         .from("kullanicilar")
         .select("ad_soyad, username, dersler")
         .eq("id", id)
         .single();
 
-      if (!kullanici) return;
-      setAdSoyad(kullanici.ad_soyad || kullanici.username);
+      if (!k) return;
+      setAdSoyad(k.ad_soyad || k.username);
 
-      if ((kullanici.dersler || []).length > 0) {
+      if ((k.dersler || []).length > 0) {
         const { data: dersler } = await supabase
           .from("dersler")
           .select("*")
-          .in("id", kullanici.dersler);
+          .in("id", k.dersler);
         setAtananDersler(dersler || []);
       }
     };
@@ -40,105 +42,126 @@ export default function OgretmenAnaSayfa() {
 
   if (yukleniyor) return (
     <DashboardLayout title="Öğretim Görevlisi Paneli">
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700"></div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400 }}>
+        <div style={{ width: 36, height: 36, border: "3px solid #E4E4E7", borderTopColor: RED, borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </DashboardLayout>
   );
 
   return (
-    <DashboardLayout
-      title={`Merhaba, ${adSoyad}!`}
-      subtitle="Öğretmen Paneline Hoş Geldiniz."
-    >
-      <div className="max-w-6xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-        
-        {/* Karşılama Kartı */}
-        <div className="bg-gradient-to-r from-red-700 to-[#a32626] text-white rounded-2xl px-10 py-10 mb-10 shadow-xl shadow-red-900/10 relative overflow-hidden">
-          <div className="relative z-10">
-            <h1 className="text-3xl font-black mb-2 tracking-tight">Merhaba, {adSoyad}! 👋</h1>
-            <p className="text-red-100/80 text-sm font-medium max-w-md">
-              Mutfak yönetim sistemi üzerinden dersleriniz için malzeme taleplerini yönetebilir ve haftalık listelerinizi oluşturabilirsiniz.
+    <DashboardLayout title={`Merhaba, ${adSoyad}!`} subtitle="Öğretmen Paneline Hoş Geldiniz">
+      <div style={{ maxWidth: 900 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 24 }}>
+
+          {/* Sol: Rehber */}
+          <div style={{
+            background: "white",
+            borderRadius: 12,
+            border: "1px solid #E4E4E7",
+            padding: "32px",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+          }}>
+            <h2 style={{ fontSize: 17, fontWeight: 700, color: "#18181B", margin: "0 0 8px" }}>
+              Alışveriş Listesi Oluşturun
+            </h2>
+            <p style={{ fontSize: 13.5, color: "#71717A", lineHeight: 1.6, margin: "0 0 20px" }}>
+              Dersleriniz için haftalık malzeme talebinde bulunmak üzere sol menüdeki{" "}
+              <strong style={{ color: "#18181B" }}>&quot;Alışveriş Listelerim&quot;</strong>{" "}
+              sekmesini kullanabilirsiniz.
             </p>
-          </div>
-          {/* Arka plan dekorasyonu */}
-          <div className="absolute right-[-20px] bottom-[-20px] text-[150px] opacity-10 rotate-12 select-none">🍲</div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* İşlem Rehberi - Sol Geniş Alan */}
-          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-6">
-                <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-3xl shadow-inner">
-                  📝
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-xl font-black text-gray-800 mb-3 tracking-tight">Nasıl Başlarım?</h2>
-                  <p className="text-gray-700 text-sm leading-relaxed mb-6">
-                    Dersleriniz için malzeme talebinde bulunmak için önce sol menüden <span className="font-bold text-gray-700">"Malzeme Talebi Yap"</span> kısmına gidebilir veya mevcut listelerinizi <span className="font-bold text-gray-700">"Talep Listelerim"</span> altından kontrol edebilirsiniz.
-                  </p>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <div className="p-4 rounded-2xl bg-red-700/5 border border-red-700/10">
-                      <p className="text-red-700 text-[11px] font-black uppercase tracking-widest mb-1 italic">İpucu 01</p>
-                      <p className="text-gray-700 text-xs">Ürünleri işaretleyip haftalık planlamanızı saniyeler içinde yapın.</p>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                      <p className="text-gray-400 text-[11px] font-black uppercase tracking-widest mb-1 italic">İpucu 02</p>
-                      <p className="text-gray-700 text-xs">Onaylanan siparişlerinizin durumunu anlık takip edin.</p>
-                    </div>
-                  </div>
-
-                  <Link href="/talep" className="inline-flex items-center justify-center bg-gray-900 hover:bg-red-700 text-white text-sm font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-gray-200 hover:shadow-red-200 group">
-                    Hemen Malzeme Talebi Oluştur
-                    <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-                  </Link>
-                </div>
-              </div>
+            <div style={{
+              background: "#FEF2F2",
+              border: "1px solid #FECACA",
+              borderRadius: 8,
+              padding: "12px 16px",
+              marginBottom: 24,
+            }}>
+              <p style={{ fontSize: 13, color: "#991B1B", margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
+                Alışveriş listesi sayfasında ürünleri isaretleyip haftalık planlamanızı yapabilirsiniz.
+              </p>
             </div>
+
+            <Link href="/alisveris-listelerim" style={{
+              display: "inline-block",
+              background: RED,
+              color: "white",
+              fontSize: 13.5,
+              fontWeight: 700,
+              padding: "12px 24px",
+              borderRadius: 8,
+              textDecoration: "none",
+              letterSpacing: 0.3,
+              boxShadow: "0 4px 14px rgba(183,28,28,0.25)",
+              transition: "background 0.15s",
+            }}>
+              Alışveriş Listesi Olustur
+            </Link>
           </div>
 
-          {/* Atanmış Dersler - Sağ Yan Panel */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-black text-gray-800 tracking-tight flex items-center gap-2">
-                  <span className="text-red-700">📚</span> Derslerim
-                </h2>
-                <span className="bg-gray-100 text-gray-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
-                  {atananDersler.length} Aktif
+          {/* Sag: Dersler */}
+          <div style={{
+            background: "white",
+            borderRadius: 12,
+            border: "1px solid #E4E4E7",
+            padding: "24px",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: "#18181B", margin: 0 }}>
+                Atanmış Dersleriniz
+              </h2>
+              {atananDersler.length > 0 && (
+                <span style={{
+                  background: "#FEF2F2",
+                  color: RED,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: "3px 10px",
+                  borderRadius: 20,
+                  border: `1px solid #FECACA`,
+                }}>
+                  {atananDersler.length} Ders
                 </span>
-              </div>
-
-              {atananDersler.length === 0 ? (
-                <div className="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                  <p className="text-gray-700 text-sm font-medium">Henüz ders atanmamış.</p>
-                  <p className="text-gray-600 text-[10px] mt-1 italic">Lütfen Bölüm Başkanı ile iletişime geçin.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {atananDersler.map((d) => (
-                    <div key={d.id} className="group p-4 rounded-2xl border border-gray-50 hover:border-red-100 hover:bg-red-50/30 transition-all duration-300 cursor-default">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-xs font-black text-red-700 group-hover:scale-110 transition-transform shadow-sm">
-                          {d.kod.slice(0, 3)}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-[11px] font-black text-red-700 uppercase tracking-tighter mb-0.5">{d.kod}</p>
-                          <p className="text-[13px] text-gray-700 font-bold truncate tracking-tight">{d.ad}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               )}
             </div>
+
+            {atananDersler.length === 0 ? (
+              <div style={{
+                background: "#F4F4F5",
+                borderRadius: 8,
+                padding: "24px",
+                textAlign: "center",
+                border: "1px dashed #D4D4D8",
+              }}>
+                <p style={{ fontSize: 13, color: "#71717A", margin: 0 }}>Henüz ders atanmamış.</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {atananDersler.map((d) => (
+                  <div key={d.id} style={{
+                    padding: "12px 14px",
+                    borderRadius: 8,
+                    border: "1px solid #F4F4F5",
+                    background: "#FAFAFA",
+                    transition: "background 0.12s",
+                  }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: RED, letterSpacing: 0.5, marginBottom: 2 }}>
+                      {d.kod}
+                    </div>
+                    <div style={{ fontSize: 13.5, fontWeight: 500, color: "#3F3F46" }}>
+                      {d.ad}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </DashboardLayout>
   );
 }
