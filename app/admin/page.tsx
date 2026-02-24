@@ -8,7 +8,6 @@ import { supabase } from "@/lib/supabase";
 
 export default function AdminAnaSayfa() {
   const { yetkili, yukleniyor } = useAuth("/admin");
-  if (yukleniyor || !yetkili) return null;
 
   const [istatistik, setIstatistik] = useState({
     kullaniciSayisi: 0,
@@ -80,6 +79,8 @@ export default function AdminAnaSayfa() {
       bg: "#F5F3FF",
     },
   ];
+
+  if (yukleniyor || !yetkili) return null;
 
   return (
     <DashboardLayout title="Sistem Yöneticisi Paneli" subtitle="Tüm sistem işlevlerine tam erişim">

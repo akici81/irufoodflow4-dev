@@ -15,7 +15,6 @@ const HAFTALAR = Array.from({ length: 10 }, (_, i) => `${i + 1}. Hafta`);
 
 export default function AlisverisListeleriPage() {
   const { yetkili, yukleniyor } = useAuth("/alisveris-listelerim");
-  if (yukleniyor || !yetkili) return null;
 
   const [kullaniciId, setKullaniciId] = useState<number | null>(null);
   const [kullaniciAdi, setKullaniciAdi] = useState("");
@@ -243,6 +242,8 @@ export default function AlisverisListeleriPage() {
     if (!dl) return 0;
     return HAFTALAR.filter((h) => (dl.haftalar[h] || []).length > 0).length;
   };
+
+  if (yukleniyor || !yetkili) return null;
 
   return (
     <DashboardLayout title="Alisveris Listelerim" subtitle="10 haftalik malzeme talep listesi olusturun">

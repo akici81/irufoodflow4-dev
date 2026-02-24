@@ -33,7 +33,6 @@ type Sekme = "panel" | "kullanici" | "listeler" | "siparisler" | "urunler";
 
 export default function BolumBaskaniPage() {
   const { yetkili, yukleniyor } = useAuth("/bolum-baskani");
-  if (yukleniyor || !yetkili) return null;
 
  const [adSoyad, setAdSoyad] = useState("");
  const [dersler, setDersler] = useState<Ders[]>([]);

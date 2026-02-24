@@ -19,7 +19,6 @@ const DURUM_LABEL: Record<string, string> = {
 
 export default function SiparislerimPage() {
   const { yetkili, yukleniyor } = useAuth("/siparislerim");
-  if (yukleniyor || !yetkili) return null;
 
  const [siparisler, setSiparisler] = useState<Siparis[]>([]);
  const [detay, setDetay] = useState<Siparis | null>(null);

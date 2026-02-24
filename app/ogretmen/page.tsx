@@ -10,7 +10,6 @@ type Ders = { id: string; kod: string; ad: string };
 
 export default function OgretmenAnaSayfa() {
   const { yetkili, yukleniyor } = useAuth("/ogretmen");
-  if (yukleniyor || !yetkili) return null;
 
   const [adSoyad, setAdSoyad] = useState("");
   const [atananDersler, setAtananDersler] = useState<Ders[]>([]);
@@ -33,6 +32,8 @@ export default function OgretmenAnaSayfa() {
     };
     fetchData();
   }, []);
+
+  if (yukleniyor || !yetkili) return null;
 
   return (
     <DashboardLayout>

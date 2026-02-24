@@ -17,7 +17,6 @@ type OzetSatir = {
 
 export default function SatinAlmaPage() {
   const { yetkili, yukleniyor } = useAuth("/satin");
-  if (yukleniyor || !yetkili) return null;
 
  const [siparisler, setSiparisler] = useState<Siparis[]>([]);
  const [stokMap, setStokMap] = useState<Record<string, { id: string; stok: number; kategori: string }>>({});

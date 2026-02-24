@@ -22,7 +22,6 @@ const olcuBilgisi = (olcu: string) => {
 
 export default function TalepPage() {
   const { yetkili, yukleniyor } = useAuth("/talep");
-  if (yukleniyor || !yetkili) return null;
 
   const [kullaniciId, setKullaniciId] = useState<number | null>(null);
   const [kullaniciAdi, setKullaniciAdi] = useState("");
@@ -167,6 +166,8 @@ export default function TalepPage() {
     const u = urunler.find((x) => x.id === urunId)!;
     return { ...u, miktar };
   });
+
+  if (yukleniyor || !yetkili) return null;
 
   return (
     <DashboardLayout title="Talep Oluştur" subtitle="Haftalık malzeme talebinizi oluşturun">

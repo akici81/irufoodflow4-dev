@@ -10,7 +10,6 @@ type Kullanici = { id: number; username: string; ad_soyad: string; role: string;
 
 export default function DerslerPage() {
   const { yetkili, yukleniyor } = useAuth("/dersler");
-  if (yukleniyor || !yetkili) return null;
 
   const [dersler, setDersler] = useState<Ders[]>([]);
   const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);
@@ -249,6 +248,8 @@ export default function DerslerPage() {
       </div>
     );
   };
+
+  if (yukleniyor || !yetkili) return null;
 
   return (
     <DashboardLayout title="Ders Yonetimi" subtitle="Dersleri ekleyin ve ogretmenlere atayin">
