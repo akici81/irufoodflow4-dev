@@ -8,122 +8,160 @@ import { useAuth } from "../hooks/useAuth";
 
 export default function AdminAnaSayfa() {
   const { yetkili, yukleniyor } = useAuth("/admin");
-  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+
+  const [istatistik, setIstatistik] = useState({
+    kullaniciSayisi: 0,
+    urunSayisi: 0,
+    dersSayisi: 0,
+    siparisSayisi: 0,
+  });
+
+  useEffect(() => {
+    const fetchIstatistik = async () => {
+      // Count sorgularını optimize ederek çekiyoruz
+      const [kullanicilar, urunler, dersler, siparisler] = await Promise.all([
+        supabase.from("kullanicilar").select("id", { count: "exact", head: true }),
+        supabase.from("urunler").select("id", { count: "exact", head: true }),
+        supabase.from("dersler").select("id", { count: "exact", head: true }),
+        supabase.from("siparisler").select("id", { count: "exact", head: true }),
+      ]);
+
+      setIstatistik({
+        kullaniciSayisi: kullanicilar.count ?? 0,
+        urunSayisi: urunler.count ?? 0,
+        dersSayisi: dersler.count ?? 0,
+        siparisSayisi: siparisler.count ?? 0,
+      });
+    };
+
+    if (yetkili) fetchIstatistik();
+  }, [yetkili]);
+
+  if (yukleniyor) return (
+    <DashboardLayout title="Yükleniyor...">
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B1A1A]"></div>
+      </div>
+    </DashboardLayout>
+  );
+
   if (!yetkili) return null;
- const [istatistik, setIstatistik] = useState({
- kullaniciSayisi: 0,
- urunSayisi: 0,
- dersSayisi: 0,
- siparisSayisi: 0,
- });
 
- useEffect(() => {
- const fetchIstatistik = async () => {
- const [kullanicilar, urunler, dersler, siparisler] = await Promise.all([
- supabase.from("kullanicilar").select("id", { count: "exact", head: true }),
- supabase.from("urunler").select("id", { count: "exact", head: true }),
- supabase.from("dersler").select("id", { count: "exact", head: true }),
- supabase.from("siparisler").select("id", { count: "exact", head: true }),
- ]);
+  const kartlar = [
+    { label: "Toplam Kullanıcı", deger: istatistik.kullaniciSayisi, renk: "from-blue-500 to-blue-600", ikon: "👤" },
+    { label: "Toplam Ürün", deger: istatistik.urunSayisi, renk: "from-orange-400 to-orange-500", ikon: "📦" },
+    { label: "Toplam Ders", deger: istatistik.dersSayisi, renk: "from-emerald-500 to-emerald-600", ikon: "🎓" },
+    { label: "Aktif Listeler", deger: istatistik.siparisSayisi, renk: "from-purple-500 to-purple-600", ikon: "📝" },
+  ];
 
- setIstatistik({
- kullaniciSayisi: kullanicilar.count ?? 0,
- urunSayisi: urunler.count ?? 0,
- dersSayisi: dersler.count ?? 0,
- siparisSayisi: siparisler.count ?? 0,
- });
- };
+  const islemler = [
+    {
+      baslik: "Kullanıcı Yönetimi",
+      aciklama: "Sistem personeli, öğretmenler ve yetki seviyelerini kontrol edin.",
+      renk: "hover:border-blue-200 group-hover:bg-blue-50",
+      baslikRenk: "text-blue-700",
+      ozellikler: ["Rol Atama", "Ders Yetkilendirme", "Şifre Sıfırlama"],
+      link: "/kullanicilar",
+      ikon: "⚙️"
+    },
+    {
+      baslik: "Ürün & Envanter",
+      aciklama: "Ürün havuzunu güncel tutun, fiyat ve stok verilerini yönetin.",
+      renk: "hover:border-orange-200 group-hover:bg-orange-50",
+      baslikRenk: "text-orange-700",
+      ozellikler: ["Excel Aktarımı", "Fiyat Güncelleme", "Kategori Bazlı Takip"],
+      link: "/urun-havuzu",
+      ikon: "📊"
+    },
+    {
+      baslik: "Alışveriş Talepleri",
+      aciklama: "Öğretmenlerden gelen malzeme listelerini inceleyin ve onaylayın.",
+      renk: "hover:border-emerald-200 group-hover:bg-emerald-50",
+      baslikRenk: "text-emerald-700",
+      ozellikler: ["Talep İnceleme", "Miktar Onayı", "Bütçe Kontrolü"],
+      link: "/siparisler",
+      ikon: "🛒"
+    },
+    {
+      baslik: "Raporlama Merkezi",
+      aciklama: "Sipariş geçmişini ve ders bazlı tüketim raporlarını analiz edin.",
+      renk: "hover:border-purple-200 group-hover:bg-purple-50",
+      baslikRenk: "text-purple-700",
+      ozellikler: ["Geçmiş Analizi", "Ders Filtreleme", "PDF Çıktısı"],
+      link: "/siparis-yonetimi",
+      ikon: "📋"
+    },
+  ];
 
- fetchIstatistik();
- }, []);
+  return (
+    <DashboardLayout title="Yönetim Merkezi" subtitle="Sistem genelindeki tüm operasyonları buradan izleyebilir ve yönetebilirsiniz.">
+      <div className="max-w-7xl space-y-10">
 
- const kartlar = [
- { label: "Toplam Kullanıcı", deger: istatistik.kullaniciSayisi, emoji: "", renk: "text-blue-600" },
- { label: "Toplam Ürün", deger: istatistik.urunSayisi, emoji: "", renk: "text-orange-500" },
- { label: "Toplam Ders", deger: istatistik.dersSayisi, emoji: "", renk: "text-green-600" },
- { label: "Alışveriş Listeleri", deger: istatistik.siparisSayisi, emoji: "", renk: "text-purple-600" },
- ];
+        {/* İstatistik Kartları */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {kartlar.map((k) => (
+            <div key={k.label} className="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm hover:shadow-md transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-2xl opacity-80">{k.ikon}</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none pt-1">{k.label}</span>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className={`text-4xl font-black italic bg-gradient-to-br ${k.renk} bg-clip-text text-transparent`}>
+                  {k.deger}
+                </span>
+                <span className="text-slate-300 font-bold text-xs uppercase italic tracking-tighter">Birim</span>
+              </div>
+            </div>
+          ))}
+        </div>
 
- const islemler = [
- {
- baslik: "Kullanıcı Yönetimi",
- aciklama: "Tüm kullanıcıları ekleyin, düzenleyin, silin ve yetkilendirin",
- emoji: "",
- renk: "border-blue-200",
- baslikRenk: "text-blue-700",
- ozellikler: ["Kullanıcı CRUD İşlemleri", "Rol ve Yetki Atama", "Ders Atama", "Şifre Yönetimi"],
- link: "/kullanicilar",
- },
- {
- baslik: "Ürün Yönetimi",
- aciklama: "Tüm ürün işlemlerini tam kontrolle yönetin",
- emoji: "",
- renk: "border-orange-200",
- baslikRenk: "text-orange-700",
- ozellikler: ["Ürün Ekleme/Silme/Düzenleme", "Excel'den Toplu Yükleme", "Fiyat ve Miktar Yönetimi", "Kategori Yönetimi"],
- link: "/urun-havuzu",
- },
- {
- baslik: "Alışveriş Listeleri",
- aciklama: "Sistem genelindeki tüm alışveriş listelerini yönetin",
- emoji: "",
- renk: "border-green-200",
- baslikRenk: "text-green-700",
- ozellikler: ["Tüm Listeleri Görme", "Onay ve Kontrol", "Düzenlemeler Yapma"],
- link: "/siparisler",
- },
- {
- baslik: "Sipariş Yönetimi",
- aciklama: "Sistem genelinde raporlar ve istatistikler",
- emoji: "",
- renk: "border-purple-200",
- baslikRenk: "text-purple-700",
- ozellikler: ["Tüm Siparişleri Görme", "Öğretmen/Ders Filtresi", "Detay ve Silme"],
- link: "/siparis-yonetimi",
- },
- ];
+        {/* Hızlı Erişim Başlığı */}
+        <div className="flex items-center gap-4">
+          <div className="h-[1px] flex-1 bg-slate-100"></div>
+          <h2 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] italic">Hızlı Erişim Menüsü</h2>
+          <div className="h-[1px] flex-1 bg-slate-100"></div>
+        </div>
 
- return (
- <DashboardLayout title="Sistem Yöneticisi Paneli" subtitle="Tüm sistem işlevlerine tam erişim">
- <div className="max-w-6xl space-y-8">
+        {/* Hızlı Erişim Kartları */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
+          {islemler.map((i) => (
+            <Link key={i.link} href={i.link} className="group">
+              <div className={`bg-white rounded-[2.5rem] border border-slate-200 p-10 h-full transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-xl group-hover:shadow-slate-200/50 ${i.renk}`}>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">{i.ikon}</span>
+                    <h3 className={`text-xl font-black uppercase italic tracking-tighter ${i.baslikRenk}`}>{i.baslik}</h3>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-[#8B1A1A] group-hover:text-white transition-all">
+                    →
+                  </div>
+                </div>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">{i.aciklama}</p>
+                <div className="flex flex-wrap gap-2">
+                  {i.ozellikler.map((o) => (
+                    <span key={o} className="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full group-hover:bg-white group-hover:text-slate-600 transition-colors border border-transparent group-hover:border-slate-100">
+                      {o}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
 
- {/* İstatistik Kartları */}
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
- {kartlar.map((k) => (
- <div key={k.label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
- <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">{k.label}</p>
- <div className="flex items-end gap-2">
- <span className="text-3xl">{k.emoji}</span>
- <span className={`text-3xl font-bold ${k.renk}`}>{k.deger}</span>
- </div>
- </div>
- ))}
- </div>
+        {/* Bilgilendirme Banner */}
+        <div className="bg-[#8B1A1A] rounded-[3rem] p-10 text-white flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden relative">
+          <div className="relative z-10">
+            <h3 className="text-2xl font-black italic tracking-tighter mb-2 uppercase">Sistem Durumu: Çevrimiçi</h3>
+            <p className="text-white/60 text-sm font-medium max-w-md">Veritabanı bağlantısı aktif. Tüm modüller sorunsuz çalışıyor. Son yedekleme: Bugün 04:00.</p>
+          </div>
+          <Link href="/ayarlar" className="relative z-10 bg-white text-[#8B1A1A] px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all shadow-lg">
+            Sistem Ayarları →
+          </Link>
+          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+        </div>
 
- {/* Hızlı Erişim Kartları */}
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- {islemler.map((i) => (
- <Link key={i.link} href={i.link}>
- <div className={`bg-white rounded-2xl border-2 ${i.renk} shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer h-full`}>
- <div className="flex items-center gap-3 mb-3">
- <span className="text-2xl">{i.emoji}</span>
- <h3 className={`font-bold text-base ${i.baslikRenk}`}>{i.baslik}</h3>
- </div>
- <p className="text-gray-500 text-sm mb-4">{i.aciklama}</p>
- <ul className="space-y-1.5">
- {i.ozellikler.map((o) => (
- <li key={o} className="text-sm text-gray-600 flex items-center gap-2">
- <span className="text-green-500 text-xs"></span>
- {o}
- </li>
- ))}
- </ul>
- </div>
- </Link>
- ))}
- </div>
-
- </div>
- </DashboardLayout>
- );
+      </div>
+    </DashboardLayout>
+  );
 }

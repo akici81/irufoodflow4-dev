@@ -1,314 +1,278 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
+// Veri tiplerini tam tanımlayarak VS Code hatalarını gideriyoruz
 type Kullanici = {
- id: number;
- username: string;
- ad_soyad: string;
- password_hash: string;
- role: string;
- dersler: string[];
+  id: number;
+  username: string;
+  ad_soyad: string;
+  password_hash: string;
+  role: string;
+  dersler: string[];
 };
 
 type Ders = { id: string; kod: string; ad: string };
 
+// Tip güvenliği için güncelleme objesi tipi
+interface GuncellemeData {
+  ad_soyad: string;
+  role: string;
+  dersler: string[];
+  password_hash?: string;
+}
+
 const ROLLER = [
- { value: "ogretmen", label: "Öğretmen" },
- { value: "admin", label: "Admin" },
- { value: "bolum_baskani", label: "Bölüm Başkanı" },
- { value: "satin_alma", label: "Satın Alma" },
- { value: "stok", label: "Stok" },
+  { value: "ogretmen", label: "Öğretmen" },
+  { value: "admin", label: "Admin" },
+  { value: "bolum_baskani", label: "Bölüm Başkanı" },
+  { value: "satin_alma", label: "Satın Alma" },
+  { value: "stok", label: "Stok" },
 ];
 
 const ROL_RENK: Record<string, string> = {
- admin: "bg-rose-100 text-rose-700 border-rose-200",
- ogretmen: "bg-sky-100 text-sky-700 border-sky-200",
- bolum_baskani: "bg-purple-100 text-purple-700 border-purple-200",
- satin_alma: "bg-amber-100 text-amber-700 border-amber-200",
- stok: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  admin: "bg-rose-50 text-rose-700 border-rose-100",
+  ogretmen: "bg-sky-50 text-sky-700 border-sky-100",
+  bolum_baskani: "bg-purple-50 text-purple-700 border-purple-100",
+  satin_alma: "bg-amber-50 text-amber-700 border-amber-100",
+  stok: "bg-emerald-50 text-emerald-700 border-emerald-100",
 };
 
 const BOSH_FORM = { username: "", ad_soyad: "", password_hash: "", role: "ogretmen", dersler: [] as string[] };
 
 export default function KullanicilarPage() {
   const { yetkili, yukleniyor } = useAuth("/kullanicilar");
-  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
+
+  const [sekme, setSekme] = useState<"liste" | "ekle" | "guncelle">("liste");
+  const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);
+  const [dersler, setDersler] = useState<Ders[]>([]);
+  const [form, setForm] = useState(BOSH_FORM);
+  const [duzenleId, setDuzenleId] = useState<number | null>(null);
+  const [bildirim, setBildirim] = useState<{ tip: "basari" | "hata"; metin: string } | null>(null);
+
+  const fetchData = useCallback(async () => {
+    const [{ data: k }, { data: d }] = await Promise.all([
+      supabase.from("kullanicilar").select("*").order("id"),
+      supabase.from("dersler").select("*").order("kod"),
+    ]);
+    setKullanicilar(k || []);
+    setDersler(d || []);
+  }, []);
+
+  useEffect(() => {
+    if (yetkili) fetchData();
+  }, [yetkili, fetchData]);
+
+  const bildirimGoster = (tip: "basari" | "hata", metin: string) => {
+    setBildirim({ tip, metin });
+    setTimeout(() => setBildirim(null), 3500);
+  };
+
+  if (yukleniyor) return (
+    <DashboardLayout title="Kullanıcı Yönetimi">
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+      </div>
+    </DashboardLayout>
+  );
+
   if (!yetkili) return null;
 
- const [sekme, setSekme] = useState<"liste" | "ekle" | "guncelle">("liste");
- const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);
- const [dersler, setDersler] = useState<Ders[]>([]);
- const [form, setForm] = useState(BOSH_FORM);
- const [duzenleId, setDuzenleId] = useState<number | null>(null);
- const [hata, setHata] = useState("");
- const [basari, setBasari] = useState("");
- const [veriYukleniyor, setVeriYukleniyor] = useState(true);
+  const handleEkle = async () => {
+    if (!form.username.trim() || !form.ad_soyad.trim() || !form.password_hash.trim()) {
+      bildirimGoster("hata", "Lütfen tüm zorunlu alanları doldurun."); return;
+    }
+    const { error } = await supabase.from("kullanicilar").insert({
+      username: form.username.trim(),
+      ad_soyad: form.ad_soyad.trim(),
+      password_hash: form.password_hash,
+      role: form.role,
+      dersler: form.dersler,
+    });
+    if (error) { bildirimGoster("hata", error.message); return; }
+    bildirimGoster("basari", `"${form.ad_soyad}" eklendi.`);
+    setForm(BOSH_FORM);
+    setSekme("liste");
+    fetchData();
+  };
 
- useEffect(() => {
- fetchData();
- }, []);
+  const handleGuncelle = async () => {
+    if (!duzenleId) return;
+    
+    // VS Code hatasını önlemek için tip tanımlı obje oluşturuyoruz
+    const guncelleme: GuncellemeData = {
+      ad_soyad: form.ad_soyad,
+      role: form.role,
+      dersler: form.dersler,
+    };
+    
+    if (form.password_hash) guncelleme.password_hash = form.password_hash;
 
- const fetchData = async () => {
- setVeriYukleniyor(true);
- const [{ data: k }, { data: d }] = await Promise.all([
- supabase.from("kullanicilar").select("*").order("id"),
- supabase.from("dersler").select("*").order("kod"),
- ]);
- setKullanicilar(k || []);
- setDersler(d || []);
- setVeriYukleniyor(false);
- };
+    const { error } = await supabase.from("kullanicilar").update(guncelleme).eq("id", duzenleId);
+    
+    if (error) { bildirimGoster("hata", error.message); return; }
+    bildirimGoster("basari", "Kullanıcı güncellendi.");
+    setDuzenleId(null);
+    setForm(BOSH_FORM);
+    setSekme("liste");
+    fetchData();
+  };
 
- const mesaj = (tip: "basari" | "hata", metin: string) => {
- if (tip === "basari") { setBasari(metin); setTimeout(() => setBasari(""), 3000); }
- else { setHata(metin); setTimeout(() => setHata(""), 3000); }
- };
+  const handleSil = async (id: number) => {
+    if (!confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
+    const { error } = await supabase.from("kullanicilar").delete().eq("id", id);
+    if (error) { bildirimGoster("hata", error.message); return; }
+    bildirimGoster("basari", "Kullanıcı silindi.");
+    fetchData();
+  };
 
- const handleEkle = async () => {
- if (!form.username.trim() || !form.ad_soyad.trim() || !form.password_hash.trim()) {
- mesaj("hata", "Tüm zorunlu alanları doldurun."); return;
- }
- const { error } = await supabase.from("kullanicilar").insert({
- username: form.username.trim(),
- ad_soyad: form.ad_soyad.trim(),
- password_hash: form.password_hash,
- role: form.role,
- dersler: form.dersler,
- });
- if (error) { mesaj("hata", "Hata: " + error.message); return; }
- mesaj("basari", `"${form.ad_soyad}" eklendi.`);
- setForm(BOSH_FORM);
- fetchData();
- };
+  const handleDuzenleBaslat = (k: Kullanici) => {
+    setDuzenleId(k.id);
+    setForm({ username: k.username, ad_soyad: k.ad_soyad, password_hash: "", role: k.role, dersler: k.dersler || [] });
+    setSekme("guncelle");
+  };
 
- const handleGuncelle = async () => {
- if (!duzenleId) return;
- const guncelleme: any = {
- ad_soyad: form.ad_soyad,
- role: form.role,
- dersler: form.dersler,
- };
- if (form.password_hash) guncelleme.password_hash = form.password_hash;
- const { error } = await supabase.from("kullanicilar").update(guncelleme).eq("id", duzenleId);
- if (error) { mesaj("hata", "Hata: " + error.message); return; }
- mesaj("basari", "Kullanıcı güncellendi.");
- setDuzenleId(null);
- setForm(BOSH_FORM);
- setSekme("liste");
- fetchData();
- };
+  const toggleDers = (dersId: string) => {
+    setForm((f) => ({
+      ...f,
+      dersler: f.dersler.includes(dersId)
+        ? f.dersler.filter((d) => d !== dersId)
+        : [...f.dersler, dersId],
+    }));
+  };
 
- const handleSil = async (id: number) => {
- if (!confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
- const { error } = await supabase.from("kullanicilar").delete().eq("id", id);
- if (error) { mesaj("hata", "Hata: " + error.message); return; }
- mesaj("basari", "Kullanıcı silindi.");
- fetchData();
- };
+  // Fokus renklerini kırmızıdan (ring-red-500) daha yumuşak bordoya (ring-[#8B1A1A]/20) çevirdim
+  const inputClass = "w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#8B1A1A]/10 focus:border-[#8B1A1A]/30 transition-all outline-none placeholder:text-slate-300";
 
- const handleDuzenleBaslat = (k: Kullanici) => {
- setDuzenleId(k.id);
- setForm({ username: k.username, ad_soyad: k.ad_soyad, password_hash: "", role: k.role, dersler: k.dersler || [] });
- setSekme("guncelle");
- };
+  return (
+    <DashboardLayout title="Erişim Yönetimi" subtitle="Personel yetkilerini buradan yönetin">
+      
+      {/* Bildirim Kutusu */}
+      {bildirim && (
+        <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in fade-in slide-in-from-top-4 ${
+          bildirim.tip === "basari" ? "bg-white border-emerald-100 text-emerald-600" : "bg-white border-red-100 text-red-600"
+        }`}>
+          <div className={`w-2 h-2 rounded-full ${bildirim.tip === "basari" ? "bg-emerald-500" : "bg-red-500"}`} />
+          <p className="font-bold text-xs uppercase tracking-widest">{bildirim.metin}</p>
+        </div>
+      )}
 
- const toggleDers = (dersId: string) => {
- setForm((f) => ({
- ...f,
- dersler: f.dersler.includes(dersId)
- ? f.dersler.filter((d) => d !== dersId)
- : [...f.dersler, dersId],
- }));
- };
+      <div className="max-w-6xl space-y-6">
+        
+        {/* Modern Tab Menü */}
+        <div className="flex bg-slate-100/50 p-1 rounded-2xl w-fit border border-slate-200/60">
+          {(["liste", "ekle", "guncelle"] as const).map((s) => (
+            (s !== "guncelle" || duzenleId) && (
+              <button key={s} onClick={() => setSekme(s)}
+                className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${
+                  sekme === s ? "bg-white text-[#8B1A1A] shadow-sm italic" : "text-slate-400 hover:text-slate-600"
+                }`}>
+                {s === "liste" ? "Personel Listesi" : s === "ekle" ? "+ Yeni Kayıt" : "Düzenle"}
+              </button>
+            )
+          ))}
+        </div>
 
- const inputClass = "mt-1 w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500";
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+          
+          {sekme === "liste" && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100">
+                    <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kullanıcı</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ad Soyad</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Yetki</th>
+                    <th className="px-8 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Yönet</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {kullanicilar.map((k) => (
+                    <tr key={k.id} className="hover:bg-slate-50/30 transition-colors group">
+                      <td className="px-8 py-4 font-bold text-slate-700 text-sm">{k.username}</td>
+                      <td className="px-6 py-4 text-sm text-slate-500">{k.ad_soyad}</td>
+                      <td className="px-6 py-4">
+                        <span className={`text-[9px] font-black px-3 py-1 rounded-full border uppercase ${ROL_RENK[k.role]}`}>
+                          {ROLLER.find((r) => r.value === k.role)?.label}
+                        </span>
+                      </td>
+                      <td className="px-8 py-4 text-right space-x-2">
+                        <button onClick={() => handleDuzenleBaslat(k)} className="text-slate-300 hover:text-blue-600 transition-colors text-xs font-bold uppercase">Düzenle</button>
+                        <span className="text-slate-200">|</span>
+                        <button onClick={() => handleSil(k.id)} className="text-slate-300 hover:text-red-600 transition-colors text-xs font-bold uppercase">Sil</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
- return (
- <DashboardLayout title="Kullanıcı & Erişim Yönetimi" subtitle="Sistemdeki personel ve kullanıcı bilgilerini yönetin">
- <div className="max-w-5xl space-y-5">
+          {(sekme === "ekle" || sekme === "guncelle") && (
+            <div className="p-8 lg:p-12 max-w-4xl">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Kullanıcı Adı</label>
+                  <input className={inputClass} value={form.username} disabled={sekme === "guncelle"}
+                    onChange={(e) => setForm({ ...form, username: e.target.value })} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Ad Soyad</label>
+                  <input className={inputClass} value={form.ad_soyad}
+                    onChange={(e) => setForm({ ...form, ad_soyad: e.target.value })} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Şifre</label>
+                  <input type="password" className={inputClass} placeholder="••••••••" value={form.password_hash}
+                    onChange={(e) => setForm({ ...form, password_hash: e.target.value })} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Rol</label>
+                  <select className={inputClass} value={form.role}
+                    onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                    {ROLLER.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                  </select>
+                </div>
 
- {basari && <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl px-4 py-3">{basari}</div>}
- {hata && <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{hata}</div>}
+                {form.role === "ogretmen" && (
+                  <div className="md:col-span-2 space-y-3 pt-4">
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Ders Atamaları</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-4 rounded-[1.5rem] border border-slate-200">
+                      {dersler.map((d) => (
+                        <button key={d.id} type="button" onClick={() => toggleDers(d.id)}
+                          className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                            form.dersler.includes(d.id) ? "bg-white border-[#8B1A1A] ring-2 ring-[#8B1A1A]/5 shadow-sm" : "bg-white/50 border-transparent opacity-60"
+                          }`}>
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center ${form.dersler.includes(d.id) ? "bg-[#8B1A1A] border-[#8B1A1A]" : "border-slate-300"}`}>
+                            {form.dersler.includes(d.id) && <span className="text-white text-[10px]">✓</span>}
+                          </div>
+                          <span className="text-xs font-bold text-slate-700">{d.kod} - {d.ad}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
- <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
- <div className="flex border-b border-gray-100">
- {([
- { key: "liste", label: " Liste & Silme" },
- { key: "ekle", label: "+ Yeni Kullanıcı" },
- { key: "guncelle", label: " Veri Güncelle" },
- ] as const).map((s) => (
- <button type="button" key={s.key} onClick={() => setSekme(s.key)}
- className={`px-6 py-4 text-sm font-medium border-b-2 transition ${sekme === s.key ? "border-red-600 text-red-700" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
- {s.label}
- </button>
- ))}
- </div>
-
- <div className="p-6">
- {sekme === "liste" && (
- <div>
- <div className="flex items-center justify-between mb-4">
- <h3 className="font-semibold text-gray-800">Mevcut Kullanıcı Listesi</h3>
- <span className="text-xs bg-red-100 text-red-700 font-medium px-3 py-1 rounded-full">{kullanicilar.length} Kullanıcı</span>
- </div>
- {yukleniyor ? (
- <p className="text-center text-gray-400 text-sm py-12">Yükleniyor...</p>
- ) : kullanicilar.length === 0 ? (
- <p className="text-center text-gray-400 text-sm py-12">Henüz kullanıcı eklenmedi.</p>
- ) : (
- <table className="w-full text-sm">
- <thead>
- <tr className="bg-gray-50 border-b border-gray-100 text-left">
- <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Kullanıcı Adı</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ad Soyad</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Rol</th>
- <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-gray-50">
- {kullanicilar.map((k) => (
- <tr key={k.id} className="hover:bg-gray-50 transition-colors">
- <td className="px-4 py-3 text-gray-400 font-mono text-xs">#{k.id}</td>
- <td className="px-4 py-3 font-semibold text-gray-800">{k.username}</td>
- <td className="px-4 py-3 text-gray-600">{k.ad_soyad || "—"}</td>
- <td className="px-4 py-3">
- <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${ROL_RENK[k.role] ?? "bg-gray-100 text-gray-600 border-gray-200"}`}>
- {ROLLER.find((r) => r.value === k.role)?.label ?? k.role}
- </span>
- </td>
- <td className="px-4 py-3 text-right">
- <div className="flex justify-end gap-2">
- <button type="button" onClick={() => handleDuzenleBaslat(k)}
- className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium px-3 py-1.5 rounded-lg transition">
- Düzenle
- </button>
- <button type="button" onClick={() => handleSil(k.id)}
- className="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-medium px-3 py-1.5 rounded-lg transition">
- Sil
- </button>
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- )}
- </div>
- )}
-
- {sekme === "ekle" && (
- <div className="space-y-4 max-w-2xl">
- <h3 className="font-semibold text-gray-800 mb-2">Yeni Kullanıcı Ekle</h3>
- <div>
- <label className="text-xs font-medium text-gray-700">Kullanıcı Adı *</label>
- <input className={inputClass} placeholder="örn. enis.akici" value={form.username}
- onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))} />
- </div>
- <div>
- <label className="text-xs font-medium text-gray-700">Ad Soyad *</label>
- <input className={inputClass} placeholder="örn. Enis Edip AKICI" value={form.ad_soyad}
- onChange={(e) => setForm((f) => ({ ...f, ad_soyad: e.target.value }))} />
- </div>
- <div>
- <label className="text-xs font-medium text-gray-700">Şifre *</label>
- <input type="password" className={inputClass} placeholder="••••••••" value={form.password_hash}
- onChange={(e) => setForm((f) => ({ ...f, password_hash: e.target.value }))} />
- </div>
- <div>
- <label className="text-xs font-medium text-gray-700">Rol</label>
- <select className={inputClass + " bg-white"} value={form.role}
- onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}>
- {ROLLER.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
- </select>
- </div>
- {form.role === "ogretmen" && dersler.length > 0 && (
- <div>
- <label className="text-xs font-medium text-gray-700">Atanacak Dersler</label>
- <div className="mt-2 space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-3">
- {dersler.map((d) => (
- <label key={d.id} className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1">
- <input type="checkbox" className="accent-red-600" checked={form.dersler.includes(d.id)}
- onChange={() => toggleDers(d.id)} />
- <span className="text-sm text-gray-700">{d.kod} - {d.ad}</span>
- </label>
- ))}
- </div>
- </div>
- )}
- <button type="button" onClick={handleEkle}
- className="mt-2 bg-red-700 hover:bg-red-800 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition">
- Kullanıcı Ekle
- </button>
- </div>
- )}
-
- {sekme === "guncelle" && (
- <div>
- {!duzenleId ? (
- <div className="text-center py-12">
- <p className="text-gray-400 text-sm">Güncellemek için Liste sekmesinden bir kullanıcı seçin.</p>
- <button type="button" onClick={() => setSekme("liste")}
- className="mt-3 text-red-600 text-sm font-medium hover:underline">Listeye git →</button>
- </div>
- ) : (
- <div className="space-y-4 max-w-2xl">
- <div className="flex items-center gap-3 mb-2">
- <h3 className="font-semibold text-gray-800">Kullanıcı Düzenle</h3>
- <span className="text-sm text-gray-400">— {form.username}</span>
- </div>
- <div>
- <label className="text-xs font-medium text-gray-700">Ad Soyad *</label>
- <input className={inputClass} value={form.ad_soyad}
- onChange={(e) => setForm((f) => ({ ...f, ad_soyad: e.target.value }))} />
- </div>
- <div>
- <label className="text-xs font-medium text-gray-700">Yeni Şifre (boş bırakılırsa değişmez)</label>
- <input type="password" className={inputClass} placeholder="••••••••" value={form.password_hash}
- onChange={(e) => setForm((f) => ({ ...f, password_hash: e.target.value }))} />
- </div>
- <div>
- <label className="text-xs font-medium text-gray-700">Rol</label>
- <select className={inputClass + " bg-white"} value={form.role}
- onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}>
- {ROLLER.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
- </select>
- </div>
- {form.role === "ogretmen" && dersler.length > 0 && (
- <div>
- <label className="text-xs font-medium text-gray-700">Atanacak Dersler</label>
- <div className="mt-2 space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-3">
- {dersler.map((d) => (
- <label key={d.id} className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1">
- <input type="checkbox" className="accent-red-600" checked={form.dersler.includes(d.id)}
- onChange={() => toggleDers(d.id)} />
- <span className="text-sm text-gray-700">{d.kod} - {d.ad}</span>
- </label>
- ))}
- </div>
- </div>
- )}
- <div className="flex gap-3 pt-2">
- <button type="button" onClick={handleGuncelle}
- className="bg-red-700 hover:bg-red-800 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition">
- Güncelle
- </button>
- <button type="button" onClick={() => { setDuzenleId(null); setSekme("liste"); }}
- className="text-gray-500 text-sm border border-gray-200 px-6 py-2.5 rounded-xl hover:bg-gray-50 transition">
- İptal
- </button>
- </div>
- </div>
- )}
- </div>
- )}
- </div>
- </div>
- </div>
- </DashboardLayout>
- );
+              <div className="flex gap-3 mt-10">
+                <button onClick={sekme === "ekle" ? handleEkle : handleGuncelle}
+                  className="bg-[#8B1A1A] hover:bg-red-800 text-white font-black py-3.5 px-10 rounded-2xl transition-all shadow-lg shadow-red-900/10 uppercase text-[11px] tracking-widest">
+                  {sekme === "ekle" ? "Kaydı Oluştur" : "Değişiklikleri Kaydet"}
+                </button>
+                {sekme === "guncelle" && (
+                  <button onClick={() => { setDuzenleId(null); setSekme("liste"); }}
+                    className="bg-slate-100 text-slate-400 font-black py-3.5 px-10 rounded-2xl hover:bg-slate-200 transition-all uppercase text-[11px] tracking-widest">
+                    İptal
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </DashboardLayout>
+  );
 }

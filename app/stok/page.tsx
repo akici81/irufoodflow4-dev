@@ -9,8 +9,6 @@ type UrunStok = { id: string; urunAdi: string; marka: string; olcu: string; stok
 
 export default function StokPage() {
   const { yetkili, yukleniyor } = useAuth("/stok");
-  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yükleniyor...</div>;
-  if (!yetkili) return null;
 
     const [urunler, setUrunler] = useState<UrunStok[]>([]);
     const [stokMap, setStokMap] = useState<Record<string, number>>({});
@@ -19,8 +17,6 @@ export default function StokPage() {
     const [kaydediliyor, setKaydediliyor] = useState<Record<string, boolean>>({});
     const [bildirim, setBildirim] = useState<{ tip: "basari" | "hata"; metin: string } | null>(null);
     const [veriYukleniyor, setVeriYukleniyor] = useState(true);
-
-    useEffect(() => { fetchUrunler(); }, []);
 
     const fetchUrunler = async () => {
         setVeriYukleniyor(true);
@@ -35,12 +31,13 @@ export default function StokPage() {
         setVeriYukleniyor(false);
     };
 
+    useEffect(() => { fetchUrunler(); }, []);
+
     const bildir = (tip: "basari" | "hata", metin: string) => {
         setBildirim({ tip, metin });
         setTimeout(() => setBildirim(null), 2500);
     };
 
-    // Ölçü birimine göre input tipi belirleme (alışveriş listesiyle aynı mantık)
     const olcuBilgisi = (olcu: string) => {
         const tip = olcu.toLowerCase();
         if (tip === "kg" || tip === "l") return { serbest: true, baslangic: 0, adim: 0 };
@@ -84,6 +81,15 @@ export default function StokPage() {
         bildir("basari", `"${u.urunAdi}" güncellendi → ${yeniStok} ${u.olcu}`);
     }, [stokMap]);
 
+  if (yukleniyor) return (
+    <DashboardLayout title="Stok Paneli">
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+      </div>
+    </DashboardLayout>
+  );
+  if (!yetkili) return null;
+
     const filtrelenmis = urunler.filter((u) =>
         !aramaMetni ||
         u.urunAdi.toLowerCase().includes(aramaMetni.toLowerCase()) ||
@@ -96,83 +102,87 @@ export default function StokPage() {
         <DashboardLayout title="Stok Paneli" subtitle="Depodaki mevcut ürün miktarlarını girin">
             <div className="max-w-5xl space-y-5">
                 {bildirim && (
-                    <div className={`text-sm rounded-xl px-4 py-3 border font-medium transition ${bildirim.tip === "basari" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-red-50 text-red-600 border-red-200"}`}>
-                        {bildirim.metin}
+                    <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in fade-in slide-in-from-top-4 ${bildirim.tip === "basari" ? "bg-white border-emerald-100 text-emerald-700" : "bg-white border-red-100 text-red-600"}`}>
+                        <div className={`w-2 h-2 rounded-full ${bildirim.tip === "basari" ? "bg-emerald-500" : "bg-red-500"}`} />
+                        <p className="font-bold text-xs uppercase tracking-widest">{bildirim.metin}</p>
                     </div>
                 )}
 
                 <div className="grid grid-cols-3 gap-4">
                     {[
-                        { label: "Toplam Ürün", deger: urunler.length, renk: "text-gray-800" },
+                        { label: "Toplam Ürün", deger: urunler.length, renk: "text-slate-800" },
                         { label: "Stokta Var", deger: stokluUrun, renk: "text-emerald-600" },
-                        { label: "Stok Yok", deger: urunler.length - stokluUrun, renk: "text-red-600" },
+                        { label: "Stok Yok", deger: urunler.length - stokluUrun, renk: "text-[#8B1A1A]" },
                     ].map((k) => (
-                        <div key={k.label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-center">
-                            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">{k.label}</p>
-                            <p className={`text-3xl font-bold ${k.renk}`}>{k.deger}</p>
+                        <div key={k.label} className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 text-center">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{k.label}</p>
+                            <p className={`text-3xl font-black ${k.renk}`}>{k.deger}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Miktar Giriş Rehberi */}
-                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-                    <p className="text-xs font-semibold text-blue-700 mb-2">Miktar Giriş Rehberi</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-1.5 text-xs">
+                <div className="bg-blue-50 border border-blue-100 rounded-[2rem] px-6 py-4">
+                    <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-3">Miktar Giriş Rehberi</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-2 text-xs">
                         <div className="flex items-start gap-2">
-                            <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap">Kg / L</span>
-                            <span className="text-gray-500">İstediğiniz değeri elle girin — orn: <b>0,100</b> · <b>1,500</b></span>
+                            <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap text-[10px]">Kg / L</span>
+                            <span className="text-slate-500 text-[10px]">Elle girin — orn: <b>0,100</b> · <b>1,500</b></span>
                         </div>
                         <div className="flex items-start gap-2">
-                            <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap">G / Ml</span>
-                            <span className="text-gray-500">+ / - ile <b>50'şer</b> artır/azalt</span>
+                            <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap text-[10px]">G / Ml</span>
+                            <span className="text-slate-500 text-[10px]">+ / - ile <b>50'şer</b> artır/azalt</span>
                         </div>
                         <div className="flex items-start gap-2">
-                            <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap">Adet</span>
-                            <span className="text-gray-500">+ / - ile <b>1'er</b> artır/azalt</span>
+                            <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap text-[10px]">Adet</span>
+                            <span className="text-slate-500 text-[10px]">+ / - ile <b>1'er</b> artır/azalt</span>
                         </div>
                         <div className="flex items-start gap-2">
-                            <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap">Paket / Kutu</span>
-                            <span className="text-gray-500">+ / - ile <b>1'er</b> artır/azalt</span>
+                            <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap text-[10px]">Paket / Kutu</span>
+                            <span className="text-slate-500 text-[10px]">+ / - ile <b>1'er</b> artır/azalt</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
+                <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-5">
                     <input value={aramaMetni} onChange={(e) => setAramaMetni(e.target.value)}
                         placeholder="Ürün adı veya marka ara..."
-                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none text-black p-2 focus:ring-2 focus:ring-red-500" />
+                        className="w-full bg-slate-50 border-none rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none" />
                 </div>
 
-                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                        <h2 className="font-semibold text-gray-800">Depo Stok Miktarları</h2>
-                        <span className="text-xs text-gray-400">{filtrelenmis.length} ürün · Giriş yaptıktan sonra Enter/Tab ile kaydedin</span>
+                <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="px-8 py-5 border-b border-slate-50 flex items-center justify-between">
+                        <h2 className="font-black text-slate-800 tracking-tight">Depo Stok Miktarları</h2>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{filtrelenmis.length} ürün · Enter/Tab ile kaydedin</span>
                     </div>
-                    {yukleniyor ? (
-                        <div className="py-20 text-center text-gray-400 text-sm">Yükleniyor...</div>
+                    {veriYukleniyor ? (
+                        <div className="py-20 text-center flex items-center justify-center gap-3 text-slate-400 text-sm">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#8B1A1A]"></div>
+                            Yükleniyor...
+                        </div>
                     ) : filtrelenmis.length === 0 ? (
-                        <div className="py-20 text-center text-gray-400 text-sm">Ürün bulunamadı.</div>
+                        <div className="py-20 text-center text-slate-400 text-sm">Ürün bulunamadı.</div>
                     ) : (
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="bg-gray-50 border-b border-gray-100 text-left">
-                                    <th className="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">ÜRÜN</th>
-                                    <th className="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">MARKA</th>
-                                    <th className="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">ÖLÇÜ</th>
-                                    <th className="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider w-52">DEPODA MEVCUT</th>
-                                    <th className="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">DURUM</th>
+                                <tr className="bg-slate-50 border-b border-slate-100 text-left">
+                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">ÜRÜN</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">MARKA</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">ÖLÇÜ</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-52">DEPODA MEVCUT</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-24">DURUM</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-slate-50">
                                 {filtrelenmis.map((u) => {
                                     const deger = stokMap[u.id] ?? u.stok;
                                     const degisti = deger !== u.stok;
                                     const bilgi = olcuBilgisi(u.olcu);
                                     return (
-                                        <tr key={u.id} className={`transition-colors ${degisti ? "bg-amber-50" : "hover:bg-gray-50"}`}>
-                                            <td className="px-5 py-3 font-medium text-gray-800">{u.urunAdi}</td>
-                                            <td className="px-5 py-3 text-gray-500">{u.marka || "—"}</td>
-                                            <td className="px-5 py-3 text-gray-500">{u.olcu}</td>
+                                        <tr key={u.id} className={`transition-colors ${degisti ? "bg-amber-50/50" : "hover:bg-slate-50"}`}>
+                                            <td className="px-5 py-3.5 font-bold text-slate-800">{u.urunAdi}</td>
+                                            <td className="px-5 py-3.5 text-slate-500">{u.marka || "—"}</td>
+                                            <td className="px-5 py-3.5 text-slate-500">{u.olcu}</td>
                                             <td className="px-5 py-3">
                                                 {bilgi.serbest ? (
                                                     /* Kg / L → serbest metin girişi */

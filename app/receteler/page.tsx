@@ -53,7 +53,7 @@ export default function RecetelerPage() {
 
   useEffect(() => {
     const id = localStorage.getItem("aktifKullaniciId");
-    const role = localStorage.getItem("aktifKullaniciRole") || "";
+    const role = localStorage.getItem("role") || "";
     if (id) {
       setKullaniciId(Number(id));
       setKullaniciRole(role);
@@ -180,55 +180,65 @@ export default function RecetelerPage() {
     (aramaMetni === "" || r.ad.toLowerCase().includes(aramaMetni.toLowerCase()))
   );
 
-  if (yukleniyor) return <div className="min-h-screen flex items-center justify-center text-gray-400">Yukleniyor...</div>;
+  if (yukleniyor) return (
+    <DashboardLayout title="Tarif Defterim">
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1A1A]"></div>
+      </div>
+    </DashboardLayout>
+  );
   if (!yetkili) return null;
 
   return (
     <DashboardLayout title="Tarif Defterim" subtitle="Kişisel reçete havuzunuz — ilerleyen dönemler için saklayın">
       <div className="max-w-6xl space-y-5">
         {bildirim && (
-          <div className={`text-sm rounded-xl px-4 py-3 border font-medium ${bildirim.tip === "basari" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-red-50 text-red-600 border-red-200"}`}>
-            {bildirim.metin}
+          <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in fade-in slide-in-from-top-4 ${bildirim.tip === "basari" ? "bg-white border-emerald-100 text-emerald-700" : "bg-white border-red-100 text-red-600"}`}>
+            <div className={`w-2 h-2 rounded-full ${bildirim.tip === "basari" ? "bg-emerald-500" : "bg-red-500"}`} />
+            <p className="font-bold text-xs uppercase tracking-widest">{bildirim.metin}</p>
           </div>
         )}
 
         {/* Sekmeler */}
-        <div className="flex gap-2 border-b border-gray-200">
+        <div className="flex bg-slate-100/50 p-1 rounded-2xl w-fit border border-slate-200/60">
           <button onClick={() => setAktifSekme("benim")}
-            className={`px-5 py-2.5 text-sm font-semibold border-b-2 transition ${aktifSekme === "benim" ? "border-red-700 text-red-700" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "benim" ? "bg-white text-[#8B1A1A] shadow-sm italic" : "text-slate-400 hover:text-slate-600"}`}>
             📒 Tarif Defterim ({receteler.length})
           </button>
           <button onClick={handleOrtakSekme}
-            className={`px-5 py-2.5 text-sm font-semibold border-b-2 transition ${aktifSekme === "ortak" ? "border-red-700 text-red-700" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+            className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tighter transition-all ${aktifSekme === "ortak" ? "bg-white text-[#8B1A1A] shadow-sm italic" : "text-slate-400 hover:text-slate-600"}`}>
             🌐 Ortak Reçeteler
           </button>
         </div>
 
         {/* Filtre + Ekle */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-wrap gap-4 items-end">
-          <div>
-            <label className="text-xs font-medium text-gray-700 block mb-1">Kategori</label>
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 flex flex-wrap gap-4 items-end">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kategori</label>
             <select value={filtreKat} onChange={e => setFiltreKat(e.target.value)}
-              className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+              className="bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none">
               {KATEGORILER.map(k => <option key={k}>{k}</option>)}
             </select>
           </div>
-          <div className="flex-1 min-w-[200px]">
-            <label className="text-xs font-medium text-gray-700 block mb-1">Arama</label>
+          <div className="flex-1 min-w-[200px] space-y-1.5">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Arama</label>
             <input value={aramaMetni} onChange={e => setAramaMetni(e.target.value)} placeholder="Tarif ara..."
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
+              className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#8B1A1A]/20 outline-none" />
           </div>
           {aktifSekme === "benim" && (
             <button onClick={handleYeniAc}
-              className="bg-red-700 hover:bg-red-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+              className="bg-[#8B1A1A] hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition shadow-lg shadow-red-900/20">
               + Yeni Tarif Ekle
             </button>
           )}
         </div>
 
         {/* Kartlar */}
-        {(yukleniyor || ortakYukleniyor) ? (
-          <div className="py-20 text-center text-gray-400 text-sm">Yükleniyor...</div>
+        {(veriYukleniyor || ortakYukleniyor) ? (
+          <div className="py-20 text-center text-slate-400 text-sm flex items-center justify-center gap-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#8B1A1A]"></div>
+            Yükleniyor...
+          </div>
         ) : gosterilecek.length === 0 ? (
           <div className="py-20 text-center space-y-3">
             <div className="text-5xl">📒</div>
@@ -239,7 +249,7 @@ export default function RecetelerPage() {
               {aktifSekme === "benim" ? "Yıllarca işinize yarayacak tariflerinizi buraya ekleyin." : "Admin henüz ortak reçete eklememiş."}
             </p>
             {aktifSekme === "benim" && (
-              <button onClick={handleYeniAc} className="bg-red-700 hover:bg-red-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+              <button onClick={handleYeniAc} className="bg-[#8B1A1A] hover:bg-red-800 text-white text-xs font-black uppercase tracking-widest px-6 py-3 rounded-2xl transition shadow-lg shadow-red-900/20">
                 + İlk Tarifinizi Ekleyin
               </button>
             )}
@@ -247,33 +257,33 @@ export default function RecetelerPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {gosterilecek.map(r => (
-              <div key={r.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition">
+              <div key={r.id} className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 flex flex-col gap-3 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="font-bold text-gray-800 text-base">{r.ad}</h3>
-                    <span className="text-xs text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded-full">{r.kategori}</span>
+                    <h3 className="font-black text-slate-800 text-sm tracking-tight mb-1">{r.ad}</h3>
+                    <span className="text-[9px] font-black text-[#8B1A1A] bg-[#8B1A1A]/10 px-2.5 py-1 rounded-full uppercase tracking-widest">{r.kategori}</span>
                   </div>
                   <div className="flex gap-1 shrink-0">
                     {aktifSekme === "ortak" ? (
                       <button onClick={() => handleKopyala(r)}
-                        className="text-xs text-emerald-600 hover:text-emerald-700 px-2 py-1 rounded-lg hover:bg-emerald-50 transition font-medium whitespace-nowrap">
+                        className="text-[10px] font-black text-emerald-600 hover:text-emerald-700 px-2.5 py-1.5 rounded-xl hover:bg-emerald-50 transition uppercase tracking-widest whitespace-nowrap">
                         + Defterime Ekle
                       </button>
                     ) : (
                       <>
                         <button onClick={() => handleDuzenleAc(r)}
-                          className="text-xs text-gray-500 hover:text-blue-600 px-2 py-1 rounded-lg hover:bg-blue-50 transition">Düzenle</button>
+                          className="text-[10px] font-black text-slate-400 hover:text-blue-600 px-2.5 py-1.5 rounded-xl hover:bg-blue-50 transition uppercase tracking-widest">Düzenle</button>
                         <button onClick={() => handleSil(r.id)}
-                          className="text-xs text-gray-500 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 transition">Sil</button>
+                          className="text-[10px] font-black text-slate-400 hover:text-red-600 px-2.5 py-1.5 rounded-xl hover:bg-red-50 transition uppercase tracking-widest">Sil</button>
                       </>
                     )}
                   </div>
                 </div>
-                {r.aciklama && <p className="text-xs text-gray-500 line-clamp-2">{r.aciklama}</p>}
-                <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                  <span className="text-xs text-gray-400">{r.porsiyon} kişilik baz</span>
+                {r.aciklama && <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{r.aciklama}</p>}
+                <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-50">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{r.porsiyon} kişilik baz</span>
                   <button onClick={() => handleDetay(r)}
-                    className="text-xs bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium px-3 py-1.5 rounded-lg transition">
+                    className="text-[10px] font-black text-slate-500 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl transition uppercase tracking-widest">
                     Malzemeler →
                   </button>
                 </div>
@@ -435,7 +445,7 @@ export default function RecetelerPage() {
                 <button onClick={() => setModalAcik(false)}
                   className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">İptal</button>
                 <button onClick={handleKaydet} disabled={formYukleniyor}
-                  className="flex-1 bg-red-700 hover:bg-red-800 text-white text-sm font-semibold py-2.5 rounded-xl transition disabled:opacity-50">
+                  className="flex-1 bg-[#8B1A1A] hover:bg-red-800 text-white text-sm font-bold py-2.5 rounded-xl transition disabled:opacity-50 shadow-lg shadow-red-900/20">
                   {formYukleniyor ? "Kaydediliyor..." : "Tarif Defterime Kaydet"}
                 </button>
               </div>
