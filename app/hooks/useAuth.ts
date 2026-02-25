@@ -12,6 +12,7 @@ const ROL_IZINLERI: Record<string, string[]> = {
     "/siparisler",
     "/siparis-yonetimi",
     "/receteler",
+    "/ders-programi",
   ],
   ogretmen: [
     "/ogretmen",
@@ -31,10 +32,12 @@ const ROL_IZINLERI: Record<string, string[]> = {
   bolum_baskani: [
     "/bolum-baskani",
     "/dersler",
+    "/ders-programi",
   ],
   "bolum-baskani": [
     "/bolum-baskani",
     "/dersler",
+    "/ders-programi",
   ],
 };
 
