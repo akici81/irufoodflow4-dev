@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import * as XLSX from "xlsx";
 import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
@@ -73,6 +74,8 @@ export default function DesProgramiPage() {
   const [kacSaat, setKacSaat] = useState(1);
   const [modalAcik, setModalAcik] = useState(false);
   const [indiriliyor, setIndiriliyor] = useState(false);
+  const [aktariliyor, setAktariliyor] = useState(false);
+  const excelInputRef = useRef<HTMLInputElement>(null);
   const [ogretmenler, setOgretmenler] = useState<{id: number, ad_soyad: string}[]>([]);
   const [seciliUnvan, setSeciliUnvan] = useState("Öğr.Gör.");
   const [seciliIsim, setSeciliIsim] = useState("");
@@ -123,6 +126,14 @@ export default function DesProgramiPage() {
 
   const BOS_TOPLU: TopluSatir = { saat_baslangic: "09:00", kac_saat: 1, ders_kodu: "", ders_adi: "", derslik: "", ogretmen_adi: "", uzem: false };
 
+  const handleTopluKapat = () => {
+    setTopluModalAcik(false);
+    setTopluGun("Pazartesi");
+    setTopluSatirlar([{ ...BOS_TOPLU }]);
+    setTopluUnvan(["Öğr.Gör."]);
+    setTopluIsim([""]);
+  };
+
   const handleTopluAc = () => {
     setTopluGun("Pazartesi");
     setTopluSatirlar([{ ...BOS_TOPLU }]);
@@ -172,7 +183,7 @@ export default function DesProgramiPage() {
     });
     await supabase.from("ders_programi").insert(eklenecekler);
     bildir("basari", `${eklenecekler.length} saat eklendi.`);
-    setTopluModalAcik(false);
+    handleTopluKapat();
     fetchSatirlar();
   };
 
@@ -235,6 +246,94 @@ export default function DesProgramiPage() {
   const programLabel = PROGRAMLAR.find(p => p.value === filtre.program)?.label || "";
   const donemLabel = DONEMLER.find(d => d.value === filtre.donem)?.label || "";
   const baslik = `MESLEK YÜKSEKOKULU\nOTEL, LOKANTA VE İKRAM HİZMETLERİ BÖLÜMÜ / ${programLabel.toUpperCase()}\n${filtre.yil} EĞİTİM-ÖĞRETİM YILI ${donemLabel.toUpperCase()} ${filtre.sinif}. SINIF DERS PROGRAMI`;
+
+
+  const handleExcelAktar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAktariliyor(true);
+    try {
+      const data = await file.arrayBuffer();
+      const wb = XLSX.read(data);
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" }) as string[][];
+
+      const GUNLER = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
+      const SAAT_BITIS_MAP: Record<string, string> = {
+        "08:00":"08:50","09:00":"09:50","10:00":"10:50","11:00":"11:50",
+        "12:00":"12:50","13:00":"13:50","14:00":"14:50","15:00":"15:50",
+        "16:00":"16:50","17:00":"17:50","18:00":"18:50","19:00":"19:50",
+        "20:00":"20:50","21:00":"21:50",
+      };
+
+      // Gün sütunlarını bul
+      const gunCols: Record<string, number> = {};
+      for (const row of rows.slice(0, 10)) {
+        row.forEach((cell, i) => { if (GUNLER.includes(String(cell))) gunCols[String(cell)] = i; });
+        if (Object.keys(gunCols).length > 0) break;
+      }
+
+      const parseHucre = (metin: string) => {
+        if (!metin?.trim()) return null;
+        const satirlar = metin.split("\n").map(s => s.trim()).filter(Boolean);
+        let ders_kodu = "", ders_adi = "", derslik = "", ogretmen_adi = "";
+        for (const s of satirlar) {
+          if (/^[A-Z]{2,4}\d{3}/.test(s)) {
+            const m = s.match(/^([A-Z]{2,4}\d{3})[\s-]*(.*)/);
+            if (m) { ders_kodu = m[1]; ders_adi = m[2].replace(/^[-\s]+/, ""); }
+          } else if (/^[BC]\d|derslik/i.test(s)) {
+            derslik = s.replace(/derslik\s*:?\s*/i, "").trim();
+          } else if (/öğr|dr\.|doç|prof/i.test(s)) {
+            ogretmen_adi = s.trim();
+          } else if (!ders_adi) {
+            ders_adi = s;
+          }
+        }
+        if (!ders_adi && !ders_kodu) return null;
+        return { ders_kodu, ders_adi: ders_adi.replace(/^[-\s"]+|[-\s"]+$/g, ""), derslik, ogretmen_adi, uzem: /uzem/i.test(metin) };
+      };
+
+      const eklenecekler: Omit<Satir, "id">[] = [];
+      for (const row of rows.slice(3)) {
+        const saat = String(row[0] || "").trim();
+        const m = saat.match(/^(\d{1,2})[:.](\d{2})/);
+        if (!m) continue;
+        const saat_baslangic = `${m[1].padStart(2, "0")}:00`;
+        const saat_bitis = SAAT_BITIS_MAP[saat_baslangic] || "";
+        for (const [gun, colIdx] of Object.entries(gunCols)) {
+          const hucre = parseHucre(String(row[colIdx] || ""));
+          if (!hucre) continue;
+          eklenecekler.push({
+            ...filtre,
+            gun,
+            saat_baslangic,
+            saat_bitis,
+            ...hucre,
+            sira: 0,
+            aktif: true,
+          });
+        }
+      }
+
+      if (eklenecekler.length === 0) { bildir("hata", "Ders bulunamadı. Şablonu kontrol edin."); setAktariliyor(false); return; }
+
+      // Önce mevcut kayıtları sil
+      await supabase.from("ders_programi")
+        .update({ aktif: false })
+        .eq("program", filtre.program)
+        .eq("sinif", filtre.sinif)
+        .eq("donem", filtre.donem)
+        .eq("yil", filtre.yil);
+
+      await supabase.from("ders_programi").insert(eklenecekler);
+      bildir("basari", `${eklenecekler.length} ders aktarıldı!`);
+      fetchSatirlar();
+    } catch (err) {
+      bildir("hata", "Dosya okunamadı. Excel formatını kontrol edin.");
+    }
+    setAktariliyor(false);
+    if (excelInputRef.current) excelInputRef.current.value = "";
+  };
 
   const handleIndir = async () => {
     setIndiriliyor(true);
@@ -315,6 +414,10 @@ export default function DesProgramiPage() {
                 style={{ background: "#B71C1C" }}>
                 + Tekli Ekle
               </button>
+              <label className={`cursor-pointer bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm ${aktariliyor ? "opacity-50 pointer-events-none" : ""}`}>
+                {aktariliyor ? "Aktarılıyor..." : "📂 Excel'den Aktar"}
+                <input ref={excelInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleExcelAktar} />
+              </label>
               <button onClick={handleIndir} disabled={indiriliyor || satirlar.length === 0}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm disabled:opacity-40">
                 {indiriliyor ? "Hazırlanıyor..." : "⬇ JPEG İndir"}
@@ -539,7 +642,7 @@ export default function DesProgramiPage() {
                 <h2 className="text-lg font-bold text-zinc-800">Toplu Ders Girişi</h2>
                 <p className="text-xs text-zinc-400 mt-0.5">Bir günün tüm derslerini tek seferde girin</p>
               </div>
-              <button onClick={() => setTopluModalAcik(false)} className="text-zinc-400 hover:text-zinc-600 text-xl font-bold">✕</button>
+              <button onClick={handleTopluKapat} className="text-zinc-400 hover:text-zinc-600 text-xl font-bold">✕</button>
             </div>
             <div className="p-6 space-y-4">
               {/* Gün seç */}
@@ -641,7 +744,7 @@ export default function DesProgramiPage() {
               </button>
 
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setTopluModalAcik(false)}
+                <button onClick={handleTopluKapat}
                   className="flex-1 border border-zinc-300 text-zinc-600 text-sm font-medium py-2.5 rounded-xl hover:bg-zinc-50 transition">
                   İptal
                 </button>
