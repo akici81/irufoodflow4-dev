@@ -23,6 +23,17 @@ type Satir = {
   aktif?: boolean;
 };
 
+
+type TopluSatir = {
+  saat_baslangic: string;
+  kac_saat: number;
+  ders_kodu: string;
+  ders_adi: string;
+  derslik: string;
+  ogretmen_adi: string;
+  uzem: boolean;
+};
+
 const PROGRAMLAR = [
   { value: "ascilik", label: "Aşçılık Programı" },
   { value: "pastacilk", label: "Pastacılık ve Ekmekçilik Programı" },
@@ -62,9 +73,23 @@ export default function DesProgramiPage() {
   const [kacSaat, setKacSaat] = useState(1);
   const [modalAcik, setModalAcik] = useState(false);
   const [indiriliyor, setIndiriliyor] = useState(false);
+  const [ogretmenler, setOgretmenler] = useState<{id: number, ad_soyad: string}[]>([]);
+  const [seciliUnvan, setSeciliUnvan] = useState("Öğr.Gör.");
+  const [seciliIsim, setSeciliIsim] = useState("");
+  const [topluModalAcik, setTopluModalAcik] = useState(false);
+  const [topluGun, setTopluGun] = useState("Pazartesi");
+  const [topluSatirlar, setTopluSatirlar] = useState<TopluSatir[]>([]);
+  const [topluUnvan, setTopluUnvan] = useState<string[]>([]);
+  const [topluIsim, setTopluIsim] = useState<string[]>([]);
   const tabloRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { if (yetkili) fetchSatirlar(); }, [yetkili, filtre]);
+  useEffect(() => {
+    if (yetkili) {
+      fetchSatirlar();
+      supabase.from("kullanicilar").select("id, ad_soyad").eq("role", "ogretmen").order("ad_soyad")
+        .then(({ data }) => setOgretmenler(data || []));
+    }
+  }, [yetkili, filtre]);
 
   const fetchSatirlar = async () => {
     setYukleniyor(true);
@@ -91,12 +116,79 @@ export default function DesProgramiPage() {
     setForm({ ...BOS_SATIR, program: filtre.program, sinif: filtre.sinif, donem: filtre.donem, yil: filtre.yil });
     setDuzenlenen(null);
     setKacSaat(1);
+    setSeciliUnvan("Öğr.Gör.");
+    setSeciliIsim("");
     setModalAcik(true);
+  };
+
+  const BOS_TOPLU: TopluSatir = { saat_baslangic: "09:00", kac_saat: 1, ders_kodu: "", ders_adi: "", derslik: "", ogretmen_adi: "", uzem: false };
+
+  const handleTopluAc = () => {
+    setTopluGun("Pazartesi");
+    setTopluSatirlar([{ ...BOS_TOPLU }]);
+    setTopluUnvan(["Öğr.Gör."]);
+    setTopluIsim([""]);
+    setTopluModalAcik(true);
+  };
+
+  const handleTopluSatirEkle = () => {
+    setTopluSatirlar(p => [...p, { ...BOS_TOPLU }]);
+    setTopluUnvan(p => [...p, "Öğr.Gör."]);
+    setTopluIsim(p => [...p, ""]);
+  };
+
+  const handleTopluSatirSil = (idx: number) => {
+    setTopluSatirlar(p => p.filter((_, i) => i !== idx));
+    setTopluUnvan(p => p.filter((_, i) => i !== idx));
+    setTopluIsim(p => p.filter((_, i) => i !== idx));
+  };
+
+  const handleTopluKaydet = async () => {
+    const gecerli = topluSatirlar.filter(s => s.ders_adi.trim());
+    if (gecerli.length === 0) { bildir("hata", "En az bir ders adı giriniz."); return; }
+    const eklenecekler: Omit<Satir, "id">[] = [];
+    gecerli.forEach((s, idx) => {
+      const saatSirasi = Object.keys(SAAT_BITIS);
+      const baslangicIdx = saatSirasi.indexOf(s.saat_baslangic);
+      const ogretmenAdi = `${topluUnvan[idx] || ""} ${topluIsim[idx] || ""}`.trim();
+      for (let i = 0; i < s.kac_saat; i++) {
+        const si = baslangicIdx + i;
+        if (si >= saatSirasi.length) break;
+        const saat = saatSirasi[si];
+        eklenecekler.push({
+          ...filtre,
+          gun: topluGun,
+          saat_baslangic: saat,
+          saat_bitis: SAAT_BITIS[saat],
+          ders_kodu: s.ders_kodu,
+          ders_adi: s.ders_adi,
+          derslik: s.derslik,
+          ogretmen_adi: ogretmenAdi,
+          uzem: s.uzem,
+          sira: 0,
+          aktif: true,
+        });
+      }
+    });
+    await supabase.from("ders_programi").insert(eklenecekler);
+    bildir("basari", `${eklenecekler.length} saat eklendi.`);
+    setTopluModalAcik(false);
+    fetchSatirlar();
   };
 
   const handleDuzenle = (s: Satir) => {
     setForm({ ...s });
     setDuzenlenen(s.id ?? null);
+    // ogretmen_adi'nden ünvan ve isim ayır
+    const unvanlar = ["Dr. Öğr. Üyesi", "Doç. Dr.", "Prof. Dr.", "Arş. Gör.", "Öğr.Gör."];
+    const bulunan = unvanlar.find(u => s.ogretmen_adi?.startsWith(u));
+    if (bulunan) {
+      setSeciliUnvan(bulunan);
+      setSeciliIsim(s.ogretmen_adi.replace(bulunan, "").trim());
+    } else {
+      setSeciliUnvan("Öğr.Gör.");
+      setSeciliIsim(s.ogretmen_adi || "");
+    }
     setModalAcik(true);
   };
 
@@ -112,10 +204,20 @@ export default function DesProgramiPage() {
     if (!form.gun) { bildir("hata", "Gün seçiniz."); return; }
     if (duzenlenen) {
       await supabase.from("ders_programi").update({ ...form, aktif: true }).eq("id", duzenlenen);
+      bildir("basari", "Güncellendi.");
     } else {
-      await supabase.from("ders_programi").insert({ ...form, aktif: true });
+      const saatSirasi = Object.keys(SAAT_BITIS);
+      const baslangicIdx = saatSirasi.indexOf(form.saat_baslangic);
+      const eklenecekler = [];
+      for (let i = 0; i < kacSaat; i++) {
+        const idx = baslangicIdx + i;
+        if (idx >= saatSirasi.length) break;
+        const s = saatSirasi[idx];
+        eklenecekler.push({ ...form, saat_baslangic: s, saat_bitis: SAAT_BITIS[s], aktif: true });
+      }
+      await supabase.from("ders_programi").insert(eklenecekler);
+      bildir("basari", `${eklenecekler.length} saat eklendi.`);
     }
-    bildir("basari", duzenlenen ? "Güncellendi." : "Eklendi.");
     setModalAcik(false);
     fetchSatirlar();
   };
@@ -204,10 +306,14 @@ export default function DesProgramiPage() {
                 className="border border-zinc-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 w-32" />
             </div>
             <div className="flex gap-2 ml-auto">
+              <button onClick={handleTopluAc}
+                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm">
+                📋 Toplu Giriş
+              </button>
               <button onClick={handleYeniAc}
                 className="text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm"
                 style={{ background: "#B71C1C" }}>
-                + Ders Ekle
+                + Tekli Ekle
               </button>
               <button onClick={handleIndir} disabled={indiriliyor || satirlar.length === 0}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm disabled:opacity-40">
@@ -384,9 +490,20 @@ export default function DesProgramiPage() {
                 </div>
                 <div className="col-span-2">
                   <label className="text-xs font-semibold text-zinc-600 block mb-1">Öğretmen</label>
-                  <input value={form.ogretmen_adi} onChange={e => setForm(p => ({ ...p, ogretmen_adi: e.target.value }))}
-                    placeholder="örn: Öğr.Gör. Ataberk ÇELİK"
-                    className="w-full border border-zinc-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
+                  <div className="flex gap-2">
+                    <select value={seciliUnvan}
+                      onChange={e => { setSeciliUnvan(e.target.value); setForm(p => ({ ...p, ogretmen_adi: `${e.target.value} ${seciliIsim}`.trim() })); }}
+                      className="border border-zinc-300 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500 shrink-0">
+                      {["Öğr.Gör.", "Arş. Gör.", "Dr. Öğr. Üyesi", "Doç. Dr.", "Prof. Dr."].map(u => <option key={u}>{u}</option>)}
+                    </select>
+                    <select value={seciliIsim}
+                      onChange={e => { setSeciliIsim(e.target.value); setForm(p => ({ ...p, ogretmen_adi: `${seciliUnvan} ${e.target.value}`.trim() })); }}
+                      className="flex-1 border border-zinc-300 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500">
+                      <option value="">— İsim Seçiniz —</option>
+                      {ogretmenler.map(o => <option key={o.id} value={o.ad_soyad}>{o.ad_soyad}</option>)}
+                    </select>
+                  </div>
+                  {form.ogretmen_adi && <p className="text-xs text-zinc-400 mt-1">Görünecek: <span className="font-medium text-zinc-600">{form.ogretmen_adi}</span></p>}
                 </div>
                 <div className="col-span-2">
                   <label className="flex items-center gap-3 cursor-pointer">
@@ -413,6 +530,132 @@ export default function DesProgramiPage() {
           </div>
         </div>
       )}
+      {/* ── Toplu Giriş Modal ── */}
+      {topluModalAcik && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-zinc-100 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-zinc-800">Toplu Ders Girişi</h2>
+                <p className="text-xs text-zinc-400 mt-0.5">Bir günün tüm derslerini tek seferde girin</p>
+              </div>
+              <button onClick={() => setTopluModalAcik(false)} className="text-zinc-400 hover:text-zinc-600 text-xl font-bold">✕</button>
+            </div>
+            <div className="p-6 space-y-4">
+              {/* Gün seç */}
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-semibold text-zinc-700 shrink-0">Gün:</label>
+                <div className="flex gap-2 flex-wrap">
+                  {GUNLER.map(g => (
+                    <button key={g} onClick={() => setTopluGun(g)}
+                      className={`px-4 py-1.5 rounded-xl text-sm font-semibold transition ${topluGun === g ? "text-white shadow-sm" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
+                      style={topluGun === g ? { background: "#B71C1C" } : {}}>
+                      {g}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Satırlar */}
+              <div className="space-y-3">
+                {topluSatirlar.map((s, idx) => (
+                  <div key={idx} className="bg-zinc-50 rounded-xl p-4 space-y-3 relative border border-zinc-100">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Ders {idx + 1}</span>
+                      {topluSatirlar.length > 1 && (
+                        <button onClick={() => handleTopluSatirSil(idx)} className="text-red-400 hover:text-red-600 text-xs font-medium">✕ Kaldır</button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-12 gap-2">
+                      {/* Saat */}
+                      <div className="col-span-2">
+                        <label className="text-xs text-zinc-500 block mb-1">Başlangıç</label>
+                        <select value={s.saat_baslangic}
+                          onChange={e => setTopluSatirlar(p => p.map((r, i) => i === idx ? { ...r, saat_baslangic: e.target.value } : r))}
+                          className="w-full border border-zinc-200 rounded-lg px-2 py-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-red-500">
+                          {SAATLER.map(s => <option key={s}>{s}</option>)}
+                        </select>
+                      </div>
+                      {/* Kaç saat */}
+                      <div className="col-span-1">
+                        <label className="text-xs text-zinc-500 block mb-1">Saat</label>
+                        <select value={s.kac_saat}
+                          onChange={e => setTopluSatirlar(p => p.map((r, i) => i === idx ? { ...r, kac_saat: Number(e.target.value) } : r))}
+                          className="w-full border border-zinc-200 rounded-lg px-2 py-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-red-500">
+                          {[1,2,3,4,5,6].map(n => <option key={n}>{n}</option>)}
+                        </select>
+                      </div>
+                      {/* Ders kodu */}
+                      <div className="col-span-2">
+                        <label className="text-xs text-zinc-500 block mb-1">Kod</label>
+                        <input value={s.ders_kodu} placeholder="ASC110"
+                          onChange={e => setTopluSatirlar(p => p.map((r, i) => i === idx ? { ...r, ders_kodu: e.target.value } : r))}
+                          className="w-full border border-zinc-200 rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-red-500 bg-white" />
+                      </div>
+                      {/* Ders adı */}
+                      <div className="col-span-3">
+                        <label className="text-xs text-zinc-500 block mb-1">Ders Adı *</label>
+                        <input value={s.ders_adi} placeholder="Mutfak Uygulama II"
+                          onChange={e => setTopluSatirlar(p => p.map((r, i) => i === idx ? { ...r, ders_adi: e.target.value } : r))}
+                          className="w-full border border-zinc-200 rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-red-500 bg-white" />
+                      </div>
+                      {/* Derslik */}
+                      <div className="col-span-2">
+                        <label className="text-xs text-zinc-500 block mb-1">Derslik</label>
+                        <input value={s.derslik} placeholder="B131"
+                          onChange={e => setTopluSatirlar(p => p.map((r, i) => i === idx ? { ...r, derslik: e.target.value } : r))}
+                          className="w-full border border-zinc-200 rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-red-500 bg-white" />
+                      </div>
+                      {/* UZEM */}
+                      <div className="col-span-2 flex items-end pb-1">
+                        <label className="flex items-center gap-1.5 cursor-pointer">
+                          <div className={`w-8 h-4 rounded-full transition-colors relative ${s.uzem ? "bg-amber-400" : "bg-zinc-200"}`}
+                            onClick={() => setTopluSatirlar(p => p.map((r, i) => i === idx ? { ...r, uzem: !r.uzem } : r))}>
+                            <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${s.uzem ? "translate-x-4" : "translate-x-0.5"}`} />
+                          </div>
+                          <span className="text-xs text-zinc-600">UZEM</span>
+                        </label>
+                      </div>
+                    </div>
+                    {/* Öğretmen */}
+                    <div className="flex gap-2">
+                      <select value={topluUnvan[idx] || "Öğr.Gör."}
+                        onChange={e => setTopluUnvan(p => p.map((v, i) => i === idx ? e.target.value : v))}
+                        className="border border-zinc-200 rounded-lg px-2 py-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-red-500 shrink-0">
+                        {["Öğr.Gör.", "Arş. Gör.", "Dr. Öğr. Üyesi", "Doç. Dr.", "Prof. Dr."].map(u => <option key={u}>{u}</option>)}
+                      </select>
+                      <select value={topluIsim[idx] || ""}
+                        onChange={e => setTopluIsim(p => p.map((v, i) => i === idx ? e.target.value : v))}
+                        className="flex-1 border border-zinc-200 rounded-lg px-2 py-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="">— Öğretmen Seçiniz —</option>
+                        {ogretmenler.map(o => <option key={o.id} value={o.ad_soyad}>{o.ad_soyad}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button onClick={handleTopluSatirEkle}
+                className="w-full border-2 border-dashed border-zinc-200 text-zinc-500 hover:border-red-300 hover:text-red-600 text-sm font-medium py-2.5 rounded-xl transition">
+                + Ders Ekle
+              </button>
+
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setTopluModalAcik(false)}
+                  className="flex-1 border border-zinc-300 text-zinc-600 text-sm font-medium py-2.5 rounded-xl hover:bg-zinc-50 transition">
+                  İptal
+                </button>
+                <button onClick={handleTopluKaydet}
+                  className="flex-1 text-white text-sm font-bold py-2.5 rounded-xl transition"
+                  style={{ background: "#B71C1C" }}>
+                  Tümünü Kaydet ({topluSatirlar.filter(s => s.ders_adi.trim()).length} ders)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </DashboardLayout>
   );
 }

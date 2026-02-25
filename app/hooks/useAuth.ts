@@ -13,6 +13,7 @@ const ROL_IZINLERI: Record<string, string[]> = {
     "/siparis-yonetimi",
     "/receteler",
     "/ders-programi",
+    "/etkinlik-takvimi",
   ],
   ogretmen: [
     "/ogretmen",
@@ -20,6 +21,7 @@ const ROL_IZINLERI: Record<string, string[]> = {
     "/siparislerim",
     "/talep",
     "/receteler",
+    "/etkinlik-takvimi",
   ],
   satin_alma: [
     "/satin",
@@ -33,11 +35,13 @@ const ROL_IZINLERI: Record<string, string[]> = {
     "/bolum-baskani",
     "/dersler",
     "/ders-programi",
+    "/etkinlik-takvimi",
   ],
   "bolum-baskani": [
     "/bolum-baskani",
     "/dersler",
     "/ders-programi",
+    "/etkinlik-takvimi",
   ],
 };
 
