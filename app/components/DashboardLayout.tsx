@@ -21,6 +21,7 @@ const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
     { name: "Alışveriş Listeleri", path: "/siparisler" },
     { name: "Sipariş Yönetimi", path: "/siparis-yonetimi" },
     { name: "Ortak Reçete Havuzu", path: "/receteler" },
+    { name: "Ders Programı", path: "/ders-programi" },
   ],
   ogretmen: [
     { name: "Ana Sayfa", path: "/ogretmen" },
@@ -38,10 +39,12 @@ const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
   bolum_baskani: [
     { name: "Ana Sayfa", path: "/bolum-baskani" },
     { name: "Ders Yönetimi", path: "/dersler" },
+    { name: "Ders Programı", path: "/ders-programi" },
   ],
   "bolum-baskani": [
     { name: "Ana Sayfa", path: "/bolum-baskani" },
     { name: "Ders Yönetimi", path: "/dersler" },
+    { name: "Ders Programı", path: "/ders-programi" },
   ],
 };
 
