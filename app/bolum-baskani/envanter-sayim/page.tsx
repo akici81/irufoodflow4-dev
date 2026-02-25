@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import DashboardLayout from "../../components/DashboardLayout";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
+import * as XLSX from "xlsx";
 
 /* ─── TIPLER ─────────────────────────────── */
 type Demirbas = {
@@ -267,6 +268,93 @@ export default function EnvanterSayimSayfasi() {
     setSayimModu(false);
     setKayitEdiliyor(false);
     fetchSayimlar();
+  };
+
+  /* ─── EXCEL SABLON iNDiR ────────────── */
+  const excelSablonIndir = () => {
+    const satirlar = demirbaslar.map((d) => ({
+      "Demirbas Adi": d.ad,
+      "Kategori": d.kategori,
+      "Marka": d.marka || "",
+      "Model": d.model || "",
+      "Seri No": d.seri_no || "",
+      "Beklenen Adet": d.beklenen_adet,
+      "Sayilan Adet": "",
+      "Durum (saglam/arizali/hurda)": "saglam",
+      "Not": "",
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(satirlar);
+
+    /* Kolon genislikleri */
+    ws["!cols"] = [
+      { wch: 28 }, { wch: 32 }, { wch: 14 }, { wch: 14 },
+      { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 28 }, { wch: 20 },
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Envanter Sayim");
+    XLSX.writeFile(wb, `envanter_sayim_sablon_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
+  /* ─── EXCEL YUKLE ──────────────────── */
+  const [excelYukleniyor, setExcelYukleniyor] = useState(false);
+
+  const excelYukle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setExcelYukleniyor(true);
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = evt.target?.result;
+        const wb = XLSX.read(data, { type: "binary" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows: Record<string, string | number>[] = XLSX.utils.sheet_to_json(ws);
+
+        if (rows.length === 0) {
+          alert("Excel dosyasi bos veya hatali format!");
+          setExcelYukleniyor(false);
+          return;
+        }
+
+        /* Eslestirme: Excel satirlarini mevcut demirbaslarla eslestir */
+        const yeniSatirlar: SayimSatiri[] = demirbaslar.map((d) => {
+          const eslesme = rows.find(
+            (r) =>
+              String(r["Demirbas Adi"] || "").trim().toLowerCase() === d.ad.trim().toLowerCase() &&
+              String(r["Kategori"] || "").trim().toLowerCase() === d.kategori.trim().toLowerCase()
+          );
+
+          return {
+            demirbas_id: d.id,
+            ad: d.ad,
+            kategori: d.kategori,
+            beklenen_adet: d.beklenen_adet,
+            sayilan_adet: eslesme ? (parseInt(String(eslesme["Sayilan Adet"])) || 0) : 0,
+            durum: eslesme
+              ? (["saglam", "arizali", "hurda"].includes(String(eslesme["Durum (saglam/arizali/hurda)"] || "").trim().toLowerCase())
+                  ? String(eslesme["Durum (saglam/arizali/hurda)"] || "").trim().toLowerCase()
+                  : "saglam")
+              : "saglam",
+            notlar: eslesme ? String(eslesme["Not"] || "") : "",
+          };
+        });
+
+        setSayimSatirlari(yeniSatirlar);
+        setSayimNot("Excel ile yuklenen sayim");
+        setSayimModu(true);
+        alert(`${rows.length} satirdan ${yeniSatirlar.filter((s) => s.sayilan_adet > 0).length} demirbas basariyla eslesti.`);
+      } catch {
+        alert("Excel dosyasi okunamadi. Lutfen sablon formatina uygun bir dosya yukleyin.");
+      }
+      setExcelYukleniyor(false);
+    };
+    reader.readAsBinaryString(file);
+
+    /* Input'u sifirla (ayni dosyayi tekrar yukleyebilmek icin) */
+    e.target.value = "";
   };
 
   const sayimDetayGoster = async (sayimId: string) => {
@@ -547,17 +635,39 @@ export default function EnvanterSayimSayfasi() {
         {/* ═══════════════════════════════════════ */}
         {aktifSekme === "sayim" && !sayimModu && !detayGoster && (
           <>
-            {/* Yeni sayim butonu */}
-            <div className="flex items-center justify-between">
+            {/* Yeni sayim butonu + Excel butonlari */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <p className="text-sm text-zinc-500">Gecmis sayimlarinizi goruntuleyebilir veya yeni bir sayim baslabilirsiniz.</p>
-              <button
-                onClick={yeniSayimBaslat}
-                disabled={demirbaslar.length === 0}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm hover:opacity-90 transition disabled:opacity-50 shrink-0"
-                style={{ background: "#B71C1C" }}
-              >
-                + Yeni Sayim Baslat
-              </button>
+              <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                {/* Excel Sablon Indir */}
+                <button
+                  onClick={excelSablonIndir}
+                  disabled={demirbaslar.length === 0}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition disabled:opacity-50"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Sablon Indir
+                </button>
+
+                {/* Excel Yukle */}
+                <label
+                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold border border-blue-300 text-blue-700 hover:bg-blue-50 transition cursor-pointer ${demirbaslar.length === 0 || excelYukleniyor ? "opacity-50 pointer-events-none" : ""}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  {excelYukleniyor ? "Yukleniyor..." : "Excel Yukle"}
+                  <input type="file" accept=".xlsx,.xls" onChange={excelYukle} className="hidden" />
+                </label>
+
+                {/* Yeni Sayim Baslat */}
+                <button
+                  onClick={yeniSayimBaslat}
+                  disabled={demirbaslar.length === 0}
+                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm hover:opacity-90 transition disabled:opacity-50"
+                  style={{ background: "#B71C1C" }}
+                >
+                  + Yeni Sayim Baslat
+                </button>
+              </div>
             </div>
 
             {/* Gecmis Sayimlar Tablosu */}
