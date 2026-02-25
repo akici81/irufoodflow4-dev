@@ -59,6 +59,7 @@ export default function DesProgramiPage() {
   const [bildirim, setBildirim] = useState<{ tip: "basari" | "hata"; metin: string } | null>(null);
   const [form, setForm] = useState<Omit<Satir, "id">>(BOS_SATIR);
   const [duzenlenen, setDuzenlenen] = useState<string | null>(null);
+  const [kacSaat, setKacSaat] = useState(1);
   const [modalAcik, setModalAcik] = useState(false);
   const [indiriliyor, setIndiriliyor] = useState(false);
   const tabloRef = useRef<HTMLDivElement>(null);
@@ -89,6 +90,7 @@ export default function DesProgramiPage() {
   const handleYeniAc = () => {
     setForm({ ...BOS_SATIR, program: filtre.program, sinif: filtre.sinif, donem: filtre.donem, yil: filtre.yil });
     setDuzenlenen(null);
+    setKacSaat(1);
     setModalAcik(true);
   };
 
@@ -353,6 +355,15 @@ export default function DesProgramiPage() {
                     {SAATLER.map(s => <option key={s}>{s}</option>)}
                   </select>
                 </div>
+                {!duzenlenen && (
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-600 block mb-1">Kaç Saat?</label>
+                    <select value={kacSaat} onChange={e => setKacSaat(Number(e.target.value))}
+                      className="w-full border border-zinc-300 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500">
+                      {[1,2,3,4,5,6].map(n => <option key={n} value={n}>{n} saat ({form.saat_baslangic} – {Object.keys(SAAT_BITIS)[Object.keys(SAAT_BITIS).indexOf(form.saat_baslangic) + n - 1] ? SAAT_BITIS[Object.keys(SAAT_BITIS)[Object.keys(SAAT_BITIS).indexOf(form.saat_baslangic) + n - 1]] : ""})</option>)}
+                    </select>
+                  </div>
+                )}
                 <div className="col-span-2">
                   <label className="text-xs font-semibold text-zinc-600 block mb-1">Ders Adı *</label>
                   <input value={form.ders_adi} onChange={e => setForm(p => ({ ...p, ders_adi: e.target.value }))}
