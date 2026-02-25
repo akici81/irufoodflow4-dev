@@ -155,7 +155,7 @@ export default function BolumBaskaniAnaSayfa() {
               { label: "Ders Programi",   icon: "📋", link: "/ders-programi",   renk: "#2563EB", bg: "#EFF6FF" },
               { label: "Etkinlik Takvimi",icon: "📅", link: "/etkinlik-takvimi",renk: "#7C3AED", bg: "#F5F3FF" },
               { label: "Siparisler",      icon: "🛒", link: "/siparisler",       renk: "#059669", bg: "#ECFDF5" },
-              { label: "Urun Havuzu",     icon: "📦", link: "/urun-havuzu",      renk: "#EA580C", bg: "#FFF7ED" },
+              { label: "Envanter Sayim",  icon: "🔧", link: "/bolum-baskani/envanter-sayim", renk: "#B71C1C", bg: "#FEF2F2" },
             ].map((h) => (
               <Link key={h.link} href={h.link}>
                 <div className="rounded-2xl border border-zinc-100 p-4 text-center hover:shadow-md transition" style={{ background: h.bg }}>
