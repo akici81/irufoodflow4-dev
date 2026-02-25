@@ -199,6 +199,109 @@ export default function EnvanterSayimSayfasi() {
     fetchDemirbaslar();
   };
 
+  /* ─── DEMiRBAS EXCEL SABLON iNDiR ────── */
+  const demirbasSablonIndir = () => {
+    const satirlar = KATEGORILER.filter((k) => k !== "Tumu").flatMap((kategori) => [
+      {
+        "Demirbas Adi": "",
+        "Kategori": kategori,
+        "Marka": "",
+        "Model": "",
+        "Seri No": "",
+        "Adet": "",
+        "Durum (saglam/arizali/hurda)": "saglam",
+        "Alis Tarihi (YYYY-MM-DD)": "",
+        "Garanti Bitis (YYYY-MM-DD)": "",
+        "Notlar": "",
+      },
+    ]);
+
+    const ws = XLSX.utils.json_to_sheet(satirlar);
+
+    ws["!cols"] = [
+      { wch: 28 }, { wch: 36 }, { wch: 14 }, { wch: 14 },
+      { wch: 16 }, { wch: 8 }, { wch: 28 }, { wch: 22 }, { wch: 22 }, { wch: 24 },
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Demirbaslar");
+
+    /* Ikinci sayfa: Kategori listesi referansi */
+    const refSatirlari = KATEGORILER.filter((k) => k !== "Tumu").map((k) => ({ "Gecerli Kategoriler": k }));
+    const wsRef = XLSX.utils.json_to_sheet(refSatirlari);
+    wsRef["!cols"] = [{ wch: 40 }];
+    XLSX.utils.book_append_sheet(wb, wsRef, "Kategori Listesi");
+
+    XLSX.writeFile(wb, `demirbas_sablon_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
+  /* ─── DEMiRBAS EXCEL YUKLE ─────────── */
+  const [demirbasExcelYukleniyor, setDemirbasExcelYukleniyor] = useState(false);
+
+  const demirbasExcelYukle = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setDemirbasExcelYukleniyor(true);
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const data = evt.target?.result;
+        const wb = XLSX.read(data, { type: "binary" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows: Record<string, string | number>[] = XLSX.utils.sheet_to_json(ws);
+
+        if (rows.length === 0) {
+          alert("Excel dosyasi bos veya hatali format!");
+          setDemirbasExcelYukleniyor(false);
+          return;
+        }
+
+        const gecerliKategoriler = KATEGORILER.filter((k) => k !== "Tumu");
+
+        const yeniDemirbaslar = rows
+          .filter((r) => String(r["Demirbas Adi"] || "").trim() !== "")
+          .map((r) => {
+            const kategori = String(r["Kategori"] || "").trim();
+            return {
+              ad: String(r["Demirbas Adi"] || "").trim(),
+              kategori: gecerliKategoriler.includes(kategori) ? kategori : "Pisirme Ekipmanlari",
+              marka: String(r["Marka"] || "").trim() || null,
+              model: String(r["Model"] || "").trim() || null,
+              seri_no: String(r["Seri No"] || "").trim() || null,
+              beklenen_adet: parseInt(String(r["Adet"] || "0")) || 0,
+              durum: ["saglam", "arizali", "hurda"].includes(String(r["Durum (saglam/arizali/hurda)"] || "").trim().toLowerCase())
+                ? String(r["Durum (saglam/arizali/hurda)"] || "").trim().toLowerCase()
+                : "saglam",
+              alis_tarihi: String(r["Alis Tarihi (YYYY-MM-DD)"] || "").trim() || null,
+              garanti_bitis: String(r["Garanti Bitis (YYYY-MM-DD)"] || "").trim() || null,
+              notlar: String(r["Notlar"] || "").trim() || null,
+            };
+          });
+
+        if (yeniDemirbaslar.length === 0) {
+          alert("Gecerli demirbas satiri bulunamadi! Lutfen 'Demirbas Adi' sutununu doldurun.");
+          setDemirbasExcelYukleniyor(false);
+          return;
+        }
+
+        const { error } = await supabase.from("demirbaslar").insert(yeniDemirbaslar);
+
+        if (error) {
+          alert("Veritabanina kaydedilemedi: " + error.message);
+        } else {
+          alert(`${yeniDemirbaslar.length} demirbas basariyla eklendi!`);
+          fetchDemirbaslar();
+        }
+      } catch {
+        alert("Excel dosyasi okunamadi. Lutfen sablon formatina uygun bir dosya yukleyin.");
+      }
+      setDemirbasExcelYukleniyor(false);
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = "";
+  };
+
   /* ─── SAYIM iSLEMLERi ─────────────────── */
   const yeniSayimBaslat = () => {
     const satirlar: SayimSatiri[] = demirbaslar.map((d) => ({
@@ -450,7 +553,7 @@ export default function EnvanterSayimSayfasi() {
               ))}
             </div>
 
-            {/* Arama + Filtre + Ekle Butonu */}
+            {/* Arama + Filtre */}
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
@@ -468,9 +571,32 @@ export default function EnvanterSayimSayfasi() {
                   <option key={k} value={k}>{k}</option>
                 ))}
               </select>
+            </div>
+
+            {/* Ekle + Excel Butonlari */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Excel Sablon Indir */}
+              <button
+                onClick={demirbasSablonIndir}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Sablon Indir
+              </button>
+
+              {/* Excel Toplu Yukle */}
+              <label
+                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold border border-blue-300 text-blue-700 hover:bg-blue-50 transition cursor-pointer ${demirbasExcelYukleniyor ? "opacity-50 pointer-events-none" : ""}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                {demirbasExcelYukleniyor ? "Yukleniyor..." : "Toplu Yukle (Excel)"}
+                <input type="file" accept=".xlsx,.xls" onChange={demirbasExcelYukle} className="hidden" />
+              </label>
+
+              {/* Tek Tek Ekle */}
               <button
                 onClick={() => { resetForm(); setFormAcik(true); }}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm hover:opacity-90 transition shrink-0"
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm hover:opacity-90 transition shrink-0"
                 style={{ background: "#B71C1C" }}
               >
                 + Yeni Demirbas
