@@ -126,7 +126,7 @@ export default function EnvanterSayimSayfasi() {
       .order("tarih", { ascending: false });
 
     if (data) {
-      const ids = [...new Set(data.map((s) => s.sayan_id))];
+      const ids = Array.from(new Set(data.map((s) => s.sayan_id)));
       const { data: kullanicilar } = await supabase
         .from("kullanicilar")
         .select("id, ad_soyad")
