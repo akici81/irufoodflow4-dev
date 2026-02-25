@@ -34,12 +34,14 @@ const ROL_IZINLERI: Record<string, string[]> = {
   ],
   bolum_baskani: [
     "/bolum-baskani",
+    "/bolum-baskani/envanter-sayim",
     "/dersler",
     "/ders-programi",
     "/etkinlik-takvimi",
   ],
   "bolum-baskani": [
     "/bolum-baskani",
+    "/bolum-baskani/envanter-sayim",
     "/dersler",
     "/ders-programi",
     "/etkinlik-takvimi",
