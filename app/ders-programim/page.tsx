@@ -105,6 +105,10 @@ export default function DersProgramimPage() {
     }
   }
 
+  const grupluToplamSaat = tumSaatler.reduce((acc, saat) =>
+    acc + GUNLER.reduce((a, gun) => a + (grid[saat]?.[gun]?.length || 0), 0), 0
+  );
+
   const handleIndir = async (format: "jpeg" | "pdf") => {
     setIndiriliyor(true);
     try {
@@ -143,7 +147,7 @@ export default function DersProgramimPage() {
           <div>
             <p className="font-semibold text-zinc-800">{adSoyad}</p>
             <p className="text-xs text-zinc-400 mt-0.5">
-              {veriYukleniyor ? "Taranıyor..." : `Haftalik toplam ${derslerim.length} ders saati`}
+              {veriYukleniyor ? "Taranıyor..." : `Haftalik toplam ${grupluToplamSaat} ders saati`}
             </p>
           </div>
           <div className="flex gap-2">
