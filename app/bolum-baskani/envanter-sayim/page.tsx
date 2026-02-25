@@ -54,12 +54,16 @@ type SayimSatiri = {
 /* ─── KATEGORiLER ─────────────────────────── */
 const KATEGORILER = [
   "Tumu",
-  "Buyuk Ekipman",
-  "Kucuk Ekipman",
-  "Servis Malzemesi",
-  "Pisirme Gereci",
-  "Kesme/Dograma",
-  "Diger",
+  "Pisirme Ekipmanlari",
+  "Sogutma ve Muhafaza Ekipmanlari",
+  "Hazirlik Ekipmanlari",
+  "Kucuk El Aletleri",
+  "Pastacilik ve Ekmekcilik Ekipmanlari",
+  "Servis Ekipmanlari",
+  "Olcum ve Kontrol Ekipmanlari",
+  "Hijyen ve Is Guvenligi Ekipmanlari",
+  "Mobilya ve Sabit Donanim",
+  "Elektrikli Kucuk Cihazlar",
 ];
 
 const DURUM_SECENEKLERI = ["saglam", "arizali", "hurda"];
@@ -88,7 +92,7 @@ export default function EnvanterSayimSayfasi() {
   const [duzenleId, setDuzenleId] = useState<string | null>(null);
   const [silOnay, setSilOnay] = useState<string | null>(null);
   const [form, setForm] = useState({
-    ad: "", kategori: "Buyuk Ekipman", marka: "", model: "", seri_no: "",
+    ad: "", kategori: "Pisirme Ekipmanlari", marka: "", model: "", seri_no: "",
     beklenen_adet: "0", durum: "saglam", alis_tarihi: "", garanti_bitis: "", notlar: "",
   });
 
@@ -141,7 +145,7 @@ export default function EnvanterSayimSayfasi() {
 
   /* ─── DEMiRBAS CRUD ────────────────────── */
   const resetForm = () => {
-    setForm({ ad: "", kategori: "Buyuk Ekipman", marka: "", model: "", seri_no: "", beklenen_adet: "0", durum: "saglam", alis_tarihi: "", garanti_bitis: "", notlar: "" });
+    setForm({ ad: "", kategori: "Pisirme Ekipmanlari", marka: "", model: "", seri_no: "", beklenen_adet: "0", durum: "saglam", alis_tarihi: "", garanti_bitis: "", notlar: "" });
     setDuzenleId(null);
     setFormAcik(false);
   };
