@@ -31,6 +31,7 @@ const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
     { name: "Talep Oluştur", path: "/talep" },
     { name: "Tarif Defterim", path: "/receteler" },
     { name: "Etkinlik Takvimi", path: "/etkinlik-takvimi" },
+    { name: "Ders Programım", path: "/ders-programim" },
   ],
   satin_alma: [
     { name: "Ana Sayfa", path: "/satin" },

@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(npx next build)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npm install xlsx)",
+      "Bash(git add app/ders-programi/page.tsx)",
+      "Bash(git commit -m \"ders-programi: excel import ozelligi eklendi\")",
+      "Bash(git add app/program-olustur/page.tsx)",
+      "Bash(git commit -m \"program-olustur: giris gerektirmeyen excel-to-jpeg sayfasi\")",
+      "Bash(git push origin main)",
+      "Bash(npm install jspdf)",
+      "Bash(git commit -m \"fix: jspdf dynamic import\")",
+      "Bash(git add package.json package-lock.json)"
     ]
   }
 }

@@ -6,98 +6,199 @@ import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
-type Ders = { id: string; kod: string; ad: string };
+type Siparis = { id: string; dersAdi: string; hafta: string; tarih: string; durum: string; genelToplam: number; };
+type Ders = { id: string; kod: string; ad: string; };
+type Etkinlik = { id: string; hafta: number; gun: string; tarih: string; etkinlik: string; renk: string; };
+
+const DURUM_STIL: Record<string, { bg: string; text: string; label: string }> = {
+  bekliyor:      { bg: "#FEF3C7", text: "#92400E", label: "Bekliyor" },
+  onaylandi:     { bg: "#D1FAE5", text: "#065F46", label: "Onaylandi" },
+  teslim_alindi: { bg: "#DBEAFE", text: "#1E40AF", label: "Teslim Alindi" },
+};
+
+const RENK_MAP: Record<string, { bg: string; text: string }> = {
+  kirmizi: { bg: "#FEE2E2", text: "#991B1B" },
+  sari:    { bg: "#FEF3C7", text: "#92400E" },
+  mavi:    { bg: "#DBEAFE", text: "#1D4ED8" },
+  yesil:   { bg: "#D1FAE5", text: "#065F46" },
+  mor:     { bg: "#EDE9FE", text: "#5B21B6" },
+  turuncu: { bg: "#FFEDD5", text: "#9A3412" },
+};
 
 export default function OgretmenAnaSayfa() {
   const { yetkili, yukleniyor } = useAuth("/ogretmen");
-
   const [adSoyad, setAdSoyad] = useState("");
-  const [atananDersler, setAtananDersler] = useState<Ders[]>([]);
+  const [dersler, setDersler] = useState<Ders[]>([]);
+  const [siparisler, setSiparisler] = useState<Siparis[]>([]);
+  const [etkinlikler, setEtkinlikler] = useState<Etkinlik[]>([]);
+  const [stats, setStats] = useState({ bekleyen: 0, onaylanan: 0, teslim: 0 });
+
+  const saat = new Date().getHours();
+  const selamlama = saat < 12 ? "Gunaydin" : saat < 18 ? "Iyi gunler" : "Iyi aksamlar";
 
   useEffect(() => {
-    const fetchData = async () => {
-      const id = localStorage.getItem("aktifKullaniciId");
-      if (!id) return;
-      const { data: kullanici } = await supabase
-        .from("kullanicilar")
-        .select("ad_soyad, username, dersler")
-        .eq("id", id)
-        .single();
-      if (!kullanici) return;
-      setAdSoyad(kullanici.ad_soyad || kullanici.username);
-      if ((kullanici.dersler || []).length > 0) {
-        const { data: dersler } = await supabase.from("dersler").select("*").in("id", kullanici.dersler);
-        setAtananDersler(dersler || []);
-      }
-    };
-    fetchData();
-  }, []);
+    if (!yetkili) return;
+    const id = localStorage.getItem("aktifKullaniciId");
+    if (!id) return;
+
+    supabase.from("kullanicilar").select("ad_soyad, dersler").eq("id", Number(id)).single()
+      .then(async ({ data }) => {
+        if (!data) return;
+        setAdSoyad(data.ad_soyad || "Ogretmen");
+        if ((data.dersler || []).length > 0) {
+          const { data: dersData } = await supabase.from("dersler").select("*").in("id", data.dersler);
+          setDersler(dersData || []);
+        }
+      });
+
+    supabase.from("siparisler").select("*").eq("ogretmenId", Number(id)).order("tarih", { ascending: false }).limit(5)
+      .then(({ data }) => {
+        const list = data || [];
+        setSiparisler(list);
+        setStats({
+          bekleyen: list.filter(s => s.durum === "bekliyor").length,
+          onaylanan: list.filter(s => s.durum === "onaylandi").length,
+          teslim: list.filter(s => s.durum === "teslim_alindi").length,
+        });
+      });
+
+    supabase.from("etkinlik_takvimi").select("*").eq("aktif", true).order("hafta").limit(5)
+      .then(({ data }) => setEtkinlikler(data || []));
+  }, [yetkili]);
 
   if (yukleniyor || !yetkili) return null;
 
   return (
-    <DashboardLayout>
-      <div className="max-w-5xl">
-        {/* Karşılama Banner */}
-        <div
-          className="text-white rounded-2xl px-8 py-7 mb-8"
-          style={{ background: "#B71C1C" }}
-        >
-          <h1 className="text-2xl font-bold mb-1">Merhaba, {adSoyad}!</h1>
-          <p className="text-red-200 text-sm">Öğretmen Paneline Hoş Geldiniz.</p>
+    <DashboardLayout title="Ogretmen Paneli" subtitle="Hosgeldiniz">
+      <div className="space-y-6 max-w-5xl">
+
+        {/* Karsilama */}
+        <div className="rounded-2xl p-6 text-white relative overflow-hidden" style={{ background: "linear-gradient(135deg, #7F1212 0%, #B71C1C 100%)" }}>
+          <div className="absolute right-6 top-0 bottom-0 flex items-center opacity-10 text-9xl font-black select-none">IRU</div>
+          <p className="text-white/60 text-sm">{selamlama},</p>
+          <h2 className="text-2xl font-black mt-0.5">{adSoyad}</h2>
+          <p className="text-white/50 text-xs mt-2">
+            {new Date().toLocaleDateString("tr-TR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* İşlem Rehberi */}
-          <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-8">
-            <div className="text-center mb-5">
-              <span className="text-5xl">📋</span>
-              <h2 className="text-lg font-bold text-zinc-800 mt-3">İşlem Rehberi</h2>
-            </div>
-            <p className="text-zinc-500 text-sm text-center mb-5">
-              Dersleriniz için alışveriş listesi oluşturmak veya mevcut listelerinizi yönetmek için sol menüdeki{" "}
-              <span className="font-semibold text-zinc-700">&quot;Alışveriş Listelerim&quot;</span>{" "}
-              sekmesini kullanabilirsiniz.
-            </p>
-            <div className="bg-red-50 border border-dashed border-red-200 rounded-xl p-4">
-              <p className="text-red-700 text-xs text-center">
-                <span className="font-semibold">İpucu:</span> Alışveriş listesi sayfasında ürünleri işaretleyip haftalık planlamanızı yapabilirsiniz.
-              </p>
-            </div>
-            <Link
-              href="/alisveris-listelerim"
-              className="mt-5 w-full block text-center text-white text-sm font-semibold py-3 rounded-xl transition"
-              style={{ background: "#B71C1C" }}
-            >
-              Alışveriş Listesi Oluştur →
-            </Link>
-          </div>
-
-          {/* Atanmış Dersler */}
-          <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-8">
-            <h2 className="font-bold text-zinc-800 mb-5 flex items-center gap-2">
-              <span>📚</span> Atanmış Dersleriniz
-            </h2>
-            {atananDersler.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-zinc-400 text-sm">Henüz ders atanmamış.</p>
-                <p className="text-zinc-300 text-xs mt-1">Yönetici ile iletişime geçin.</p>
+        {/* Siparis ozeti */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Bekleyen",     val: stats.bekleyen,  renk: "#D97706", bg: "#FFFBEB", icon: "⏳" },
+            { label: "Onaylanan",    val: stats.onaylanan, renk: "#059669", bg: "#ECFDF5", icon: "✅" },
+            { label: "Teslim Alindi",val: stats.teslim,    renk: "#2563EB", bg: "#EFF6FF", icon: "📦" },
+          ].map((k) => (
+            <Link href="/alisveris-listelerim" key={k.label}>
+              <div className="rounded-2xl border border-zinc-100 p-4 text-center hover:shadow-md transition" style={{ background: k.bg }}>
+                <div className="text-xl mb-1">{k.icon}</div>
+                <p className="text-2xl font-black" style={{ color: k.renk }}>{k.val}</p>
+                <p className="text-xs text-zinc-400 mt-0.5">{k.label}</p>
               </div>
-            ) : (
-              <ul className="space-y-3">
-                {atananDersler.map((d) => (
-                  <li key={d.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-zinc-50 transition">
-                    <span className="text-lg">📖</span>
-                    <div>
-                      <span className="text-xs font-bold" style={{ color: "#B71C1C" }}>{d.kod}</span>
-                      <p className="text-sm text-zinc-700 font-medium">{d.ad}</p>
+            </Link>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+          {/* Atanan Dersler */}
+          <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+              <h3 className="font-bold text-zinc-800">Derslerim</h3>
+              <Link href="/receteler" className="text-xs font-semibold text-red-700 hover:underline">Tarif Defteri</Link>
+            </div>
+            <div className="divide-y divide-zinc-50">
+              {dersler.length === 0 ? (
+                <p className="px-5 py-8 text-center text-zinc-400 text-sm">Henuz ders atanmamis</p>
+              ) : dersler.map((d) => (
+                <div key={d.id} className="px-5 py-3 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold text-white" style={{ background: "#B71C1C" }}>
+                    {d.kod?.slice(0, 3) || "DR"}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-800">{d.ad}</p>
+                    <p className="text-xs text-zinc-400">{d.kod}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Etkinlikler */}
+          <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+              <h3 className="font-bold text-zinc-800">Etkinlik Takvimi</h3>
+              <Link href="/etkinlik-takvimi" className="text-xs font-semibold text-red-700 hover:underline">Takvime Git</Link>
+            </div>
+            <div className="divide-y divide-zinc-50">
+              {etkinlikler.length === 0 ? (
+                <p className="px-5 py-8 text-center text-zinc-400 text-sm">Etkinlik bulunmuyor</p>
+              ) : etkinlikler.map((e) => {
+                const r = RENK_MAP[e.renk] || RENK_MAP.mavi;
+                return (
+                  <div key={e.id} className="px-5 py-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center shrink-0 text-xs font-bold" style={{ background: r.bg, color: r.text }}>
+                      <span>{e.hafta}.</span>
+                      <span>Hft</span>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-zinc-800 truncate">{e.etkinlik}</p>
+                      <p className="text-xs text-zinc-400">{e.gun} &bull; {e.tarih}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
+
+        {/* Son siparisler */}
+        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+            <h3 className="font-bold text-zinc-800">Son Alisveris Listelerim</h3>
+            <Link href="/alisveris-listelerim" className="text-xs font-semibold text-red-700 hover:underline">Tumunu Gor</Link>
+          </div>
+          <div className="divide-y divide-zinc-50">
+            {siparisler.length === 0 ? (
+              <p className="px-5 py-8 text-center text-zinc-400 text-sm">Henuz liste olusturulmmamis</p>
+            ) : siparisler.map((s) => {
+              const d = DURUM_STIL[s.durum] || DURUM_STIL.bekliyor;
+              return (
+                <div key={s.id} className="px-5 py-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-zinc-800 truncate">{s.dersAdi}</p>
+                    <p className="text-xs text-zinc-400">{s.hafta} &bull; {new Date(s.tarih).toLocaleDateString("tr-TR")}</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs font-bold text-zinc-600">{Number(s.genelToplam || 0).toFixed(2)} TL</span>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: d.bg, color: d.text }}>{d.label}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Hizli Erisim */}
+        <div>
+          <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">Hizli Erisim</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: "Tarif Defteri",   icon: "📖", link: "/receteler",          renk: "#EA580C", bg: "#FFF7ED" },
+              { label: "Alisveris Listesi",icon: "🛒", link: "/alisveris-listelerim",renk: "#059669", bg: "#ECFDF5" },
+              { label: "Ders Programi",   icon: "📋", link: "/ders-programi",       renk: "#2563EB", bg: "#EFF6FF" },
+              { label: "Etkinlik Takvimi",icon: "📅", link: "/etkinlik-takvimi",    renk: "#7C3AED", bg: "#F5F3FF" },
+            ].map((h) => (
+              <Link key={h.link} href={h.link}>
+                <div className="rounded-2xl border border-zinc-100 p-4 text-center hover:shadow-md transition" style={{ background: h.bg }}>
+                  <div className="text-2xl mb-2">{h.icon}</div>
+                  <p className="text-sm font-bold" style={{ color: h.renk }}>{h.label}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
       </div>
     </DashboardLayout>
   );

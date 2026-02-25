@@ -6,121 +6,166 @@ import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
+type Siparis = { id: string; ogretmenAdi: string; dersAdi: string; hafta: string; tarih: string; durum: string; genelToplam: number; };
+type Etkinlik = { id: string; hafta: number; gun: string; tarih: string; etkinlik: string; renk: string; };
+
+const DURUM_STIL: Record<string, { bg: string; text: string; label: string }> = {
+  bekliyor:      { bg: "#FEF3C7", text: "#92400E", label: "Bekliyor" },
+  onaylandi:     { bg: "#D1FAE5", text: "#065F46", label: "Onaylandi" },
+  teslim_alindi: { bg: "#DBEAFE", text: "#1E40AF", label: "Teslim" },
+};
+
+const RENK_MAP: Record<string, { bg: string; text: string }> = {
+  kirmizi: { bg: "#FEE2E2", text: "#991B1B" },
+  sari:    { bg: "#FEF3C7", text: "#92400E" },
+  mavi:    { bg: "#DBEAFE", text: "#1D4ED8" },
+  yesil:   { bg: "#D1FAE5", text: "#065F46" },
+  mor:     { bg: "#EDE9FE", text: "#5B21B6" },
+  turuncu: { bg: "#FFEDD5", text: "#9A3412" },
+};
+
 export default function AdminAnaSayfa() {
   const { yetkili, yukleniyor } = useAuth("/admin");
+  const [adSoyad, setAdSoyad] = useState("");
+  const [stats, setStats] = useState({ kullanici: 0, urun: 0, ders: 0, bekleyen: 0, onaylanan: 0, toplam: 0 });
+  const [sonSiparisler, setSonSiparisler] = useState<Siparis[]>([]);
+  const [etkinlikler, setEtkinlikler] = useState<Etkinlik[]>([]);
 
-  const [istatistik, setIstatistik] = useState({
-    kullaniciSayisi: 0,
-    urunSayisi: 0,
-    dersSayisi: 0,
-    siparisSayisi: 0,
-  });
+  const saat = new Date().getHours();
+  const selamlama = saat < 12 ? "Gunaydin" : saat < 18 ? "Iyi gunler" : "Iyi aksamlar";
 
   useEffect(() => {
-    const fetchIstatistik = async () => {
-      const [kullanicilar, urunler, dersler, siparisler] = await Promise.all([
-        supabase.from("kullanicilar").select("id", { count: "exact", head: true }),
-        supabase.from("urunler").select("id", { count: "exact", head: true }),
-        supabase.from("dersler").select("id", { count: "exact", head: true }),
-        supabase.from("siparisler").select("id", { count: "exact", head: true }),
-      ]);
-      setIstatistik({
-        kullaniciSayisi: kullanicilar.count ?? 0,
-        urunSayisi: urunler.count ?? 0,
-        dersSayisi: dersler.count ?? 0,
-        siparisSayisi: siparisler.count ?? 0,
-      });
-    };
-    fetchIstatistik();
-  }, []);
+    if (!yetkili) return;
+    const id = localStorage.getItem("aktifKullaniciId");
+    supabase.from("kullanicilar").select("ad_soyad").eq("id", Number(id)).single()
+      .then(({ data }) => setAdSoyad(data?.ad_soyad || "Admin"));
 
-  const kartlar = [
-    { label: "Toplam Kullanıcı", deger: istatistik.kullaniciSayisi, renk: "#2563EB", bg: "#EFF6FF" },
-    { label: "Toplam Ürün",      deger: istatistik.urunSayisi,      renk: "#EA580C", bg: "#FFF7ED" },
-    { label: "Toplam Ders",      deger: istatistik.dersSayisi,      renk: "#16A34A", bg: "#F0FDF4" },
-    { label: "Alışveriş Listeleri", deger: istatistik.siparisSayisi, renk: "#7C3AED", bg: "#F5F3FF" },
-  ];
+    Promise.all([
+      supabase.from("kullanicilar").select("id", { count: "exact", head: true }),
+      supabase.from("urunler").select("id", { count: "exact", head: true }),
+      supabase.from("dersler").select("id", { count: "exact", head: true }),
+      supabase.from("siparisler").select("id", { count: "exact", head: true }).eq("durum", "bekliyor"),
+      supabase.from("siparisler").select("id", { count: "exact", head: true }).eq("durum", "onaylandi"),
+      supabase.from("siparisler").select("id", { count: "exact", head: true }),
+    ]).then(([k, u, d, b, o, t]) => {
+      setStats({ kullanici: k.count ?? 0, urun: u.count ?? 0, ders: d.count ?? 0, bekleyen: b.count ?? 0, onaylanan: o.count ?? 0, toplam: t.count ?? 0 });
+    });
 
-  const islemler = [
-    {
-      baslik: "Kullanıcı Yönetimi",
-      aciklama: "Tüm kullanıcıları ekleyin, düzenleyin, silin ve yetkilendirin",
-      ozellikler: ["Kullanıcı CRUD İşlemleri", "Rol ve Yetki Atama", "Ders Atama", "Şifre Yönetimi"],
-      link: "/kullanicilar",
-      renk: "#2563EB",
-      border: "#BFDBFE",
-      bg: "#EFF6FF",
-    },
-    {
-      baslik: "Ürün Yönetimi",
-      aciklama: "Tüm ürün işlemlerini tam kontrolle yönetin",
-      ozellikler: ["Ürün Ekleme/Silme/Düzenleme", "Excel'den Toplu Yükleme", "Fiyat ve Miktar Yönetimi", "Kategori Yönetimi"],
-      link: "/urun-havuzu",
-      renk: "#EA580C",
-      border: "#FED7AA",
-      bg: "#FFF7ED",
-    },
-    {
-      baslik: "Alışveriş Listeleri",
-      aciklama: "Sistem genelindeki tüm alışveriş listelerini yönetin",
-      ozellikler: ["Tüm Listeleri Görme", "Onay ve Kontrol", "Düzenlemeler Yapma"],
-      link: "/siparisler",
-      renk: "#16A34A",
-      border: "#BBF7D0",
-      bg: "#F0FDF4",
-    },
-    {
-      baslik: "Sipariş Yönetimi",
-      aciklama: "Sistem genelinde raporlar ve istatistikler",
-      ozellikler: ["Tüm Siparişleri Görme", "Öğretmen/Ders Filtresi", "Detay ve Silme"],
-      link: "/siparis-yonetimi",
-      renk: "#7C3AED",
-      border: "#DDD6FE",
-      bg: "#F5F3FF",
-    },
-  ];
+    supabase.from("siparisler").select("*").order("tarih", { ascending: false }).limit(5)
+      .then(({ data }) => setSonSiparisler(data || []));
+
+    supabase.from("etkinlik_takvimi").select("*").eq("aktif", true).order("hafta").limit(5)
+      .then(({ data }) => setEtkinlikler(data || []));
+  }, [yetkili]);
 
   if (yukleniyor || !yetkili) return null;
 
   return (
-    <DashboardLayout title="Sistem Yöneticisi Paneli" subtitle="Tüm sistem işlevlerine tam erişim">
-      <div className="max-w-5xl space-y-6">
+    <DashboardLayout title="Yonetim Paneli" subtitle="IRU FoodFlow Sistem Kontrolu">
+      <div className="space-y-6 max-w-6xl">
 
-        {/* İstatistik Kartları */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {kartlar.map((k) => (
-            <div
-              key={k.label}
-              className="rounded-2xl border border-zinc-200 p-5 shadow-sm"
-              style={{ background: k.bg }}
-            >
-              <p className="text-xs text-zinc-500 font-semibold uppercase tracking-wider mb-2">{k.label}</p>
-              <p className="text-4xl font-bold" style={{ color: k.renk }}>{k.deger}</p>
-            </div>
-          ))}
+        {/* Karsilama */}
+        <div className="rounded-2xl p-6 text-white relative overflow-hidden" style={{ background: "linear-gradient(135deg, #7F1212 0%, #B71C1C 100%)" }}>
+          <div className="absolute right-6 top-0 bottom-0 flex items-center opacity-10 text-9xl font-black select-none">IRU</div>
+          <p className="text-white/60 text-sm">{selamlama}</p>
+          <h2 className="text-2xl font-black mt-0.5">{adSoyad}</h2>
+          <p className="text-white/50 text-xs mt-2">Sistem Yoneticisi &bull; {new Date().toLocaleDateString("tr-TR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
         </div>
 
-        {/* Hızlı Erişim Kartları */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {islemler.map((i) => (
-            <Link key={i.link} href={i.link} className="group block">
-              <div
-                className="h-full rounded-2xl border-2 p-6 shadow-sm transition-all duration-200 group-hover:shadow-md group-hover:-translate-y-0.5 bg-white"
-                style={{ borderColor: i.border }}
-              >
-                <h3 className="font-bold text-base mb-1" style={{ color: i.renk }}>{i.baslik}</h3>
-                <p className="text-zinc-500 text-sm mb-4">{i.aciklama}</p>
-                <ul className="space-y-1.5">
-                  {i.ozellikler.map((o) => (
-                    <li key={o} className="text-sm text-zinc-600 flex items-center gap-2">
-                      <span className="text-emerald-500 text-xs flex-shrink-0">✓</span>
-                      {o}
-                    </li>
-                  ))}
-                </ul>
+        {/* Istatistikler */}
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
+          {[
+            { label: "Kullanici",  val: stats.kullanici,  icon: "👤", renk: "#2563EB", bg: "#EFF6FF", link: "/kullanicilar" },
+            { label: "Urun",       val: stats.urun,       icon: "📦", renk: "#EA580C", bg: "#FFF7ED", link: "/urun-havuzu" },
+            { label: "Ders",       val: stats.ders,       icon: "📚", renk: "#16A34A", bg: "#F0FDF4", link: "/dersler" },
+            { label: "Bekleyen",   val: stats.bekleyen,   icon: "⏳", renk: "#D97706", bg: "#FFFBEB", link: "/siparis-yonetimi" },
+            { label: "Onaylanan",  val: stats.onaylanan,  icon: "✅", renk: "#059669", bg: "#ECFDF5", link: "/siparis-yonetimi" },
+            { label: "Toplam",     val: stats.toplam,     icon: "🛒", renk: "#7C3AED", bg: "#F5F3FF", link: "/siparis-yonetimi" },
+          ].map((k) => (
+            <Link href={k.link} key={k.label}>
+              <div className="rounded-2xl border border-zinc-100 p-4 text-center hover:shadow-md transition" style={{ background: k.bg }}>
+                <div className="text-xl mb-1">{k.icon}</div>
+                <p className="text-2xl font-black" style={{ color: k.renk }}>{k.val}</p>
+                <p className="text-xs text-zinc-400 mt-0.5">{k.label}</p>
               </div>
             </Link>
           ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* Son Siparisler */}
+          <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+              <h3 className="font-bold text-zinc-800">Son Siparisler</h3>
+              <Link href="/siparis-yonetimi" className="text-xs font-semibold text-red-700 hover:underline">Tumunu Gor</Link>
+            </div>
+            <div className="divide-y divide-zinc-50">
+              {sonSiparisler.length === 0 ? (
+                <p className="px-5 py-8 text-center text-zinc-400 text-sm">Henuz siparis yok</p>
+              ) : sonSiparisler.map((s) => {
+                const d = DURUM_STIL[s.durum] || DURUM_STIL.bekliyor;
+                return (
+                  <div key={s.id} className="px-5 py-3 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-zinc-800 truncate">{s.ogretmenAdi}</p>
+                      <p className="text-xs text-zinc-400 truncate">{s.dersAdi} &bull; {s.hafta}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs font-bold text-zinc-600">{Number(s.genelToplam || 0).toFixed(2)} TL</span>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: d.bg, color: d.text }}>{d.label}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Etkinlikler */}
+          <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+              <h3 className="font-bold text-zinc-800">Etkinlik Takvimi</h3>
+              <Link href="/etkinlik-takvimi" className="text-xs font-semibold text-red-700 hover:underline">Takvime Git</Link>
+            </div>
+            <div className="divide-y divide-zinc-50">
+              {etkinlikler.length === 0 ? (
+                <p className="px-5 py-8 text-center text-zinc-400 text-sm">Etkinlik bulunmuyor</p>
+              ) : etkinlikler.map((e) => {
+                const r = RENK_MAP[e.renk] || RENK_MAP.mavi;
+                return (
+                  <div key={e.id} className="px-5 py-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center shrink-0 text-xs font-bold" style={{ background: r.bg, color: r.text }}>
+                      <span>{e.hafta}.</span>
+                      <span>Hft</span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-zinc-800 truncate">{e.etkinlik}</p>
+                      <p className="text-xs text-zinc-400">{e.gun} &bull; {e.tarih}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Hizli Erisim */}
+        <div>
+          <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">Hizli Erisim</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: "Kullanicilar",    icon: "👥", link: "/kullanicilar",    renk: "#2563EB", bg: "#EFF6FF" },
+              { label: "Urun Havuzu",     icon: "📦", link: "/urun-havuzu",     renk: "#EA580C", bg: "#FFF7ED" },
+              { label: "Ders Programi",   icon: "📋", link: "/ders-programi",   renk: "#059669", bg: "#ECFDF5" },
+              { label: "Etkinlik Takvimi",icon: "📅", link: "/etkinlik-takvimi",renk: "#7C3AED", bg: "#F5F3FF" },
+            ].map((h) => (
+              <Link key={h.link} href={h.link}>
+                <div className="rounded-2xl border border-zinc-100 p-4 text-center hover:shadow-md transition" style={{ background: h.bg }}>
+                  <div className="text-2xl mb-2">{h.icon}</div>
+                  <p className="text-sm font-bold" style={{ color: h.renk }}>{h.label}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
 
       </div>
