@@ -23,6 +23,7 @@ const ROL_IZINLERI: Record<string, string[]> = {
     "/receteler",
     "/etkinlik-takvimi",
     "/ders-programim",
+    "/urun-havuzu",
   ],
   satin_alma: [
     "/satin",
@@ -38,6 +39,7 @@ const ROL_IZINLERI: Record<string, string[]> = {
     "/dersler",
     "/ders-programi",
     "/etkinlik-takvimi",
+    "/urun-havuzu",
   ],
   "bolum-baskani": [
     "/bolum-baskani",
@@ -45,6 +47,7 @@ const ROL_IZINLERI: Record<string, string[]> = {
     "/dersler",
     "/ders-programi",
     "/etkinlik-takvimi",
+    "/urun-havuzu",
   ],
 };
 

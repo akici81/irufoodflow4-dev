@@ -231,11 +231,13 @@ export default function UrunHavuzuPage() {
               className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition">
               + Yeni Ürün
             </button>
-            <label className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition cursor-pointer">
-              Excel'den Yükle
-              <input ref={dosyaRef} type="file" accept=".xlsx,.xls" onChange={handleExcelYukle} className="hidden" />
-            </label>
-            {urunler.length > 0 && aktifRol !== "ogretmen" && (
+            {(aktifRol === "admin" || aktifRol === "bolum_baskani" || aktifRol === "bolum-baskani") && (
+              <label className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition cursor-pointer">
+                Excel'den Yükle
+                <input ref={dosyaRef} type="file" accept=".xlsx,.xls" onChange={handleExcelYukle} className="hidden" />
+              </label>
+            )}
+            {urunler.length > 0 && aktifRol === "admin" && (
               <button type="button" onClick={handleTopluSil}
                 className="bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium px-4 py-2.5 rounded-xl transition">
                 Tümünü Sil
@@ -305,7 +307,7 @@ export default function UrunHavuzuPage() {
                         </td>
                         <td className="px-4 py-3 text-gray-400 text-xs font-mono">{u.kod || "—"}</td>
                         <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                          {aktifRol !== "ogretmen" && (
+                          {aktifRol !== "ogretmen" && aktifRol !== "satin_alma" && aktifRol !== "stok" && (
                             <button type="button" onClick={() => handleSil(u.id)}
                               className="text-xs text-red-500 hover:text-red-700 font-medium hover:underline transition">
                               Sil
