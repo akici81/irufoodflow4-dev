@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import DashboardLayout from "../components/DashboardLayout"
-import { useAuth } from "../hooks/useAuth";
+import DashboardLayout from "../../components/DashboardLayout"
+import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
 
