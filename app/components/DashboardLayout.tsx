@@ -110,12 +110,12 @@ export default function DashboardLayout({
       setSifreBildirim({ tip: "hata", metin: "Şifre en az 4 karakter olmalı." }); return;
     }
     setSifreYukleniyor(true);
-    const { data } = await supabase.from("kullanicilar").select("sifre").eq("id", kullanici!.id).single();
-    if (!data || data.sifre !== sifreForm.mevcutSifre) {
+    const { data } = await supabase.from("kullanicilar").select("password_hash").eq("id", kullanici!.id).single();
+    if (!data || data.password_hash !== sifreForm.mevcutSifre) {
       setSifreBildirim({ tip: "hata", metin: "Mevcut şifre yanlış." });
       setSifreYukleniyor(false); return;
     }
-    await supabase.from("kullanicilar").update({ sifre: sifreForm.yeniSifre }).eq("id", kullanici!.id);
+    await supabase.from("kullanicilar").update({ password_hash: sifreForm.yeniSifre }).eq("id", kullanici!.id);
     setSifreBildirim({ tip: "basari", metin: "Şifre başarıyla güncellendi!" });
     setSifreYukleniyor(false);
     setSifreForm({ mevcutSifre: "", yeniSifre: "", tekrar: "" });
