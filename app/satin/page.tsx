@@ -247,37 +247,61 @@ export default function SatinAlmaPage() {
               ))}
             </div>
 
-            {/* Bekleyen siparisler */}
-            <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-zinc-800">Bekleyen Siparisler</h3>
-                  <p className="text-xs text-zinc-400 mt-0.5">{bekleyenler.length} siparis onay bekliyor</p>
-                </div>
+            {/* Bekleyen siparisler - hafta hafta kutular */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-zinc-800">Bekleyen Siparisler <span className="text-zinc-400 font-normal text-sm">({bekleyenler.length} siparis)</span></h3>
                 <button onClick={() => setAktifSekme("liste")} className="text-xs font-semibold hover:underline" style={{ color: "#B71C1C" }}>
                   Satin Alma Listesi
                 </button>
               </div>
-              <div className="divide-y divide-zinc-50">
-                {bekleyenler.length === 0 ? (
-                  <p className="px-5 py-8 text-center text-zinc-400 text-sm">Bekleyen siparis yok</p>
-                ) : bekleyenler.slice(0, 8).map((s) => (
-                  <div key={s.id} className="px-5 py-3 flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-zinc-800 truncate">{s.ogretmenAdi}</p>
-                      <p className="text-xs text-zinc-400 truncate">{s.dersAdi} &bull; {s.hafta}</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs font-bold text-zinc-600">{Number(s.genelToplam || 0).toFixed(2)} TL</span>
-                      <button onClick={() => handleDurumGuncelle(s.id, "onaylandi")}
-                        className="text-xs font-semibold px-3 py-1 rounded-lg text-white transition"
-                        style={{ background: "#059669" }}>
-                        Onayla
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {bekleyenler.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-zinc-200 p-8 text-center text-zinc-400 text-sm">Bekleyen siparis yok</div>
+              ) : (
+                <div className="space-y-3">
+                  {Array.from(new Set(bekleyenler.map(s => s.hafta))).sort().map(hafta => {
+                    const haftaBekleyenler = bekleyenler.filter(s => s.hafta === hafta);
+                    const haftaToplam = haftaBekleyenler.reduce((acc, s) => acc + (s.genelToplam || 0), 0);
+                    return (
+                      <div key={hafta} className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+                        <div className="px-5 py-3 border-b border-zinc-100 flex items-center justify-between" style={{ background: "#FFFBEB" }}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-black text-amber-700 uppercase tracking-wider">{hafta}</span>
+                            <span className="text-xs text-amber-600 font-medium">{haftaBekleyenler.length} siparis</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold text-amber-700">{haftaToplam.toFixed(2)} TL</span>
+                            <button
+                              onClick={() => haftaBekleyenler.forEach(s => handleDurumGuncelle(s.id, "onaylandi"))}
+                              className="text-xs font-semibold px-3 py-1 rounded-lg text-white transition"
+                              style={{ background: "#D97706" }}>
+                              Tumunu Onayla
+                            </button>
+                          </div>
+                        </div>
+                        <div className="divide-y divide-zinc-50">
+                          {haftaBekleyenler.map((s) => (
+                            <div key={s.id} className="px-5 py-3 flex items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-zinc-800 truncate">{s.ogretmenAdi}</p>
+                                <p className="text-xs text-zinc-400 truncate">{s.dersAdi}</p>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-xs font-bold text-zinc-600">{Number(s.genelToplam || 0).toFixed(2)} TL</span>
+                                <button onClick={() => handleDurumGuncelle(s.id, "onaylandi")}
+                                  className="text-xs font-semibold px-3 py-1 rounded-lg text-white transition"
+                                  style={{ background: "#059669" }}>
+                                  Onayla
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Son siparisler - tumu */}
