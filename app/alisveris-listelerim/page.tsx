@@ -340,6 +340,7 @@ export default function AlisverisListeleriPage() {
                         <tr className="bg-gray-50 border-b border-gray-100 text-left">
                           <th className="px-4 py-3 w-10 text-xs font-semibold text-gray-500">SEC</th>
                           <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">URUN</th>
+                          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">KATEGORI</th>
                           <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">B.FIYAT</th>
                           <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">MIKTAR</th>
                           <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">TOPLAM</th>
@@ -365,6 +366,7 @@ export default function AlisverisListeleriPage() {
                                   ? <p className="text-xs text-emerald-600 font-medium">Depoda: {u.stok} {u.olcu}</p>
                                   : <p className="text-xs text-gray-400">Depoda stok yok</p>}
                               </td>
+                              <td className="px-4 py-3 text-gray-500 text-xs">{u.kategori || "-"}</td>
                               <td className="px-4 py-3 text-gray-700 font-medium">
                                 {u.fiyat > 0 ? `${u.fiyat.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} TL/${u.olcu}` : "-"}
                               </td>
