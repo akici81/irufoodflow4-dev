@@ -115,7 +115,7 @@ export default function SatinAlmaPage() {
     if (satir.depodaMiktar <= 0) { bildir("hata", "Depoda bu urunun stoku zaten sifir."); return; }
     const { error } = await supabase.from("urunler").update({ stok: 0 }).eq("id", satir.urunId);
     if (error) { bildir("hata", "Stok guncellenemedi: " + error.message); return; }
-    bildir("basari", `"${satir.urunAdi}": depodaki ${satir.depodaMiktar} ${satir.olcu} stoktan dusuldu.`);
+    bildir("basari", `"${satir.urunAdi}": depodaki ${parseFloat(satir.depodaMiktar.toFixed(3))} ${satir.olcu} stoktan dusuldu.`);
     setStokMap((prev) => {
       const key = `${satir.urunAdi}__${satir.marka || ""}`;
       return { ...prev, [key]: { id: satir.urunId!, stok: 0, kategori: satir.kategori } };
@@ -485,7 +485,7 @@ export default function SatinAlmaPage() {
                           <tr key={i} className={`hover:bg-gray-50 transition-colors ${u.dususYapildi ? "bg-emerald-50" : ""}`}>
                             <td className="px-4 py-3.5 font-medium text-gray-800">{u.urunAdi}</td>
                             <td className="px-4 py-3.5 text-gray-500">{u.marka || "-"}</td>
-                            <td className="px-4 py-3.5 text-gray-700 font-medium">{u.listeMiktar} {u.olcu}</td>
+                            <td className="px-4 py-3.5 text-gray-700 font-medium">{parseFloat(u.listeMiktar.toFixed(3))} {u.olcu}</td>
                             <td className="px-4 py-3.5">
                               <span className={`font-semibold ${u.depodaMiktar > 0 ? "text-amber-600" : "text-gray-400"}`}>
                                 {u.depodaMiktar > 0 ? `${u.depodaMiktar} ${u.olcu}` : "-"}
