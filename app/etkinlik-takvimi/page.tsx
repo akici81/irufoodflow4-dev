@@ -35,6 +35,8 @@ const HAFTA_TARIHLER: Record<number, Record<string, string>> = {
   12: { PAZARTESİ:"11 May", SALI:"12 May", ÇARŞAMBA:"13 May", PERŞEMBE:"14 May", CUMA:"15 May", CUMARTESİ:"16 May", PAZAR:"17 May" },
   13: { PAZARTESİ:"18 May", SALI:"19 May", ÇARŞAMBA:"20 May", PERŞEMBE:"21 May", CUMA:"22 May", CUMARTESİ:"23 May", PAZAR:"24 May" },
   14: { PAZARTESİ:"25 May", SALI:"26 May", ÇARŞAMBA:"27 May", PERŞEMBE:"28 May", CUMA:"29 May", CUMARTESİ:"30 May", PAZAR:"31 May" },
+  15: { PAZARTESİ:"1 Haz",  SALI:"2 Haz",  ÇARŞAMBA:"3 Haz",  PERŞEMBE:"4 Haz",  CUMA:"5 Haz",  CUMARTESİ:"6 Haz",  PAZAR:"7 Haz" },
+  16: { PAZARTESİ:"8 Haz",  SALI:"9 Haz",  ÇARŞAMBA:"10 Haz", PERŞEMBE:"11 Haz", CUMA:"12 Haz", CUMARTESİ:"13 Haz", PAZAR:"14 Haz" }, 
 };
 
 const RENKLER = [
