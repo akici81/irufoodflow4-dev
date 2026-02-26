@@ -145,6 +145,55 @@ export default function SatinAlmaPage() {
   const bekleyenTutar = bekleyenler.reduce((acc, s) => acc + (s.genelToplam || 0), 0);
   const haftaBazli = Array.from(new Set(siparisler.map(s => s.hafta))).sort().slice(-3);
 
+  const handlePdfOgrenci = () => {
+    if (satirlar.length === 0) return;
+    const gruplar: Record<string, OzetSatir[]> = {};
+    satirlar.forEach((u) => {
+      const kat = u.kategori || "Diger";
+      if (!gruplar[kat]) gruplar[kat] = [];
+      gruplar[kat].push(u);
+    });
+    const baslik = secilenHafta === "tumu" ? "Tum Haftalar" : secilenHafta;
+    const ders = secilenDers === "tumu" ? "Tum Dersler" : secilenDers;
+    const tarih = new Date().toLocaleDateString("tr-TR");
+    let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+body{font-family:Arial,sans-serif;font-size:11px;margin:20px;color:#222}
+h1{font-size:14px;color:#8B0000;border-bottom:2px solid #8B0000;padding-bottom:6px;margin-bottom:4px}
+.meta{font-size:10px;color:#666;margin-bottom:16px}
+.kat{background:#f3f4f6;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;color:#555;padding:6px 8px;margin-top:14px;border-left:3px solid #8B0000}
+table{width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed}
+th,td{padding:6px 10px;border-bottom:1px solid #eee;font-size:10px;vertical-align:middle}
+th{background:#8B0000;color:white}
+th.col-urun{width:45%;text-align:left}
+th.col-marka{width:25%;text-align:left}
+th.col-miktar{width:30%;text-align:center}
+td.col-urun{text-align:left}
+td.col-marka{text-align:left}
+td.col-miktar{text-align:center}
+tr:nth-child(even) td{background:#fafafa}
+.s{color:#059669;font-weight:bold}
+.y{color:#aaa}
+.footer{margin-top:20px;font-size:9px;color:#aaa;border-top:1px solid #eee;padding-top:6px}
+@media print{body{margin:10px}}
+</style></head><body>`;
+    html += `<h1>Alisveris Listesi - ${baslik}</h1><div class="meta">${ders} | ${tarih}</div>`;
+    Object.entries(gruplar).forEach(([kategori, urunler]) => {
+      html += `<div class="kat">${kategori} (${urunler.length} urun)</div><table><thead><tr><th class="col-urun">Urun</th><th class="col-marka">Marka</th><th class="col-miktar">Miktar</th></tr></thead><tbody>`;
+      urunler.forEach((u) => {
+        const satin = u.satinAlinacak > 0 ? `<span class="s">${u.satinAlinacak} ${u.olcu}</span>` : `<span class="y">Depoda yeterli</span>`;
+        html += `<tr><td class="col-urun">${u.urunAdi}</td><td class="col-marka">${u.marka || "-"}</td><td class="col-miktar">${satin}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+    });
+    html += `<div class="footer">IRUFoodFlow | ${tarih}</div></body></html>`;
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => { win.print(); }, 400);
+  };
+
   const handlePdf = () => {
     if (satirlar.length === 0) return;
     const gruplar: Record<string, OzetSatir[]> = {};
@@ -156,18 +205,39 @@ export default function SatinAlmaPage() {
     const baslik = secilenHafta === "tumu" ? "Tum Haftalar" : secilenHafta;
     const ders = secilenDers === "tumu" ? "Tum Dersler" : secilenDers;
     const tarih = new Date().toLocaleDateString("tr-TR");
-    let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;font-size:11px;margin:20px;color:#222}h1{font-size:14px;color:#8B0000;border-bottom:2px solid #8B0000;padding-bottom:6px;margin-bottom:4px}.meta{font-size:10px;color:#666;margin-bottom:16px}.kat{background:#f3f4f6;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;color:#555;padding:6px 8px;margin-top:14px;border-left:3px solid #8B0000}table{width:100%;border-collapse:collapse;margin-top:4px}th{background:#8B0000;color:white;padding:5px 8px;font-size:10px;text-align:left}td{padding:5px 8px;border-bottom:1px solid #eee;font-size:10px}tr:nth-child(even) td{background:#fafafa}.s{color:#059669;font-weight:bold}.d{color:#d97706}.y{color:#aaa}.footer{margin-top:20px;font-size:9px;color:#aaa;border-top:1px solid #eee;padding-top:6px}@media print{body{margin:10px}}</style></head><body>`;
+    let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+body{font-family:Arial,sans-serif;font-size:11px;margin:20px;color:#222}
+h1{font-size:14px;color:#8B0000;border-bottom:2px solid #8B0000;padding-bottom:6px;margin-bottom:4px}
+.meta{font-size:10px;color:#666;margin-bottom:16px}
+.kat{background:#f3f4f6;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;color:#555;padding:6px 8px;margin-top:14px;border-left:3px solid #8B0000}
+table{width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed}
+th,td{padding:6px 10px;border-bottom:1px solid #eee;font-size:10px;vertical-align:middle}
+th{background:#8B0000;color:white}
+th.col-urun{width:40%;text-align:left}
+th.col-marka{width:20%;text-align:left}
+th.col-miktar{width:22%;text-align:center}
+th.col-fiyat{width:18%;text-align:center}
+td.col-urun{text-align:left}
+td.col-marka{text-align:left}
+td.col-miktar{text-align:center}
+td.col-fiyat{text-align:center}
+tr:nth-child(even) td{background:#fafafa}
+.s{color:#059669;font-weight:bold}
+.y{color:#aaa}
+.footer{margin-top:20px;font-size:9px;color:#aaa;border-top:1px solid #eee;padding-top:6px}
+@media print{body{margin:10px}}
+</style></head><body>`;
     html += `<h1>Satin Alma Listesi - ${baslik}</h1><div class="meta">${ders} | ${tarih}</div>`;
     Object.entries(gruplar).forEach(([kategori, urunler]) => {
-      html += `<div class="kat">${kategori} (${urunler.length} urun)</div><table><thead><tr><th>Urun</th><th>Marka</th><th>Satin Alinacak</th><th>B.Fiyat</th></tr></thead><tbody>`;
+      html += `<div class="kat">${kategori} (${urunler.length} urun)</div><table><thead><tr><th class="col-urun">Urun</th><th class="col-marka">Marka</th><th class="col-miktar">Satin Alinacak</th><th class="col-fiyat">B.Fiyat</th></tr></thead><tbody>`;
       urunler.forEach((u) => {
         const satin = u.satinAlinacak > 0 ? `<span class="s">${u.satinAlinacak} ${u.olcu}</span>` : `<span class="y">Depoda yeterli</span>`;
-        html += `<tr><td>${u.urunAdi}</td><td>${u.marka || "-"}</td><td>${satin}</td><td>${u.birimFiyat > 0 ? "TL" + u.birimFiyat.toFixed(2) : "-"}</td></tr>`;
+        html += `<tr><td class="col-urun">${u.urunAdi}</td><td class="col-marka">${u.marka || "-"}</td><td class="col-miktar">${satin}</td><td class="col-fiyat">${u.birimFiyat > 0 ? u.birimFiyat.toFixed(2) + " TL" : "-"}</td></tr>`;
       });
       html += `</tbody></table>`;
     });
     const toplamTutar = satirlar.reduce((acc, u) => acc + (u.birimFiyat * u.satinAlinacak), 0);
-    html += `<div style="margin-top:16px;text-align:right;font-size:12px;font-weight:bold;border-top:2px solid #8B0000;padding-top:8px;color:#8B0000;">TOPLAM: TL${toplamTutar.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}</div>`;
+    html += `<div style="margin-top:16px;text-align:right;font-size:12px;font-weight:bold;border-top:2px solid #8B0000;padding-top:8px;color:#8B0000;">TOPLAM: ${toplamTutar.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} TL</div>`;
     html += `<div class="footer">IRUFoodFlow | ${tarih}</div></body></html>`;
     const win = window.open("", "_blank");
     if (!win) return;
@@ -445,6 +515,8 @@ export default function SatinAlmaPage() {
                 </select>
               </div>
               <div className="ml-auto flex items-end gap-3">
+                <button onClick={handlePdfOgrenci} disabled={satirlar.length === 0}
+                  className="bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition disabled:opacity-40">Alisveris Listesi</button>
                 <button onClick={handlePdf} disabled={satirlar.length === 0}
                   className="bg-red-700 hover:bg-red-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition disabled:opacity-40">PDF</button>
                 <button onClick={handleExcel} disabled={satirlar.length === 0}
