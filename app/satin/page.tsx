@@ -304,10 +304,66 @@ export default function SatinAlmaPage() {
               )}
             </div>
 
-            {/* Son siparisler - tumu */}
+            {/* Onaylanan siparisler - Satin Alindi bekliyor */}
+            {onaylananlar.length > 0 && (
+              <div>
+                <h3 className="font-bold text-zinc-800 mb-3">
+                  Onaylandi — Satin Alinacak <span className="text-zinc-400 font-normal text-sm">({onaylananlar.length} siparis)</span>
+                </h3>
+                <div className="space-y-3">
+                  {Array.from(new Set(onaylananlar.map(s => s.hafta))).sort().map(hafta => {
+                    const haftaOnaylanan = onaylananlar.filter(s => s.hafta === hafta);
+                    const haftaToplam = haftaOnaylanan.reduce((acc, s) => acc + (s.genelToplam || 0), 0);
+                    return (
+                      <div key={hafta} className="bg-white rounded-2xl border border-emerald-200 shadow-sm overflow-hidden">
+                        <div className="px-5 py-3 border-b border-emerald-100 flex items-center justify-between" style={{ background: "#ECFDF5" }}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-black text-emerald-700 uppercase tracking-wider">{hafta}</span>
+                            <span className="text-xs text-emerald-600 font-medium">{haftaOnaylanan.length} siparis</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold text-emerald-700">{haftaToplam.toFixed(2)} TL</span>
+                            <button
+                              onClick={() => haftaOnaylanan.forEach(s => handleDurumGuncelle(s.id, "teslim_alindi"))}
+                              className="text-xs font-semibold px-3 py-1 rounded-lg text-white transition"
+                              style={{ background: "#059669" }}>
+                              Tumunu Teslim Et
+                            </button>
+                          </div>
+                        </div>
+                        <div className="divide-y divide-zinc-50">
+                          {haftaOnaylanan.map((s) => (
+                            <div key={s.id} className="px-5 py-3 flex items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-zinc-800 truncate">{s.ogretmenAdi}</p>
+                                <p className="text-xs text-zinc-400 truncate">{s.dersAdi}</p>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-xs font-bold text-zinc-600">{Number(s.genelToplam || 0).toFixed(2)} TL</span>
+                                <button onClick={() => handleDurumGuncelle(s.id, "bekliyor")}
+                                  className="text-xs font-medium px-3 py-1 rounded-lg border border-zinc-200 text-zinc-500 hover:bg-zinc-50 transition">
+                                  Geri Al
+                                </button>
+                                <button onClick={() => handleDurumGuncelle(s.id, "teslim_alindi")}
+                                  className="text-xs font-semibold px-3 py-1 rounded-lg text-white transition"
+                                  style={{ background: "#059669" }}>
+                                  Satin Alindi
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Son siparisler - tum gecmis */}
             <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-zinc-100">
-                <h3 className="font-bold text-zinc-800">Son Siparisler</h3>
+                <h3 className="font-bold text-zinc-800">Tum Siparisler</h3>
               </div>
               <div className="divide-y divide-zinc-50">
                 {siparisler.slice(0, 10).map((s) => {
@@ -319,13 +375,7 @@ export default function SatinAlmaPage() {
                         <p className="text-xs text-zinc-400 truncate">{s.dersAdi} &bull; {s.hafta}</p>
                       </div>
                       <span className="text-xs font-bold text-zinc-600 shrink-0">{Number(s.genelToplam || 0).toFixed(2)} TL</span>
-                      <select value={s.durum} onChange={(e) => handleDurumGuncelle(s.id, e.target.value)}
-                        className="text-xs font-semibold px-2 py-1 rounded-lg border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-200 shrink-0"
-                        style={{ background: d.bg, color: d.text }}>
-                        <option value="bekliyor">Bekliyor</option>
-                        <option value="onaylandi">Onaylandi</option>
-                        <option value="teslim_alindi">Teslim Alindi</option>
-                      </select>
+                      <span className="text-xs font-semibold px-2 py-1 rounded-full shrink-0" style={{ background: d.bg, color: d.text }}>{d.label}</span>
                     </div>
                   );
                 })}
