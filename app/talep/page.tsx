@@ -8,11 +8,6 @@ import { supabase } from "@/lib/supabase";
 type Urun = { id: string; urunAdi: string; marka: string; fiyat: number; olcu: string; kategori: string };
 type Ders = { id: string; kod: string; ad: string };
 
-const HAFTALAR = Array.from({ length: 10 }, (_, i) => `${i + 1}. Hafta`);
-
-// Kg, L  → serbest elle giriş, +/- yok
-// G, Ml  → 50'şer adım, +/- buton
-// Adet, Paket, Kutu → 1'er adım, +/- buton
 const olcuBilgisi = (olcu: string) => {
   const tip = olcu.toLowerCase();
   if (tip === "kg" || tip === "l")  return { serbest: true,  baslangic: 0,  adim: 0  };
@@ -28,19 +23,11 @@ export default function TalepPage() {
   const [dersler, setDersler] = useState<Ders[]>([]);
   const [urunler, setUrunler] = useState<Urun[]>([]);
   const [secilenDers, setSecilenDers] = useState("");
-  const [secilenHafta, setSecilenHafta] = useState("1. Hafta");
+  const [etkinlikAdi, setEtkinlikAdi] = useState("");
   const [aramaMetni, setAramaMetni] = useState("");
-  const [manuelUrun, setManuelUrun] = useState("");
-  const [manuelMiktar, setManuelMiktar] = useState("");
-  const [manuelOlcu, setManuelOlcu] = useState("Kg");
   const [basari, setBasari] = useState(false);
   const [hata, setHata] = useState("");
-
-  // seciliUrunler: key = urunId, value = miktar (number)
-  // Kg/L için 0 başlar → kullanıcı elle girer
   const [seciliUrunler, setSeciliUrunler] = useState<Record<string, number>>({});
-
-  // Kg/L için input string ayrı tutulur (1, veya 1. gibi yarım yazıları kaybetmemek için)
   const [kgInputler, setKgInputler] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -67,30 +54,28 @@ export default function TalepPage() {
   }, []);
 
   const filtreliUrunler = urunler.filter((u) =>
-    !aramaMetni || (u.urunAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) || (u.marka || "").toLowerCase().includes(aramaMetni.toLowerCase())
+    !aramaMetni ||
+    (u.urunAdi || "").toLowerCase().includes(aramaMetni.toLowerCase()) ||
+    (u.marka || "").toLowerCase().includes(aramaMetni.toLowerCase())
   );
 
   const handleCheckbox = (urun: Urun, isaretli: boolean) => {
     if (isaretli) {
       const { baslangic } = olcuBilgisi(urun.olcu);
       setSeciliUrunler((prev) => ({ ...prev, [urun.id]: baslangic }));
-      if (olcuBilgisi(urun.olcu).serbest) {
-        setKgInputler((prev) => ({ ...prev, [urun.id]: "" }));
-      }
+      if (olcuBilgisi(urun.olcu).serbest) setKgInputler((prev) => ({ ...prev, [urun.id]: "" }));
     } else {
       setSeciliUrunler((prev) => { const y = { ...prev }; delete y[urun.id]; return y; });
       setKgInputler((prev) => { const y = { ...prev }; delete y[urun.id]; return y; });
     }
   };
 
-  // Kg/L: string input → number state
   const handleKgInput = (urunId: string, metin: string) => {
     setKgInputler((prev) => ({ ...prev, [urunId]: metin }));
     const num = parseFloat(metin.replace(",", "."));
     setSeciliUrunler((prev) => ({ ...prev, [urunId]: (!isNaN(num) && num > 0) ? Math.round(num * 1000) / 1000 : 0 }));
   };
 
-  // G/Ml/Adet/Paket/Kutu: +/- butonlar
   const handleArttir = (urun: Urun) => {
     const { adim, baslangic } = olcuBilgisi(urun.olcu);
     const mevcut = seciliUrunler[urun.id] || baslangic;
@@ -101,25 +86,20 @@ export default function TalepPage() {
     const { adim, baslangic } = olcuBilgisi(urun.olcu);
     const mevcut = seciliUrunler[urun.id] || baslangic;
     const yeni = Math.round((mevcut - adim) * 1000) / 1000;
-    if (yeni <= 0) {
-      setSeciliUrunler((prev) => { const y = { ...prev }; delete y[urun.id]; return y; });
-    } else {
-      setSeciliUrunler((prev) => ({ ...prev, [urun.id]: yeni }));
-    }
+    if (yeni <= 0) setSeciliUrunler((prev) => { const y = { ...prev }; delete y[urun.id]; return y; });
+    else setSeciliUrunler((prev) => ({ ...prev, [urun.id]: yeni }));
   };
 
   const handleDirektMiktar = (urun: Urun, miktar: number) => {
-    if (miktar <= 0) {
-      setSeciliUrunler((prev) => { const y = { ...prev }; delete y[urun.id]; return y; });
-    } else {
-      setSeciliUrunler((prev) => ({ ...prev, [urun.id]: Math.round(miktar * 1000) / 1000 }));
-    }
+    if (miktar <= 0) setSeciliUrunler((prev) => { const y = { ...prev }; delete y[urun.id]; return y; });
+    else setSeciliUrunler((prev) => ({ ...prev, [urun.id]: Math.round(miktar * 1000) / 1000 }));
   };
 
   const handleGonder = async () => {
     setHata("");
     if (!secilenDers) { setHata("Lütfen bir ders seçin."); return; }
-    if (Object.keys(seciliUrunler).length === 0 && !manuelUrun.trim()) { setHata("En az bir ürün seçin veya manuel ürün girin."); return; }
+    if (!etkinlikAdi.trim()) { setHata("Lütfen etkinlik adını girin."); return; }
+    if (Object.keys(seciliUrunler).length === 0) { setHata("En az bir ürün seçin."); return; }
 
     const eksik = Object.entries(seciliUrunler).find(([id, m]) => {
       const u = urunler.find((x) => x.id === id);
@@ -132,34 +112,32 @@ export default function TalepPage() {
 
     if (!kullaniciId) return;
     const ders = dersler.find((d) => d.id === secilenDers);
-    const havuzUrunleri = Object.entries(seciliUrunler).map(([urunId, miktar]) => {
+    const urunListesi = Object.entries(seciliUrunler).map(([urunId, miktar]) => {
       const u = urunler.find((x) => x.id === urunId)!;
       return { urunId, urunAdi: u.urunAdi, marka: u.marka, miktar, olcu: u.olcu, birimFiyat: u.fiyat, toplam: u.fiyat * miktar };
     });
-    const manuelEkle = manuelUrun.trim()
-      ? [{ urunId: `manuel_${Date.now()}`, urunAdi: manuelUrun.trim(), marka: "", miktar: Number(manuelMiktar) || 1, olcu: manuelOlcu, birimFiyat: 0, toplam: 0 }]
-      : [];
-
-    const tumUrunler = [...havuzUrunleri, ...manuelEkle];
-    const genelToplam = tumUrunler.reduce((acc, u) => acc + u.toplam, 0);
+    const genelToplam = urunListesi.reduce((acc, u) => acc + u.toplam, 0);
 
     const { error } = await supabase.from("siparisler").insert({
       ogretmen_id: kullaniciId,
       ogretmen_adi: kullaniciAdi,
       ders_id: secilenDers,
       ders_adi: ders ? `${ders.kod} - ${ders.ad}` : "",
-      hafta: secilenHafta,
-      urunler: tumUrunler,
+      hafta: etkinlikAdi.trim(),
+      urunler: urunListesi,
       genel_toplam: genelToplam,
       tarih: new Date().toLocaleDateString("tr-TR"),
       durum: "bekliyor",
+      tip: "etkinlik",
     });
 
     if (error) { setHata("Hata: " + error.message); return; }
     setSeciliUrunler({});
     setKgInputler({});
-    setManuelUrun(""); setManuelMiktar(""); setSecilenDers("");
-    setBasari(true); setTimeout(() => setBasari(false), 4000);
+    setEtkinlikAdi("");
+    setSecilenDers("");
+    setBasari(true);
+    setTimeout(() => setBasari(false), 4000);
   };
 
   const secilenUrunListesi = Object.entries(seciliUrunler).map(([urunId, miktar]) => {
@@ -170,69 +148,76 @@ export default function TalepPage() {
   if (yukleniyor || !yetkili) return null;
 
   return (
-    <DashboardLayout title="Talep Oluştur" subtitle="Haftalık malzeme talebinizi oluşturun">
+    <DashboardLayout title="Etkinlik Talebi Oluştur" subtitle="Etkinlik için malzeme talebinizi oluşturun">
       <div className="max-w-6xl space-y-5">
-        {basari && <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl px-4 py-3 font-medium">Talebiniz başarıyla gönderildi!</div>}
-        {hata && <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{hata}</div>}
+        {basari && (
+          <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl px-4 py-3 font-medium">
+            ✅ Etkinlik talebiniz başarıyla gönderildi!
+          </div>
+        )}
+        {hata && (
+          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 font-medium">
+            {hata}
+          </div>
+        )}
 
+        {/* Üst bilgiler */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Hoca adı - otomatik */}
+            <div>
+              <label className="text-xs font-medium text-gray-700 block mb-2">Hoca Adı</label>
+              <div className="border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-50 text-gray-600 font-medium">
+                {kullaniciAdi || "—"}
+              </div>
+            </div>
+
+            {/* Ders seçimi */}
             <div>
               <label className="text-xs font-medium text-gray-700 block mb-2">Ders *</label>
-              <select value={secilenDers} onChange={(e) => setSecilenDers(e.target.value)}
-                className={`w-full border rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500 ${!secilenDers ? "border-red-300" : "border-gray-200"}`}>
+              <select
+                value={secilenDers}
+                onChange={(e) => setSecilenDers(e.target.value)}
+                className={`w-full border rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500 ${!secilenDers ? "border-red-300" : "border-gray-200"}`}
+              >
                 <option value="">DERS SEÇİNİZ...</option>
                 {dersler.map((d) => <option key={d.id} value={d.id}>{d.kod} - {d.ad}</option>)}
               </select>
             </div>
+
+            {/* Etkinlik adı */}
             <div>
-              <label className="text-xs font-medium text-gray-700 block mb-2">Uygulama Haftası</label>
-              <select value={secilenHafta} onChange={(e) => setSecilenHafta(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500">
-                {HAFTALAR.map((h) => <option key={h}>{h}</option>)}
-              </select>
+              <label className="text-xs font-medium text-gray-700 block mb-2">Etkinlik Adı *</label>
+              <input
+                type="text"
+                value={etkinlikAdi}
+                onChange={(e) => setEtkinlikAdi(e.target.value)}
+                placeholder="örn: Bahar Şenliği, Mezuniyet Yemeği..."
+                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 ${!etkinlikAdi.trim() ? "border-red-300" : "border-gray-200"}`}
+              />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <h2 className="font-semibold text-gray-800 mb-4 text-sm">Manuel Ürün Ekle</h2>
-          <div className="flex flex-wrap gap-3 items-end">
-            <div className="flex-1 min-w-[200px]">
-              <label className="text-xs font-medium text-gray-700 block mb-1">Ürün Adı</label>
-              <input value={manuelUrun} onChange={(e) => setManuelUrun(e.target.value)} placeholder="Örn: Özel Baharat"
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-gray-700 block mb-1">Miktar</label>
-              <input type="number" value={manuelMiktar} onChange={(e) => setManuelMiktar(e.target.value)} placeholder="1" min={1}
-                className="w-24 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-gray-700 block mb-1">Ölçü</label>
-              <select value={manuelOlcu} onChange={(e) => setManuelOlcu(e.target.value)}
-                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500">
-                {["Kg", "L", "Paket", "Adet", "G", "Ml", "Kutu"].map((o) => <option key={o}>{o}</option>)}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-6">
+        {/* Ürün havuzu + özet */}
+        <div className="flex gap-5">
           <div className="flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <h2 className="font-semibold text-gray-800 text-sm">Ürün Havuzu</h2>
-              <input value={aramaMetni} onChange={(e) => setAramaMetni(e.target.value)} placeholder="Ara..."
-                className="border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 w-44" />
+              <input
+                value={aramaMetni}
+                onChange={(e) => setAramaMetni(e.target.value)}
+                placeholder="Ürün ara..."
+                className="border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 w-48"
+              />
             </div>
 
-            {/* Miktar giriş rehberi */}
             <div className="mx-4 mt-4 mb-2 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
               <p className="text-xs font-semibold text-blue-700 mb-2">Miktar Giriş Rehberi</p>
               <div className="grid grid-cols-2 gap-x-8 gap-y-1.5 text-xs">
                 <div className="flex items-center gap-2">
                   <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800">Kg / L</span>
-                  <span className="text-gray-500">Elle yazın: <b>0,100</b> · <b>1,500</b> · <b>2,000</b></span>
+                  <span className="text-gray-500">Elle yazın: <b>0,100</b> · <b>1,500</b></span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800">G / Ml</span>
@@ -261,8 +246,6 @@ export default function TalepPage() {
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {filtreliUrunler.map((u) => {
-                      // DÜZELTME: secili kontrolü `u.id in seciliUrunler` ile yapılıyor
-                      // böylece miktar 0 olsa bile checkbox seçili görünür ve input açık kalır
                       const secili = u.id in seciliUrunler;
                       const miktar = seciliUrunler[u.id] ?? 0;
                       const bilgi = olcuBilgisi(u.olcu);
@@ -284,45 +267,31 @@ export default function TalepPage() {
                           <td className="px-4 py-3">
                             {secili ? (
                               bilgi.serbest ? (
-                                // Kg / L → text input, virgülle de çalışır
                                 <div className="flex items-center gap-1.5">
                                   <input
-                                    type="text"
-                                    inputMode="decimal"
+                                    type="text" inputMode="decimal"
                                     value={kgInputler[u.id] !== undefined ? kgInputler[u.id] : (miktar > 0 ? String(miktar).replace(".", ",") : "")}
                                     placeholder="örn: 1,500"
                                     onChange={(e) => handleKgInput(u.id, e.target.value)}
-                                    className={`w-24 border rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                                      miktar > 0 ? "border-gray-300" : "border-red-300 bg-red-50 placeholder-red-300"
-                                    }`}
+                                    className={`w-24 border rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-red-500 ${miktar > 0 ? "border-gray-300" : "border-red-300 bg-red-50 placeholder-red-300"}`}
                                   />
                                   <span className="text-xs font-medium text-gray-500">{u.olcu}</span>
                                 </div>
                               ) : (
-                                // G / Ml / Adet / Paket / Kutu → +/- butonlar
                                 <div className="flex items-center gap-1">
                                   <button type="button" onClick={() => handleAzalt(u)}
-                                    className="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 font-bold text-sm transition">
-                                    -
-                                  </button>
+                                    className="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 font-bold text-sm transition">-</button>
                                   <input
-                                    type="number"
-                                    value={miktar || ""}
-                                    step={bilgi.adim}
-                                    min={bilgi.baslangic}
+                                    type="number" value={miktar || ""} step={bilgi.adim} min={bilgi.baslangic}
                                     onChange={(e) => handleDirektMiktar(u, Number(e.target.value))}
                                     className="w-14 border border-gray-200 rounded-lg px-1 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-red-500"
                                   />
                                   <span className="text-xs text-gray-400">{u.olcu}</span>
                                   <button type="button" onClick={() => handleArttir(u)}
-                                    className="w-7 h-7 flex items-center justify-center bg-red-100 hover:bg-red-200 rounded-lg text-red-700 font-bold text-sm transition">
-                                    +
-                                  </button>
+                                    className="w-7 h-7 flex items-center justify-center bg-red-100 hover:bg-red-200 rounded-lg text-red-700 font-bold text-sm transition">+</button>
                                 </div>
                               )
-                            ) : (
-                              <span className="text-gray-300">—</span>
-                            )}
+                            ) : <span className="text-gray-300">—</span>}
                           </td>
                         </tr>
                       );
@@ -333,41 +302,39 @@ export default function TalepPage() {
             )}
           </div>
 
+          {/* Özet paneli */}
           <div className="w-72 flex-shrink-0">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sticky top-4">
-              <h3 className="font-semibold text-gray-800 mb-4 text-sm">Talep Özeti</h3>
-              {secilenUrunListesi.length === 0 && !manuelUrun ? (
-                <p className="text-gray-400 text-xs text-center py-6">Henüz ürün seçilmedi.</p>
-              ) : (
-                <>
-                  <div className="space-y-2 max-h-64 overflow-y-auto mb-4">
-                    {secilenUrunListesi.map((u) => (
-                      <div key={u.id} className="flex justify-between items-center text-xs py-1.5 border-b border-gray-50">
-                        <div>
-                          <p className="font-medium text-gray-800">{u.urunAdi}</p>
-                          {u.miktar > 0 ? (
-                            <p className="text-gray-400">{String(u.miktar).replace(".", ",")} {u.olcu}</p>
-                          ) : (
-                            <p className="text-red-400 font-medium">Miktar giriniz</p>
-                          )}
-                        </div>
-                        <span className="text-gray-600 font-medium ml-2">
-                          {u.miktar > 0 && u.fiyat > 0 ? `₺${(u.fiyat * u.miktar).toFixed(2)}` : "—"}
-                        </span>
-                      </div>
-                    ))}
-                    {manuelUrun && (
-                      <div className="flex justify-between items-center text-xs py-1.5 border-b border-gray-50">
-                        <div>
-                          <p className="font-medium text-gray-800">{manuelUrun}</p>
-                          <p className="text-gray-400">{manuelMiktar || 1} {manuelOlcu} <span className="text-amber-500">(Manuel)</span></p>
-                        </div>
-                        <span className="text-gray-400">—</span>
-                      </div>
-                    )}
-                  </div>
-                </>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sticky top-4 space-y-4">
+              <h3 className="font-semibold text-gray-800 text-sm">Talep Özeti</h3>
+
+              {(kullaniciAdi || secilenDers || etkinlikAdi) && (
+                <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2.5 space-y-1">
+                  {kullaniciAdi && <p className="text-xs text-gray-600"><span className="font-medium">Hoca:</span> {kullaniciAdi}</p>}
+                  {secilenDers && <p className="text-xs text-gray-600"><span className="font-medium">Ders:</span> {dersler.find(d => d.id === secilenDers)?.kod} - {dersler.find(d => d.id === secilenDers)?.ad}</p>}
+                  {etkinlikAdi && <p className="text-xs text-gray-600"><span className="font-medium">Etkinlik:</span> {etkinlikAdi}</p>}
+                </div>
               )}
+
+              {secilenUrunListesi.length === 0 ? (
+                <p className="text-gray-400 text-xs text-center py-4">Henüz ürün seçilmedi.</p>
+              ) : (
+                <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                  {secilenUrunListesi.map((u) => (
+                    <div key={u.id} className="flex justify-between items-start text-xs py-1.5 border-b border-gray-50">
+                      <div>
+                        <p className="font-medium text-gray-800">{u.urunAdi}</p>
+                        {u.miktar > 0
+                          ? <p className="text-gray-400">{String(u.miktar).replace(".", ",")} {u.olcu}</p>
+                          : <p className="text-red-400 font-medium">Miktar giriniz</p>}
+                      </div>
+                      <span className="text-gray-600 font-medium ml-2">
+                        {u.miktar > 0 && u.fiyat > 0 ? `₺${(u.fiyat * u.miktar).toFixed(2)}` : "—"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <button type="button" onClick={handleGonder}
                 className="w-full bg-red-700 hover:bg-red-800 text-white text-sm font-semibold py-3 rounded-xl transition">
                 Talebi Gönder

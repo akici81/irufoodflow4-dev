@@ -7,7 +7,7 @@ import * as XLSX from "xlsx";
 import { supabase } from "@/lib/supabase";
 
 type SiparisUrun = { urunAdi: string; marka: string; miktar: number; olcu: string; birimFiyat: number; toplam: number };
-type Siparis = { id: string; ogretmenAdi: string; dersAdi: string; hafta: string; urunler: SiparisUrun[]; genelToplam: number; durum: string; tarih: string; };
+type Siparis = { id: string; ogretmenAdi: string; dersAdi: string; hafta: string; urunler: SiparisUrun[]; genelToplam: number; durum: string; tarih: string; tip: string; };
 type OzetSatir = {
   urunAdi: string; marka: string; olcu: string;
   listeMiktar: number; depodaMiktar: number; satinAlinacak: number;
@@ -30,6 +30,7 @@ export default function SatinAlmaPage() {
   const [satirlar, setSatirlar] = useState<OzetSatir[]>([]);
   const [secilenHafta, setSecilenHafta] = useState("tumu");
   const [secilenDers, setSecilenDers] = useState("tumu");
+  const [secilenTip, setSecilenTip] = useState("haftalik");
   const [bildirim, setBildirim] = useState<{ tip: "basari" | "hata"; metin: string } | null>(null);
 
   const saat = new Date().getHours();
@@ -57,6 +58,7 @@ export default function SatinAlmaPage() {
       genelToplam: s.genel_toplam as number,
       durum: (s.durum as string) || "bekliyor",
       tarih: s.tarih as string,
+      tip: (s.tip as string) || "haftalik",
     })));
     const map: Record<string, { id: string; stok: number; kategori: string }> = {};
     (urunData || []).forEach((u: Record<string, unknown>) => {
@@ -75,6 +77,7 @@ export default function SatinAlmaPage() {
   const dersler = ["tumu", ...Array.from(new Set(siparisler.map((s) => s.dersAdi))).sort()];
 
   const filtrelenmis = siparisler.filter((s) =>
+    (secilenTip === "tumu" || (s.tip || "haftalik") === secilenTip) &&
     (secilenHafta === "tumu" || s.hafta === secilenHafta) &&
     (secilenDers === "tumu" || s.dersAdi === secilenDers)
   );
@@ -136,7 +139,7 @@ export default function SatinAlmaPage() {
   const satinAlinacakToplam = satirlar.reduce((acc, u) => acc + (u.birimFiyat * u.satinAlinacak), 0);
 
   // Dashboard istatistikleri
-  const bekleyenler = siparisler.filter(s => s.durum === "bekliyor");
+  const bekleyenler = siparisler.filter(s => s.durum === "bekliyor" && (s.tip || "haftalik") === "haftalik");
   const onaylananlar = siparisler.filter(s => s.durum === "onaylandi");
   const teslimler = siparisler.filter(s => s.durum === "teslim_alindi");
   const bekleyenTutar = bekleyenler.reduce((acc, s) => acc + (s.genelToplam || 0), 0);
@@ -415,7 +418,21 @@ export default function SatinAlmaPage() {
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-wrap gap-4 items-end">
               <div>
                 <label className="text-xs font-medium text-gray-700 block mb-1">Hafta</label>
-                <select value={secilenHafta} onChange={(e) => setSecilenHafta(e.target.value)}
+                {/* Tip filtresi */}
+            <div className="flex rounded-xl border border-gray-200 overflow-hidden text-sm font-medium">
+              {[
+                { val: "haftalik", label: "Haftalık" },
+                { val: "etkinlik", label: "Etkinlik" },
+                { val: "tumu", label: "Tümü" },
+              ].map((t) => (
+                <button key={t.val} type="button"
+                  onClick={() => { setSecilenTip(t.val); setSecilenHafta("tumu"); setSecilenDers("tumu"); }}
+                  className={`px-4 py-2 transition ${secilenTip === t.val ? "bg-red-700 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <select value={secilenHafta} onChange={(e) => setSecilenHafta(e.target.value)}
                   className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500">
                   {haftalar.map((h) => <option key={h} value={h}>{h === "tumu" ? "Tum Haftalar" : h}</option>)}
                 </select>
