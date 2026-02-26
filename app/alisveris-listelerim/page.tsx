@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../hooks/useAuth";
 import * as XLSX from "xlsx";
@@ -28,6 +28,9 @@ export default function AlisverisListeleriPage() {
   const [bildirim, setBildirim] = useState<{ tip: "basari" | "hata"; metin: string } | null>(null);
   const [dersListeleri, setDersListeleri] = useState<Record<string, DersListesi>>({});
   const [aktifSekme, setAktifSekme] = useState<"liste-olustur" | "listelerim">("liste-olustur");
+  const [sablonYukleniyor, setSablonYukleniyor] = useState<Record<string, boolean>>({});
+  const [dersSablonDosyasi, setDersSablonDosyasi] = useState<Record<string, File>>({});
+  const sablonInputRef = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -233,7 +236,11 @@ export default function AlisverisListeleriPage() {
           html += `<tr><td>${i + 1}</td><td>${u.urunAdi}</td><td>${u.marka || "-"}</td><td>${u.miktar}</td><td>${u.olcu}</td><td>${u.toplam > 0 ? u.toplam.toFixed(2) + " TL" : "-"}</td></tr>`;
         });
       }
-      html += `</tbody></table></div>`;
+      const haftaToplamTutar = urunlerHafta.reduce((acc, u) => acc + u.toplam, 0);
+      if (urunlerHafta.length > 0) {
+        html += `<div style="text-align:right;margin-top:8px;padding:8px 12px;border-top:2px solid #8B0000;font-size:12px;font-weight:bold;color:#8B0000;">${hafta} Toplam: ${haftaToplamTutar.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} TL</div>`;
+      }
+      html += `</div>`;
     });
     html += `</body></html>`;
     const win = window.open("", "_blank");
@@ -246,6 +253,79 @@ export default function AlisverisListeleriPage() {
   // - Tamamen client-side, internet gerektirmez
   // - Hocaya ait gercek dersler ve Supabase'den cekilen urunler kullanilir
   // - Hoca bu dosyayi internetsiz ortamda doldurup internet gelince yukler
+
+  const handleSablonIndir = async (dersId: string) => {
+    const ders = atananDersler.find((d) => d.id === dersId);
+    if (!ders) return;
+    const wb = XLSX.utils.book_new();
+    HAFTALAR.forEach((hafta) => {
+      const ornekSatirlar = [
+        ["urunId", "urunAdi", "marka", "miktar", "olcu", "birimFiyat", "toplam"],
+        ["", "Domates", "Pinar", 2, "kg", 15, 30],
+        ["", "Zeytinyagi", "Komili", 500, "ml", 0.05, 25],
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(ornekSatirlar);
+      ws["!cols"] = [{ wch: 10 }, { wch: 30 }, { wch: 20 }, { wch: 10 }, { wch: 8 }, { wch: 12 }, { wch: 12 }];
+      XLSX.utils.book_append_sheet(wb, ws, hafta);
+    });
+    XLSX.writeFile(wb, `${ders.kod}_Sablon.xlsx`);
+  };
+
+  const handleSablonYukle = async (dersId: string, dosya: File) => {
+    const ders = atananDersler.find((d) => d.id === dersId);
+    if (!ders || !kullaniciId) return;
+    setSablonYukleniyor((prev) => ({ ...prev, [dersId]: true }));
+    try {
+      const buffer = await dosya.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: "array" });
+      for (const hafta of HAFTALAR) {
+        const ws = wb.Sheets[hafta];
+        if (!ws) continue;
+        const rows: unknown[][] = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
+        const veriSatirlari = rows.slice(1).filter((r) => r[1]);
+        if (veriSatirlari.length === 0) continue;
+        const urunListesi: HaftaUrun[] = veriSatirlari.map((r) => {
+          const miktar = parseFloat(String(r[3]).replace(",", ".")) || 0;
+          const birimFiyat = parseFloat(String(r[5]).replace(",", ".")) || 0;
+          return {
+            urunId: String(r[0] || ""),
+            urunAdi: String(r[1] || ""),
+            marka: String(r[2] || ""),
+            miktar, olcu: String(r[4] || ""),
+            birimFiyat,
+            toplam: parseFloat((miktar * birimFiyat).toFixed(2)),
+          };
+        });
+        const haftaToplami = urunListesi.reduce((a, u) => a + u.toplam, 0);
+        const { data: mevcut } = await supabase.from("siparisler").select("id")
+          .eq("ogretmen_id", kullaniciId).eq("ders_id", dersId).eq("hafta", hafta).single();
+        if (mevcut) {
+          await supabase.from("siparisler").update({ urunler: urunListesi, genel_toplam: haftaToplami }).eq("id", mevcut.id);
+        } else {
+          await supabase.from("siparisler").insert({
+            ogretmen_id: kullaniciId, ogretmen_adi: kullaniciAdi,
+            ders_id: dersId, ders_adi: `${ders.kod} - ${ders.ad}`,
+            hafta, urunler: urunListesi, genel_toplam: haftaToplami,
+            tarih: new Date().toLocaleDateString("tr-TR"), durum: "bekliyor",
+          });
+        }
+        setDersListeleri((prev) => ({
+          ...prev,
+          [dersId]: {
+            ...(prev[dersId] || { dersId, dersAdi: ders.ad, dersKodu: ders.kod, ogretmenAdi: kullaniciAdi, olusturmaTarihi: new Date().toLocaleDateString("tr-TR"), haftalar: {} }),
+            haftalar: { ...(prev[dersId]?.haftalar || {}), [hafta]: urunListesi },
+          },
+        }));
+      }
+      bildirimGoster("basari", `${ders.kod} sablon verisi yuklendi!`);
+    } catch {
+      bildirimGoster("hata", "Sablon yuklenirken hata olustu.");
+    } finally {
+      setSablonYukleniyor((prev) => ({ ...prev, [dersId]: false }));
+      setDersSablonDosyasi((prev) => { const y = { ...prev }; delete y[dersId]; return y; });
+    }
+  };
+
   const dersHaftaDoluluk = (dersId: string) => {
     const dl = dersListeleri[dersId];
     if (!dl) return 0;
@@ -494,7 +574,7 @@ export default function AlisverisListeleriPage() {
                           )}
                         </div>
                         {dl && doluHafta > 0 ? (
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
                             <button onClick={() => handleExcelIndir(ders.id)}
                               className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
                               Excel
@@ -503,6 +583,15 @@ export default function AlisverisListeleriPage() {
                               className="bg-red-700 hover:bg-red-800 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
                               PDF
                             </button>
+                            <button onClick={() => handleSablonIndir(ders.id)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
+                              Sablon Indir
+                            </button>
+                            <label className={`flex items-center gap-1 text-sm font-semibold px-4 py-2.5 rounded-xl transition cursor-pointer ${sablonYukleniyor[ders.id] ? "bg-gray-200 text-gray-400" : "bg-amber-500 hover:bg-amber-600 text-white"}`}>
+                              {sablonYukleniyor[ders.id] ? "Yukleniyor..." : "Excel Yukle"}
+                              <input type="file" accept=".xlsx" className="hidden" disabled={sablonYukleniyor[ders.id]}
+                                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleSablonYukle(ders.id, f); e.target.value = ""; }} />
+                            </label>
                           </div>
                         ) : (
                           <button onClick={() => { setSecilenDers(ders.id); setAktifSekme("liste-olustur"); }}
