@@ -493,7 +493,7 @@ export default function SatinAlmaPage() {
                             </td>
                             <td className="px-4 py-3.5">
                               <span className={`font-bold text-base ${u.satinAlinacak > 0 ? "text-emerald-700" : "text-gray-400"}`}>
-                                {u.satinAlinacak > 0 ? `${u.satinAlinacak} ${u.olcu}` : "Depoda yeterli"}
+                                {u.satinAlinacak > 0 ? `${parseFloat(u.satinAlinacak.toFixed(3))} ${u.olcu}` : "Depoda yeterli"}
                               </span>
                             </td>
                             <td className="px-4 py-3.5 text-gray-500">
