@@ -30,7 +30,6 @@ const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
     { name: "Siparişlerim", path: "/siparislerim" },
     { name: "Talep Oluştur", path: "/talep" },
     { name: "Tarif Defterim", path: "/receteler" },
-    { name: "Ürün Havuzu", path: "/urun-havuzu" },
     { name: "Etkinlik Takvimi", path: "/etkinlik-takvimi" },
     { name: "Ders Programım", path: "/ders-programim" },
   ],
@@ -42,12 +41,14 @@ const ROLE_MENUS: Record<string, { name: string; path: string }[]> = {
   ],
   bolum_baskani: [
     { name: "Ana Sayfa", path: "/bolum-baskani" },
+    { name: "Envanter Sayım", path: "/bolum-baskani/envanter-sayim" },
     { name: "Ders Yönetimi", path: "/dersler" },
     { name: "Ders Programı", path: "/ders-programi" },
     { name: "Etkinlik Takvimi", path: "/etkinlik-takvimi" },
   ],
   "bolum-baskani": [
     { name: "Ana Sayfa", path: "/bolum-baskani" },
+    { name: "Envanter Sayım", path: "/bolum-baskani/envanter-sayim" },
     { name: "Ders Yönetimi", path: "/dersler" },
     { name: "Ders Programı", path: "/ders-programi" },
     { name: "Etkinlik Takvimi", path: "/etkinlik-takvimi" },
