@@ -51,14 +51,17 @@ export default function OgretmenAnaSayfa() {
         }
       });
 
-    supabase.from("siparisler").select("*").eq("ogretmenId", Number(id)).order("tarih", { ascending: false }).limit(5)
+    supabase.from("siparisler").select("*").eq("ogretmen_id", Number(id)).order("tarih", { ascending: false }).limit(5)
       .then(({ data }) => {
         const list = data || [];
-        setSiparisler(list);
+        setSiparisler(list.map((s: any) => ({
+          id: s.id, dersAdi: s.ders_adi, hafta: s.hafta,
+          tarih: s.tarih, durum: s.durum, genelToplam: s.genel_toplam,
+        })));
         setStats({
-          bekleyen: list.filter(s => s.durum === "bekliyor").length,
-          onaylanan: list.filter(s => s.durum === "onaylandi").length,
-          teslim: list.filter(s => s.durum === "teslim_alindi").length,
+          bekleyen: list.filter((s: any) => s.durum === "bekliyor").length,
+          onaylanan: list.filter((s: any) => s.durum === "onaylandi").length,
+          teslim: list.filter((s: any) => s.durum === "teslim_alindi").length,
         });
       });
 
@@ -85,9 +88,9 @@ export default function OgretmenAnaSayfa() {
         {/* Siparis ozeti */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Bekleyen",     val: stats.bekleyen,  renk: "#D97706", bg: "#FFFBEB", icon: "⏳" },
-            { label: "Onaylanan",    val: stats.onaylanan, renk: "#059669", bg: "#ECFDF5", icon: "✅" },
-            { label: "Teslim Alindi",val: stats.teslim,    renk: "#2563EB", bg: "#EFF6FF", icon: "📦" },
+            { label: "Bekleyen",      val: stats.bekleyen,  renk: "#D97706", bg: "#FFFBEB", icon: "⏳" },
+            { label: "Onaylanan",     val: stats.onaylanan, renk: "#059669", bg: "#ECFDF5", icon: "✅" },
+            { label: "Teslim Alindi", val: stats.teslim,    renk: "#2563EB", bg: "#EFF6FF", icon: "📦" },
           ].map((k) => (
             <Link href="/alisveris-listelerim" key={k.label}>
               <div className="rounded-2xl border border-zinc-100 p-4 text-center hover:shadow-md transition" style={{ background: k.bg }}>
@@ -160,14 +163,14 @@ export default function OgretmenAnaSayfa() {
           </div>
           <div className="divide-y divide-zinc-50">
             {siparisler.length === 0 ? (
-              <p className="px-5 py-8 text-center text-zinc-400 text-sm">Henuz liste olusturulmmamis</p>
+              <p className="px-5 py-8 text-center text-zinc-400 text-sm">Henuz liste olusturulmamis</p>
             ) : siparisler.map((s) => {
               const d = DURUM_STIL[s.durum] || DURUM_STIL.bekliyor;
               return (
                 <div key={s.id} className="px-5 py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-zinc-800 truncate">{s.dersAdi}</p>
-                    <p className="text-xs text-zinc-400">{s.hafta} &bull; {new Date(s.tarih).toLocaleDateString("tr-TR")}</p>
+                    <p className="text-xs text-zinc-400">{s.hafta} &bull; {s.tarih}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="text-xs font-bold text-zinc-600">{Number(s.genelToplam || 0).toFixed(2)} TL</span>
@@ -182,12 +185,13 @@ export default function OgretmenAnaSayfa() {
         {/* Hizli Erisim */}
         <div>
           <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">Hizli Erisim</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
-              { label: "Tarif Defteri",   icon: "📖", link: "/receteler",          renk: "#EA580C", bg: "#FFF7ED" },
-              { label: "Alisveris Listesi",icon: "🛒", link: "/alisveris-listelerim",renk: "#059669", bg: "#ECFDF5" },
-              { label: "Ders Programi",   icon: "📋", link: "/ders-programi",       renk: "#2563EB", bg: "#EFF6FF" },
-              { label: "Etkinlik Takvimi",icon: "📅", link: "/etkinlik-takvimi",    renk: "#7C3AED", bg: "#F5F3FF" },
+              { label: "Tarif Defteri",    icon: "📖", link: "/receteler",            renk: "#EA580C", bg: "#FFF7ED" },
+              { label: "Alisveris Listesi", icon: "🛒", link: "/alisveris-listelerim", renk: "#059669", bg: "#ECFDF5" },
+              { label: "Urun Havuzu",       icon: "📦", link: "/urun-havuzu",          renk: "#0284C7", bg: "#F0F9FF" },
+              { label: "Ders Programi",    icon: "📋", link: "/ders-programi",         renk: "#2563EB", bg: "#EFF6FF" },
+              { label: "Etkinlik Takvimi", icon: "📅", link: "/etkinlik-takvimi",      renk: "#7C3AED", bg: "#F5F3FF" },
             ].map((h) => (
               <Link key={h.link} href={h.link}>
                 <div className="rounded-2xl border border-zinc-100 p-4 text-center hover:shadow-md transition" style={{ background: h.bg }}>
