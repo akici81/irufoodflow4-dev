@@ -222,13 +222,25 @@ export default function AlisverisListeleriPage() {
     XLSX.writeFile(wb, `${dl.dersKodu}_Malzeme_Talep_Listesi.xlsx`);
   };
 
+  // ✅ DÜZELTİLDİ: toplam <div> yerine <p> olarak tablo DIŞINDA yazılıyor
   const handlePdfIndir = (dersId: string) => {
     const dl = dersListeleri[dersId];
     if (!dl) return;
-    let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;font-size:11px}.sayfa{page-break-after:always;padding:20px}.baslik{text-align:center;font-size:13px;font-weight:bold;border:2px solid #8B0000;padding:10px;margin-bottom:8px}table{width:100%;border-collapse:collapse}th{background:#8B0000;color:white;padding:6px 8px;font-size:10px}td{padding:5px 8px;border-bottom:1px solid #eee;font-size:10px}</style></head><body>`;
+    let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+      body{font-family:Arial,sans-serif;font-size:11px}
+      .sayfa{page-break-after:always;padding:20px}
+      .baslik{text-align:center;font-size:13px;font-weight:bold;border:2px solid #8B0000;padding:10px;margin-bottom:8px}
+      table{width:100%;border-collapse:collapse}
+      th{background:#8B0000;color:white;padding:6px 8px;font-size:10px}
+      td{padding:5px 8px;border-bottom:1px solid #eee;font-size:10px}
+      .toplam{text-align:right;margin-top:8px;padding:8px 12px;border-top:2px solid #8B0000;font-size:12px;font-weight:bold;color:#8B0000;}
+    </style></head><body>`;
     HAFTALAR.forEach((hafta) => {
       const urunlerHafta = dl.haftalar[hafta] || [];
-      html += `<div class="sayfa"><div class="baslik">${dl.dersKodu} - ${dl.dersAdi}<br>MALZEME TALEP LISTESI - ${hafta}</div><table><thead><tr><th>Sira</th><th>Urun</th><th>Marka</th><th>Miktar</th><th>Olcu</th><th>Toplam</th></tr></thead><tbody>`;
+      const haftaToplamTutar = urunlerHafta.reduce((acc, u) => acc + u.toplam, 0);
+      html += `<div class="sayfa">`;
+      html += `<div class="baslik">${dl.dersKodu} - ${dl.dersAdi}<br>MALZEME TALEP LISTESI - ${hafta}</div>`;
+      html += `<table><thead><tr><th>Sira</th><th>Urun</th><th>Marka</th><th>Miktar</th><th>Olcu</th><th>Toplam</th></tr></thead><tbody>`;
       if (urunlerHafta.length === 0) {
         html += `<tr><td colspan="6" style="text-align:center;color:#999;">Bu hafta icin urun girilmemis.</td></tr>`;
       } else {
@@ -236,9 +248,9 @@ export default function AlisverisListeleriPage() {
           html += `<tr><td>${i + 1}</td><td>${u.urunAdi}</td><td>${u.marka || "-"}</td><td>${u.miktar}</td><td>${u.olcu}</td><td>${u.toplam > 0 ? u.toplam.toFixed(2) + " TL" : "-"}</td></tr>`;
         });
       }
-      const haftaToplamTutar = urunlerHafta.reduce((acc, u) => acc + u.toplam, 0);
+      html += `</tbody></table>`;
       if (urunlerHafta.length > 0) {
-        html += `<div style="text-align:right;margin-top:8px;padding:8px 12px;border-top:2px solid #8B0000;font-size:12px;font-weight:bold;color:#8B0000;">${hafta} Toplam: ${haftaToplamTutar.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} TL</div>`;
+        html += `<p class="toplam">${hafta} Toplam: ${haftaToplamTutar.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} TL</p>`;
       }
       html += `</div>`;
     });
@@ -248,11 +260,6 @@ export default function AlisverisListeleriPage() {
     win.document.write(html); win.document.close(); win.focus();
     setTimeout(() => { win.print(); }, 500);
   };
-
-  // Kisisiye ozel offline sablon
-  // - Tamamen client-side, internet gerektirmez
-  // - Hocaya ait gercek dersler ve Supabase'den cekilen urunler kullanilir
-  // - Hoca bu dosyayi internetsiz ortamda doldurup internet gelince yukler
 
   const handleSablonIndir = async (dersId: string) => {
     const ders = atananDersler.find((d) => d.id === dersId);
@@ -398,15 +405,15 @@ export default function AlisverisListeleriPage() {
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap">G / Ml</span>
-                      <span className="text-gray-500">+ / - ile <b>50'ser</b> artir/azalt</span>
+                      <span className="text-gray-500">+ / - ile <b>50&apos;ser</b> artir/azalt</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap">Adet</span>
-                      <span className="text-gray-500">+ / - ile <b>1'er</b> artir/azalt</span>
+                      <span className="text-gray-500">+ / - ile <b>1&apos;er</b> artir/azalt</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="font-mono bg-white border border-blue-200 px-1.5 py-0.5 rounded text-blue-800 whitespace-nowrap">Paket / Kutu</span>
-                      <span className="text-gray-500">+ / - ile <b>1'er</b> artir/azalt</span>
+                      <span className="text-gray-500">+ / - ile <b>1&apos;er</b> artir/azalt</span>
                     </div>
                   </div>
                 </div>
